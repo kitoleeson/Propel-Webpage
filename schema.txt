@@ -1,0 +1,144 @@
+CLIENTS
+Students (
+  student_id SERIAL PRIMARY KEY,
+  gov_name TEXT NOT NULL,
+  pref_name TEXT,
+  grade TEXT,
+  city TEXT NOT NULL,
+  email TEXT NOT NULL,
+  phone TEXT,
+  pref_communication TEXT NOT NULL
+    CHECK (pref_communication IN ('email','text message')),
+  how_found_us TEXT
+    CHECK (how_found_us IN ('teacher', 'word of mouth', 'advertisement', 'web search', 'other')),
+  UNIQUE (email)
+);
+
+Parents (
+  parent_id SERIAL PRIMARY KEY,
+  gov_name TEXT NOT NULL,
+  pref_name TEXT,
+  email TEXT NOT NULL,
+  phone TEXT,
+  pref_communication TEXT NOT NULL
+    CHECK (pref_communication IN ('email','text message')),
+  UNIQUE (email)
+);
+
+StudentParent (
+  student_id INTEGER NOT NULL REFERENCES Students(student_id),
+  parent_id INTEGER NOT NULL REFERENCES Parents(parent_id),
+  relationship_type TEXT,
+  is_primary_biller BOOLEAN DEFAULT FALSE,
+  PRIMARY KEY (student_id, parent_id)
+);
+
+CREATE UNIQUE INDEX one_primary_biller
+ON StudentParent (student_id)
+WHERE is_primary_biller;
+
+TUTORS
+Tutors (
+  tutor_id SERIAL PRIMARY KEY,
+  gov_name TEXT NOT NULL,
+  pref_name TEXT,
+  email TEXT NOT NULL,
+  phone TEXT NOT NULL,
+  date_hired DATE NOT NULL,
+  prior_experience INTEGER NOT NULL,
+  current_rate NUMERIC(6, 2) NOT NULL,
+  emerg_contact_name TEXT NOT NULL,
+  emerg_contact_phone TEXT NOT NULL,
+  emerg_contact_relationship TEXT,
+  availability TEXT,
+  subjects TEXT NOT NULL,
+  current_uni TEXT,
+  current_degree TEXT,
+  year_of_study INTEGER,
+  current_fav_class TEXT,
+  bio TEXT,
+  hobbies TEXT,
+  academic_interests TEXT,
+  ap_ib_credentials TEXT,
+  high_school TEXT,
+  fav_high_school_class TEXT,
+  UNIQUE (email),
+  UNIQUE (phone)
+);
+
+SESSIONS
+StudentTutorAssignments (
+  assignment_id SERIAL PRIMARY KEY,
+  student_id INTEGER NOT NULL REFERENCES Students(student_id),
+  tutor_id INTEGER NOT NULL REFERENCES Tutors(tutor_id),
+  usual_duration NUMERIC(4, 2) NOT NULL,
+  hourly_rate NUMERIC(6, 2) NOT NULL,
+  start_date DATE NOT NULL,
+  end_date DATE NULL,
+  CHECK (end_date IS NULL OR end_date >= start_date),
+  UNIQUE (student_id, tutor_id, start_date)
+);
+
+CREATE UNIQUE INDEX one_active_assignment
+ON StudentTutorAssignments (student_id, tutor_id)
+WHERE end_date IS NULL;
+
+Sessions (
+  session_id SERIAL PRIMARY KEY,
+  assignment_id INTEGER NOT NULL REFERENCES StudentTutorAssignments(assignment_id),
+  session_date DATE NOT NULL,
+  duration_hours NUMERIC(4, 2) NOT NULL CHECK (duration_hours > 0)
+);
+
+BILLING
+BillingAccounts (
+  billing_id SERIAL PRIMARY KEY,
+  type TEXT NOT NULL
+    CHECK (type IN ('parent','student')),
+  owner_id INTEGER NOT NULL,
+  display_name TEXT,
+  email TEXT,
+  UNIQUE (email)
+);
+
+StudentBilling (
+  student_id INTEGER NOT NULL REFERENCES Students(student_id),
+  billing_id INTEGER NOT NULL REFERENCES BillingAccounts(billing_id),
+  PRIMARY KEY (student_id)
+);
+
+INVOICING
+Invoices (
+  invoice_id SERIAL PRIMARY KEY,
+  billing_id INTEGER NOT NULL REFERENCES BillingAccounts(billing_id),
+  biweek_start DATE NOT NULL,
+  date_sent DATE NOT NULL,
+  total_hours NUMERIC(5, 2) NOT NULL,
+  total_amount NUMERIC(8, 2) NOT NULL,
+  UNIQUE (billing_id, biweek_start),
+  CHECK (total_hours > 0)
+);
+
+Payments (
+  payment_id SERIAL PRIMARY KEY,
+  billing_id INTEGER NOT NULL REFERENCES BillingAccounts(billing_id),
+  invoice_id INTEGER NOT NULL REFERENCES Invoices(invoice_id),
+  amount NUMERIC(8, 2) NOT NULL
+    CHECK (amount > 0),
+  payment_date DATE  NOT NULL,
+  method TEXT NOT NULL
+    CHECK (method IN ('eTransfer', 'cash'))
+);
+
+PAYROLL
+Payroll (
+  payroll_id SERIAL PRIMARY KEY,
+  tutor_id INTEGER NOT NULL REFERENCES Tutors(tutor_id),
+  biweek_start DATE NOT NULL,
+  total_hours NUMERIC(5, 2) NOT NULL,
+  total_amount NUMERIC(8, 2) NOT NULL
+    CHECK (total_amount > 0),
+  date_paid DATE NOT NULL,
+  UNIQUE (tutor_id, biweek_start),
+  CHECK (total_hours > 0)
+);
