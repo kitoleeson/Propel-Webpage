@@ -190,7 +190,7 @@ def send_invoice(billing_id: int, invoice_path: str, biweek_start: date, biweek_
         body = f"Hello {name},|Please find attached your tutoring invoice for the period of {biweek_start.strftime('%B %d')} (inclusive) to {biweek_end.strftime('%B %d, %Y')} (exclusive).|If you have any questions or concerns regarding invoices, payments, or scheduling, please feel free to reach out. I'm here to help!|Kito Lee Son"
 
     options = {
-        "subject": f"Propel Tutoring Invoice -- {biweek_start.strftime('%b %d')} to {biweek_end.strftime('%b %d, %Y')}",
+        "subject": f"Propel Tutoring Invoice",
         "from": os.getenv("PROPEL_EMAIL"),
         "to": email,
         "body": body.replace("|", "\n\n"),
