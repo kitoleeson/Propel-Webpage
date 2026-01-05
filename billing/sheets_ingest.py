@@ -58,7 +58,7 @@ def ingest_sessions(biweek_start: date, biweek_end: date):
     sheets = spreadsheet.worksheets()
     count = 0
 
-    # Ingest sessions
+    # Ingest sessions in biweek from each tutor's sheet
     with psycopg2.connect(os.getenv("DATABASE_URL"), cursor_factory=DictCursor) as conn:
         with Progress() as progress:
             sheets_bar = progress.add_task(format_progress_update("Ingesting sessions from sheets", "cyan"), total=len(sheets))
@@ -67,7 +67,7 @@ def ingest_sessions(biweek_start: date, biweek_end: date):
                 tutor_id, tutor_name = sheet.title.split(" - ", 1)
                 rows = sheet.get(os.getenv("SESSION_RANGE"), value_render_option='UNFORMATTED_VALUE')
                 rows_bar = progress.add_task(format_progress_update(f"Processing rows for tutor: {tutor_name}", "cyan"), total=len(rows))
-                num = 3
+                num = int(os.getenv("SESSION_RANGE").split(":")[0][1:]) - 1 # Starting row number
                 with conn.cursor() as cursor:
                     for row in rows:
                         num += 1
@@ -76,6 +76,8 @@ def ingest_sessions(biweek_start: date, biweek_end: date):
                             continue
                         # Parse session
                         session = parse_session_row(row)
+
+                        # Check date range
                         if not (biweek_start <= session["date"].date() < biweek_end):
                             continue
                         

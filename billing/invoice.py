@@ -11,7 +11,7 @@ import os
 import logging
 from collections import defaultdict
 from rich.logging import RichHandler
-from rich.progress import Progress
+from rich.progress import Progress, TaskID
 from dotenv import load_dotenv
 from jinja2 import Environment, FileSystemLoader
 from pathlib import Path
@@ -24,6 +24,20 @@ from send_email import send_email
 logging.basicConfig(level=logging.INFO, format="%(message)s", handlers=[RichHandler()])
 load_dotenv()
 
+# Helper functions
+def cleanup_latex_artifacts(directory: Path, keep_exts={".pdf", ".tex"}):
+    """
+    Cleanup LaTeX artifacts in the specified directory, keeping only files with specified extensions.
+    Arguments:
+        directory (Path): Directory to clean up
+        keep_exts (set): Set of file extensions to keep
+    Returns:
+        None
+    """
+    for file in directory.iterdir():
+        if file.is_file() and file.suffix not in keep_exts:
+            file.unlink()
+
 def find_sessions(biweek_start: date, biweek_end: date):
     """
     Find all sessions in the database within the specified biweekly period.
@@ -31,7 +45,7 @@ def find_sessions(biweek_start: date, biweek_end: date):
         biweek_start (date): The start date of the 2-week billing period.
         biweek_end (date): The end date of the 2-week billing period.
     Returns:
-        sessions (dict): Session records sorted by student_id
+        sessions_by_biller (dict): Session records sorted by biller_id
     """
     query = """
         SELECT
@@ -60,11 +74,11 @@ def find_sessions(biweek_start: date, biweek_end: date):
     with psycopg2.connect(os.getenv("DATABASE_URL")) as conn, conn.cursor(cursor_factory=DictCursor) as cursor:
         cursor.execute(query, (biweek_start, biweek_end))
         results = cursor.fetchall()
-    sessions = defaultdict(list)
+    sessions_by_biller = defaultdict(list)
     with Progress() as progress:
         session_bar = progress.add_task(format_progress_update("Ingesting sessions from sheets", "cyan"), total=len(results))
         for session in results:
-            sessions[session['billing_id']].append({
+            sessions_by_biller[session['billing_id']].append({
                 'student_id': session['student_id'],
                 'student_name': session['student_name'],
                 'student_pref_name': session['student_pref_name'],
@@ -78,7 +92,7 @@ def find_sessions(biweek_start: date, biweek_end: date):
             })
             progress.update(session_bar, advance=1)
         progress.update(session_bar, description=format_progress_update("All sessions ingested ✓", "green"))
-    return sessions
+    return sessions_by_biller
 
 def build_invoice(billing_id: int, sessions: list, biweek_start: date, biweek_end: date):
     """
@@ -90,30 +104,11 @@ def build_invoice(billing_id: int, sessions: list, biweek_start: date, biweek_en
         invoice_path (str): Path to the generated invoice file
     """
 
-    def cleanup_latex_artifacts(directory: Path, keep_exts={".pdf", ".tex"}):
-        """
-        Cleanup LaTeX artifacts in the specified directory, keeping only files with specified extensions.
-        Arguments:
-            directory (Path): Directory to clean up
-            keep_exts (set): Set of file extensions to keep
-        Returns:
-            None
-        """
-        for file in directory.iterdir():
-            if file.is_file() and file.suffix not in keep_exts:
-                file.unlink()
-
-    
-    env = Environment(
-        loader=FileSystemLoader(Path(__file__).parent / "latex_templates"),
-        autoescape=False
-    )
-    template = env.get_template("student_invoice.j2")
-
+    # Determine invoice number and current tab
     with psycopg2.connect(os.getenv("DATABASE_URL"), cursor_factory=DictCursor) as conn, conn.cursor() as cursor:
         cursor.execute("""SELECT invoice_id FROM invoices ORDER BY invoice_id DESC LIMIT 1""")
         result = cursor.fetchone()
-        invoice_number = f"{(int(result[0]) + 1 if result else 1):04}"
+        invoice_number = int(result[0]) + 1 if result else 1
         query = """
             SELECT COALESCE(SUM(s.duration_hours * st.hourly_rate), 0) - COALESCE(SUM(p.amount), 0) AS current_tab
             FROM student_billing sb
@@ -126,28 +121,33 @@ def build_invoice(billing_id: int, sessions: list, biweek_start: date, biweek_en
         cursor.execute(query, (billing_id, biweek_start))
         result = cursor.fetchone()
         current_tab = float(result[0]) if result else 0.0
-        session_total = sum(session['total_fee'] for session in sessions)
 
+    # Prepare invoice data
     invoice_data = {
         "invoice_number": invoice_number,
         "invoice_date": date.today().strftime("%B %d, %Y"),
         "biweek": f"{biweek_start.strftime('%b %d')} - {biweek_end.strftime('%b %d, %Y')}",
-        "billing_id": f"{billing_id:02}",
+        "billing_id": billing_id,
         "student_name": ", ".join(sorted({session['student_name'] for session in sessions})),
         "subjects_list": ", ".join(sorted({session['subjects'] for session in sessions})),
         "sessions": sessions,
-        "session_count": len(sessions),
-        "session_total": f"{session_total:.2f}",
-        "total_hours": f"{sum(session['duration_hours'] for session in sessions):.2f}",
-        "current_tab": f"{current_tab:.2f}",
-        "total_amount": f"{(current_tab + session_total):.2f}",
+        "current_tab": current_tab,
         "propel_email": os.getenv("PROPEL_EMAIL"),
         "propel_phone": os.getenv("PROPEL_PHONE"),
     }
 
-    output_path = Path(f"invoices/{os.getenv('CURRENT_SEMESTER')}/INV-{invoice_number}-{billing_id:02}.pdf")
+    # Render LaTeX template
+    env = Environment(
+        loader=FileSystemLoader(Path(__file__).parent / "latex_templates"),
+        autoescape=False
+    )
+    template = env.get_template("invoice.j2")
+
+    # Generate PDF
+    output_path = Path(f"invoices/{os.getenv('CURRENT_SEMESTER')}/INV-{invoice_number:04}-{billing_id:02}.pdf")
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
+    # Render and compile LaTeX
     rendered_tex = template.render(**invoice_data)
     tex_path = output_path.with_suffix(".tex")
     with open(tex_path, "w") as f:
@@ -198,6 +198,82 @@ def send_invoice(billing_id: int, invoice_path: str, biweek_start: date, biweek_
     }
     send_email(options)
 
+def generate_and_send_tutor_payroll(sessions_by_biller: dict, biweek_start: date, biweek_end: date, progress: Progress, payroll_bar: TaskID):
+    """
+    Generate and send tutor payroll summaries for the specified biweekly period.
+    Arguments:
+        sessions_by_biller (dict): Session records sorted by billing_id
+        biweek_start (date): The start date of the 2-week billing period.
+        biweek_end (date): The end date of the 2-week billing period.
+        progress (Progress): Rich Progress instance for updating progress bars
+        payroll_bar (TaskID): Specific progress bar for payroll generation
+    Returns:
+        None
+    """
+    # Generate tutor payroll summaries
+    progress.update(payroll_bar, description=format_progress_update(f"Gathering payroll data", "yellow"))
+    # Build tutor payroll data
+    sessions_by_tutor = defaultdict(list)
+    for session_list in sessions_by_biller.values():
+        for session in session_list:
+            sessions_by_tutor[session['tutor_id']].append(session)
+    tutors = []
+    for tutor_id, sessions in sessions_by_tutor.items():
+        tutors.append({
+            "tutor_id": tutor_id,
+            "pref_name": sessions[0]['tutor_name'],
+            "num_sessions": len(sessions),
+            "num_hours": sum(session['duration_hours'] for session in sessions),
+            "num_students": len(set(session['student_id'] for session in sessions)),
+            "total_earned": sum(session['total_fee'] for session in sessions)
+        })
+    
+    # Determine payroll number
+    with psycopg2.connect(os.getenv("DATABASE_URL"), cursor_factory=DictCursor) as conn, conn.cursor() as cursor:
+        cursor.execute("""SELECT payroll_id FROM payroll ORDER BY payroll_id DESC LIMIT 1""")
+        result = cursor.fetchone()
+        payroll_number = int(result[0]) + 1 if result else 1
+
+    # Prepare payroll data
+    payroll_data = {
+        "payroll_number": payroll_number,
+        "payroll_date": date.today().strftime("%B %d, %Y"),
+        "biweek": f"{biweek_start.strftime('%b %d')} - {biweek_end.strftime('%b %d, %Y')}",
+        "tutors": sorted(tutors, key=lambda t: t['tutor_id'])
+    }
+
+    progress.update(payroll_bar, advance=1, description=format_progress_update(f"Generating payroll summary", "yellow"))
+    # Render LaTeX template
+    env = Environment(
+        loader=FileSystemLoader(Path(__file__).parent / "latex_templates"),
+        autoescape=False
+    )
+    template = env.get_template("payroll.j2")
+
+    # Generate PDF
+    output_path = Path(f"payroll/{os.getenv('CURRENT_SEMESTER')}/PAY-{payroll_number:04}.pdf")
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+
+    # Render and compile LaTeX
+    rendered_tex = template.render(**payroll_data)
+    tex_path = output_path.with_suffix(".tex")
+    with open(tex_path, "w") as f:
+        f.write(rendered_tex)
+    subprocess.run(["pdflatex", "-interaction=batchmode", "-output-directory", str(output_path.parent), str(tex_path)], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    cleanup_latex_artifacts(output_path.parent)
+    progress.update(payroll_bar, advance=1, description=format_progress_update(f"Sending email", "yellow"))
+
+    # Send email
+    options = {
+        "subject": f"Payroll Summary - PAY-{payroll_number:04}",
+        "from": os.getenv("PROPEL_EMAIL"),
+        "to": os.getenv("PROPEL_EMAIL"),
+        "body": f"Tutor payroll summary for {biweek_start.strftime('%b %d')} to {biweek_end.strftime('%b %d, %Y')}.",
+        "attachments": [output_path.with_suffix(".pdf")]
+    }
+    send_email(options)
+    progress.update(payroll_bar, advance=1)
+
 def generate_and_send_invoices(biweek_start: date, biweek_end: date):
     """
     Generate and send student invoices for the specified biweekly period.
@@ -208,13 +284,13 @@ def generate_and_send_invoices(biweek_start: date, biweek_end: date):
         None
     """
     # Find sessions
-    sessions = find_sessions(biweek_start, biweek_end)
+    sessions_by_biller = find_sessions(biweek_start, biweek_end)
 
     with Progress() as progress:
         # Generate invoices
-        invoice_bar = progress.add_task(format_progress_update("Generating and sending invoices", "cyan"), total=len(sessions))
+        invoice_bar = progress.add_task(format_progress_update("Generating and sending invoices", "cyan"), total=len(sessions_by_biller))
         invoices = {}
-        for billing_id, session_list in sessions.items():
+        for billing_id, session_list in sessions_by_biller.items():
             progress.update(invoice_bar, description=format_progress_update(f"Generating invoice for billing ID: {billing_id}", "yellow"))
             invoices[billing_id] = build_invoice(billing_id, session_list, biweek_start, biweek_end)
             progress.update(invoice_bar, advance=1)
@@ -228,5 +304,10 @@ def generate_and_send_invoices(biweek_start: date, biweek_end: date):
             progress.update(email_bar, advance=1)
         progress.update(email_bar, description=format_progress_update("All invoices sent ✓", "green"))
 
+        # Generate and send tutor payroll summary
+        payroll_bar = progress.add_task(format_progress_update("Generating and sending tutor payroll summary", "cyan"), total=3)
+        generate_and_send_tutor_payroll(sessions_by_biller, biweek_start, biweek_end, progress, payroll_bar)
+        progress.update(payroll_bar, description=format_progress_update("Tutor payroll summary sent ✓", "green"))
 
-# ADD BIWEEK TIMES TO INVOICES
+        
+# ADD DATABASE INSERTIONS FOR INVOICES AND PAYROLLS

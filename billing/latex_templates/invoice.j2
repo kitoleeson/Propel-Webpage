@@ -1,24 +1,25 @@
 \documentclass[12pt]{article}
 \usepackage[margin=1in]{geometry}
 \usepackage{booktabs}
-\usepackage{datetime}
 \usepackage{array}
 \usepackage[dvipsnames]{xcolor}
 \usepackage{graphicx}
 \usepackage{tabularx}
 
+% ---------------- COLORS ----------------
 \definecolor{propel_blue}{HTML}{1652df}
 \definecolor{propel_teal}{HTML}{1eb9c2}
 
+% ---------------- HEADER ----------------
 \newcommand{\invoiceHeader}{
     \noindent
     \begin{minipage}[t]{0.58\textwidth} % Client info on the left
         \vspace{0pt}
         \raggedright
-        \textbf{Invoice: INV-{{ invoice_number }}}\\
+        \textbf{Invoice: INV-{{ "%04d"|format(invoice_number) }}}\\
         \textbf{Date: {{ invoice_date }}}\\
         \vspace{1em}
-        \textbf{Billing ID:} {{ billing_id }}\\
+        \textbf{Billing ID:} {{ "%02d"|format(billing_id) }}\\
         \textbf{Biweek:} {{ biweek }}\\
         \vspace{1em}
         \textbf{Student Name(s):} {{ student_name }}\\
@@ -37,6 +38,7 @@
     \vspace{3em} % Space below header before tables
 }
 
+% ---------------- FOOTER ----------------
 \newcommand{\invoiceFooter}{
     \vspace{2em}
     \begin{flushleft}
@@ -47,11 +49,13 @@
     \end{flushleft}
 }
 
+% ---------------- DOCUMENT ----------------
 \begin{document}
 \pagestyle{empty}
 
 \invoiceHeader
 
+% ---------------- SESSION TABLE ----------------
 \noindent
 \begin{tabularx}{\textwidth}{p{2cm} X X p{2cm} p{3cm} p{3cm}}
     \multicolumn{6}{l}{\textcolor{propel_blue}{\textbf{Session Summary}}}\\
@@ -62,20 +66,21 @@
     {{ session.session_date }} & {{ session.student_pref_name }} & {{ session.tutor_name }} & {{ session.duration_hours }} & {{ session.hourly_rate }} & {{ session.total_fee }} \\
     {% endfor %}
     \midrule
-    \multicolumn{5}{l}{\textbf{Session Total:}} & \textbf{\${{ session_total }}} \\
+    \multicolumn{5}{l}{\textbf{Session Total:}} & \textbf{\${{ sessions|sum(attribute='total_fee') }}} \\
     \bottomrule
 \end{tabularx}
 
 \vspace{2em} % Space between tables
 
+% ---------------- SUMMARY TABLE ----------------
 \noindent
 \begin{tabularx}{\textwidth}{X p{2cm} X p{2cm}}
     \multicolumn{4}{l}{\textcolor{propel_blue}{\textbf{Invoice Summary}}} \\
     \toprule
-    \textbf{Sessions} & {{ session_count }} & \textbf{Session Total} & \${{ session_total }} \\
-    \textbf{Total Hours} & {{ total_hours }} & \textbf{Current Tab} & \${{ current_tab }} \\
+    \textbf{Sessions} & {{ sessions|length }} & \textbf{Session Total} & \${{ sessions|sum(attribute='total_fee')|round(2) }} \\
+    \textbf{Total Hours} & {{ sessions|sum(attribute='duration_hours') }} & \textbf{Current Tab} & \${{ current_tab|round(2) }} \\
     \midrule
-    \multicolumn{3}{l}{\textbf{Total Due (Tab + Session Total)}} & \textbf{\$ {{ total_amount }}} \\
+    \multicolumn{3}{l}{\textbf{Total Due (Tab + Session Total)}} & \textbf{\$ {{ sessions|sum(attribute='total_fee')|round(2) + current_tab|round(2) }}} \\
     \bottomrule
 \end{tabularx}
 
