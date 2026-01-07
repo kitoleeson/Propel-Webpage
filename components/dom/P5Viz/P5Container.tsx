@@ -14,8 +14,7 @@ type Props = {
   children: React.ReactNode;
 };
 
-const P5Container = forwardRef<HTMLDivElement, Props>(
-  ({ title, width = "100%", height = 400, className, children }, ref) => {
+const P5Container = forwardRef<HTMLDivElement, Props>( ({ title, width = "100%", height = 400, className, children }, ref) => {
     return (
       <div ref={ref} className={className} style={{ width, height, position: "relative" }}>
         {title && (<div style={{ position: "absolute", top: 8, left: 12, zIndex: 10, fontSize: 14, opacity: 0.8,}}>{title}</div>)}

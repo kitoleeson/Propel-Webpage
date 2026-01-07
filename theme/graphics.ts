@@ -8,10 +8,10 @@ export interface GraphicsColors {
 }
 
 export const colors: GraphicsColors = {
-  background: "#1e1e1e",
-  accent: "#ff6f61",
+  background: "#1652df",
+  accent: "#1eb9c2",
   accentLight: "#ff9b8a",
-  accentDark: "#c94c3f",
+  accentDark: "#698ad6",
   textPrimary: "#ffffff",
   textSecondary: "#bbbbbb",
 };

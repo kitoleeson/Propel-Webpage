@@ -6,12 +6,8 @@ interface P5SceneInfo {
   canvasSize: CanvasSize;
 }
 
-export type P5SetupCallback = (p: p5, colors: GraphicsColors) => void;
-export type P5SketchCallback = (
-  p: p5,
-  colors: GraphicsColors,
-  scene: P5SceneInfo
-) => void;
+export type P5SetupCallback = (p: p5, colors: GraphicsColors, scene: P5SceneInfo) => void;
+export type P5SketchCallback = (p: p5, colors: GraphicsColors, scene: P5SceneInfo) => void;
 
 /**
  * Wrapper for the `sketch` prop passed to P5 to create blog viz.
@@ -23,6 +19,7 @@ export type P5SketchCallback = (
 
 export const createSketch = (setup: P5SetupCallback, draw: P5SketchCallback) => {
   let canvasSize = { width: 480, height: 400 };
+  
   return (p: p5) => {
     p.setup = () => {
       const { canvasSize: canvasSizeStore } = useAppStore.getState();
@@ -30,10 +27,11 @@ export const createSketch = (setup: P5SetupCallback, draw: P5SketchCallback) => 
       //   canvasSize.height = canvasSizeStore.height;
 
       p.createCanvas(canvasSizeStore.width, canvasSizeStore.height);
-      p.frameRate(30);
+      // p.frameRate(30);
       p.background(colors.background);
 
-      setup(p, colors);
+      const scene = { canvasSize };
+      setup(p, colors, scene);
     };
 
     p.draw = () => {
