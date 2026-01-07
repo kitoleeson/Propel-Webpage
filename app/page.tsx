@@ -5,121 +5,77 @@ import { P5SetupCallback, P5SketchCallback } from "@/utils/p5";
 
 export default function Home() {
 
-  // type Vec = {
-  //   x: number;
-  //   y: number;
-  // }
-  
-  // let theta = 0;
-  // let radius = 0;
-  // let size = 250;
-  // let center: Vec;
-  // let lastPoint: Vec;
-  // let points = [];
-
-  // const setup: P5SetupCallback = (p, colors, scene) => {
-  //   p.background(colors.accent);
-
-  //   const { canvasSize } = scene;
-  //   center = {
-  //     x: canvasSize.width / 2,
-  //     y: canvasSize.height / 2,
-  //   };
-  //   radius = p.pow(Math.cos((3/7) * theta), 2);
-  //   lastPoint = { x: radius * size * Math.cos(theta), y: radius * size * Math.sin(theta) };
-  // }
-  
-  // const draw: P5SketchCallback = (p, colors, scene) => {
-  //   const { canvasSize } = scene;
-
-  //   p.noStroke();
-  //   p.fill(colors.accentDark);
-  //   p.rect(20, 50, 150, 30);
-  //   p.fill(colors.textPrimary);
-  //   p.text("Size of points: " + points.length, 25, 70);
-
-  //   p.stroke(colors.textPrimary);
-  //   p.strokeWeight(2);
-    
-  //   p.translate(center.x, center.y);
-  //   const point = { x: radius * size * Math.cos(theta), y: radius * size * Math.sin(theta) } as Vec;
-  //   p.line(lastPoint.x, lastPoint.y, point.x, point.y);
-
-  //   theta += 0.1;
-  //   radius = p.pow(Math.cos((3/7) * theta), 2);
-  //   lastPoint = point;
-
-  //   if (p.dist(point.x, point.y, 0, 0) < size * 0.61) points.push(point);
-  //   if (theta > p.TWO_PI * 7) p.background(colors.accent);
-  //   for (let point of points){
-  //     p.ellipse(point.x, point.y, 5);
-  //   }
-  // }
-  
   type Vec = {
     x: number;
     y: number;
-  };
-
+  }
+  
   let theta = 0;
   let radius = 0;
   let size = 250;
   let center: Vec;
-
+  let lastPoint: Vec;
+  let points = [];
   let propeller: any;
+  let x = 0;
+  let r = 0;
+
+  const logoPoint = (theta: number) => {
+    radius = Math.pow(Math.cos((3/7) * theta), 2);
+    return { x: radius * size * Math.cos(theta), y: radius * size * Math.sin(theta) } as Vec;
+  }
 
   const setup: P5SetupCallback = (p, colors, scene) => {
-    const { canvasSize } = scene;
     p.background(colors.accent);
 
-    center = { x: canvasSize.width / 2, y: canvasSize.height / 2 };
-    theta = p.PI * (7 / 6);
-    radius = p.pow(Math.cos((3 / 7) * theta), 2);
+    const { canvasSize } = scene;
+    center = {
+      x: canvasSize.width / 2,
+      y: canvasSize.height / 2,
+    };
 
-    // Create the offscreen buffer for the propeller
+    lastPoint = logoPoint(theta);
+
+    // draw logo
+    const bounds = (a: number, b: number) => (Math.PI / 6) * (3 + (8 * a) + (14 * b));
+    
     propeller = p.createGraphics(canvasSize.width, canvasSize.height);
+    propeller.clear();
     propeller.translate(center.x, center.y);
-    propeller.stroke(colors.textPrimary);
-    propeller.strokeWeight(2);
-  };
-
+    for (let k = 0; k < 6; k++) for (let t = bounds(0, k); t < bounds(1, k); t += 0.005) {
+      const point = logoPoint(t);
+      propeller.stroke(colors.textPrimary);
+      propeller.strokeWeight(2);
+      propeller.ellipse(point.x, point.y, 4);
+    }
+  }
+  
   const draw: P5SketchCallback = (p, colors, scene) => {
     const { canvasSize } = scene;
-
-    // --- Fade the main canvas to create trailing effect ---
-    p.fill(colors.accent + "33"); // semi-transparent background
-    p.noStroke();
-    p.rect(0, 0, canvasSize.width, canvasSize.height);
-
-    p.push();
+    
+    p.stroke(colors.textPrimary);
+    p.strokeWeight(2);
+    
     p.translate(center.x, center.y);
+    const point = logoPoint(theta);
+    p.line(lastPoint.x, lastPoint.y, point.x, point.y);
+    lastPoint = point;
 
-    // Compute current point on pattern
-    const x = radius * size * Math.cos(theta);
-    const y = radius * size * Math.sin(theta);
-
-    // Draw line to last point on main canvas
-    if (theta > 0) {
-      p.stroke(colors.textPrimary);
-      p.strokeWeight(2);
-      p.line(0, 0, x, y); // or draw your outer pattern line
+    if (theta > Math.PI * 14) {
+      p.fill(colors.accent);
+      p.rect(-center.x, -center.y, canvasSize.width, 480);
+      p.push();
+      p.rotate(r);
+      p.image(propeller, -center.x, -center.y);
+      p.pop()
+      // p.fill(colors.accent);
+      // p.ellipse(0, 0, 85);
+      r -= 1;
+      // p.noLoop();
     }
-    p.pop();
-
-    // --- Draw propeller into offscreen buffer ---
-    const propX = radius * size * Math.cos(theta);
-    const propY = radius * size * Math.sin(theta);
-    propeller.stroke(colors.textPrimary);
-    propeller.strokeWeight(5);
-    propeller.point(propX, propY);
-
-    // --- Render propeller buffer onto main canvas ---
-    p.image(propeller, 0, 0);
-
-    // Update for next frame
-    theta += 0.05;
-    radius = p.pow(Math.cos((3 / 7) * theta), 2);
-  };
+    
+    theta += 0.1;
+  }
   
   return (
     <main>
