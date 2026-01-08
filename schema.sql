@@ -12,9 +12,9 @@ DROP TABLE IF EXISTS billing_accounts;
 DROP TABLE IF EXISTS sessions;
 DROP TABLE IF EXISTS student_tutor;
 DROP TABLE IF EXISTS payroll;
-DROP TABLE IF EXISTS student_parent;
+DROP TABLE IF EXISTS student_guardian;
 DROP TABLE IF EXISTS tutors;
-DROP TABLE IF EXISTS parents;
+DROP TABLE IF EXISTS guardians;
 DROP TABLE IF EXISTS students;
 
 -- SELECT table_name
@@ -45,8 +45,8 @@ CREATE TABLE IF NOT EXISTS students (
         CHECK (how_found_us IN ('teacher', 'word of mouth', 'advertisement', 'web search', 'other'))
 );
 
-CREATE TABLE IF NOT EXISTS parents (
-    parent_id SERIAL PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS guardians (
+    guardian_id SERIAL PRIMARY KEY,
     gov_first_name TEXT NOT NULL,
     gov_last_name TEXT NOT NULL,
     pref_name TEXT,
@@ -56,16 +56,16 @@ CREATE TABLE IF NOT EXISTS parents (
         CHECK (pref_communication IN ('email','text message'))
 );
 
-CREATE TABLE IF NOT EXISTS student_parent (
+CREATE TABLE IF NOT EXISTS student_guardian (
     student_id INTEGER NOT NULL REFERENCES students(student_id),
-    parent_id INTEGER NOT NULL REFERENCES parents(parent_id),
+    guardian_id INTEGER NOT NULL REFERENCES guardians(guardian_id),
     relationship_type TEXT,
     is_primary_biller BOOLEAN DEFAULT FALSE,
-    PRIMARY KEY (student_id, parent_id)
+    PRIMARY KEY (student_id, guardian_id)
 );
 
 CREATE UNIQUE INDEX IF NOT EXISTS one_primary_biller
-ON student_parent (student_id)
+ON student_guardian (student_id)
 WHERE is_primary_biller;
 
 -- =========================
@@ -137,7 +137,7 @@ ON sessions (assignment_id, session_date);
 CREATE TABLE IF NOT EXISTS billing_accounts (
     billing_id SERIAL PRIMARY KEY,
     type TEXT NOT NULL
-        CHECK (type IN ('parent','student')),
+        CHECK (type IN ('guardian','student')),
     owner_id INTEGER NOT NULL,
     display_name TEXT NOT NULL,
     email TEXT UNIQUE NOT NULL,
