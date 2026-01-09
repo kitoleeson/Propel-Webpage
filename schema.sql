@@ -86,6 +86,8 @@ CREATE TABLE IF NOT EXISTS tutors (
     emerg_contact_phone TEXT NOT NULL,
     emerg_contact_relationship TEXT,
     availability TEXT,
+    in_person BOOLEAN NOT NULL,
+    location TEXT,
     subjects TEXT NOT NULL,
     current_uni TEXT,
     current_degree TEXT,
@@ -112,6 +114,7 @@ CREATE TABLE IF NOT EXISTS student_tutor (
     start_date DATE NOT NULL,
     end_date DATE NULL,
     subjects TEXT NOT NULL,
+    count INTEGER NOT NULL DEFAULT 0,
     CHECK (end_date IS NULL OR end_date >= start_date),
     UNIQUE (student_id, tutor_id, start_date)
 );
@@ -124,7 +127,9 @@ CREATE TABLE IF NOT EXISTS sessions (
     session_id SERIAL PRIMARY KEY,
     assignment_id INTEGER NOT NULL REFERENCES student_tutor(assignment_id),
     session_date DATE NOT NULL,
-    duration_hours NUMERIC(4, 2) NOT NULL CHECK (duration_hours > 0)
+    duration_hours NUMERIC(4, 2) NOT NULL CHECK (duration_hours > 0),
+    exam_prep BOOLEAN DEFAULT FALSE,
+    half_price BOOLEAN DEFAULT FALSE,
 );
 
 CREATE UNIQUE INDEX IF NOT EXISTS one_session_per_day
