@@ -140,7 +140,7 @@ CREATE TABLE IF NOT EXISTS sessions (
     session_date DATE NOT NULL,
     duration_hours NUMERIC(4, 2) NOT NULL CHECK (duration_hours > 0),
     exam_prep BOOLEAN DEFAULT FALSE,
-    half_price BOOLEAN DEFAULT FALSE,
+    notes TEXT
 );
 -- inputed: through interface or sheets ingestion when a session is completed
 -- updated: through interface when session details change
@@ -210,12 +210,22 @@ CREATE TABLE IF NOT EXISTS payments (
 
 CREATE TABLE IF NOT EXISTS payroll (
     payroll_id SERIAL PRIMARY KEY,
-    tutor_id INTEGER NOT NULL REFERENCES tutors(tutor_id),
     biweek_start DATE NOT NULL,
     total_hours NUMERIC(5, 2) NOT NULL CHECK (total_hours > 0),
     total_amount NUMERIC(8, 2) NOT NULL CHECK (total_amount > 0),
-    date_paid DATE NOT NULL,
-    UNIQUE (tutor_id, biweek_start)
+    date_paid DATE NOT NULL
+);
+-- inputed: through invoice system when payroll completed
+-- updated: never updated
+-- deleted: never deleted
+
+CREATE TABLE IF NOT EXISTS payroll_entries (
+    entry_id SERIAL PRIMARY KEY,
+    payroll_id INTEGER NOT NULL REFERENCES payroll(payroll_id) ON DELETE RESTRICT,
+    tutor_id INTEGER NOT NULL REFERENCES tutors(tutor_id),
+    total_hours NUMERIC(5, 2) NOT NULL CHECK (total_hours > 0),
+    total_amount NUMERIC(8, 2) NOT NULL CHECK (total_amount > 0),
+    UNIQUE(payroll_id, tutor_id)
 );
 -- inputed: through invoice system when payroll completed
 -- updated: never updated

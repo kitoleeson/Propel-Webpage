@@ -106,21 +106,28 @@ def build_invoice(billing_id: int, sessions: list, biweek_start: date, biweek_en
 
     # Determine invoice number and current tab
     with psycopg2.connect(os.getenv("DATABASE_URL"), cursor_factory=DictCursor) as conn, conn.cursor() as cursor:
-        cursor.execute("""SELECT invoice_id FROM invoices ORDER BY invoice_id DESC LIMIT 1""")
-        result = cursor.fetchone()
-        invoice_number = int(result[0]) + 1 if result else 1
+        # Calculate current tab before this biweek
         query = """
-            SELECT COALESCE(SUM(s.duration_hours * st.hourly_rate), 0) - COALESCE(SUM(p.amount), 0) AS current_tab
-            FROM student_billing sb
-            JOIN student_tutor st ON sb.student_id = st.student_id
-            JOIN sessions s ON st.assignment_id = s.assignment_id
-            LEFT JOIN payments p ON sb.billing_id = p.billing_id
-            WHERE sb.billing_id = %s AND s.session_date < %s
-            GROUP BY sb.billing_id;
+            SELECT
+                COALESCE(SUM(i.total_amount), 0) - COALESCE(SUM(p.amount), 0) AS current_tab
+            FROM invoices i
+            LEFT JOIN payments p ON p.invoice_id = i.invoice_id
+            WHERE i.billing_id = %s
+            AND i.biweek_start < %s;
+
         """
         cursor.execute(query, (billing_id, biweek_start))
         result = cursor.fetchone()
         current_tab = float(result[0]) if result else 0.0
+
+        # Insert invoice record
+        cursor.execute(
+            """INSERT INTO invoices (billing_id, biweek_start, date_sent, total_hours, total_amount) VALUES (%s, %s, %s, %s, %s) RETURNING invoice_id""",
+            (billing_id, biweek_start, date.today(), sum(session['duration_hours'] for session in sessions), sum(session['total_fee'] for session in sessions))
+        )
+        result = cursor.fetchone()
+        invoice_number = int(result[0]) if result else 1
+        conn.commit()
 
     # Prepare invoice data
     invoice_data = {
@@ -198,6 +205,15 @@ def send_invoice(billing_id: int, invoice_path: str, biweek_start: date, biweek_
     }
     send_email(options)
 
+    with psycopg2.connect(os.getenv("DATABASE_URL"), cursor_factory=DictCursor) as conn, conn.cursor() as cursor:
+        # Update first_invoice flag
+        if first_invoice:
+            cursor.execute(
+                """UPDATE billing_accounts SET first_invoice = FALSE WHERE billing_id = %s""",
+                (billing_id,)
+            )
+            conn.commit()
+
 def generate_and_send_tutor_payroll(sessions_by_biller: dict, biweek_start: date, biweek_end: date, progress: Progress, payroll_bar: TaskID):
     """
     Generate and send tutor payroll summaries for the specified biweekly period.
@@ -230,7 +246,10 @@ def generate_and_send_tutor_payroll(sessions_by_biller: dict, biweek_start: date
     
     # Determine payroll number
     with psycopg2.connect(os.getenv("DATABASE_URL"), cursor_factory=DictCursor) as conn, conn.cursor() as cursor:
-        cursor.execute("""SELECT payroll_id FROM payroll ORDER BY payroll_id DESC LIMIT 1""")
+        cursor.execute(
+            """INSERT INTO payroll (tutor_id, biweek_start, total_hours, total_amount, date_paid) VALUES (%s, %s, %s, %s, %s) RETURNING payroll_id""",
+            (tutors[0]['tutor_id'], biweek_start, sum(tutor['num_hours'] for tutor in tutors), sum(tutor['total_earned'] for tutor in tutors), date.today())
+        )
         result = cursor.fetchone()
         payroll_number = int(result[0]) + 1 if result else 1
 
@@ -272,6 +291,7 @@ def generate_and_send_tutor_payroll(sessions_by_biller: dict, biweek_start: date
         "attachments": [output_path.with_suffix(".pdf")]
     }
     send_email(options)
+
     progress.update(payroll_bar, advance=1)
 
 def generate_and_send_invoices(biweek_start: date, biweek_end: date):
