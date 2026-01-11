@@ -44,6 +44,9 @@ CREATE TABLE IF NOT EXISTS students (
     how_found_us TEXT
         CHECK (how_found_us IN ('teacher', 'word of mouth', 'advertisement', 'web search', 'other'))
 );
+-- inputed: through the website form during sign up
+-- updated: through interface when student details change, eventually app
+-- deleted: never deleted
 
 CREATE TABLE IF NOT EXISTS guardians (
     guardian_id SERIAL PRIMARY KEY,
@@ -55,6 +58,9 @@ CREATE TABLE IF NOT EXISTS guardians (
     pref_communication TEXT NOT NULL
         CHECK (pref_communication IN ('email','text message'))
 );
+-- inputed: through the website form during sign up
+-- updated: through interface when guardian details change, eventually app
+-- deleted: never deleted
 
 CREATE TABLE IF NOT EXISTS student_guardian (
     student_id INTEGER NOT NULL REFERENCES students(student_id),
@@ -63,6 +69,10 @@ CREATE TABLE IF NOT EXISTS student_guardian (
     is_primary_biller BOOLEAN DEFAULT FALSE,
     PRIMARY KEY (student_id, guardian_id)
 );
+-- inputed: through the website form during sign up
+-- inputed: through interface when a guardian is added to a student profile
+-- updated: through interface when is_primary_biller is changed
+-- deleted: through interface when a guardian is removed from a student profile
 
 CREATE UNIQUE INDEX IF NOT EXISTS one_primary_biller
 ON student_guardian (student_id)
@@ -100,6 +110,10 @@ CREATE TABLE IF NOT EXISTS tutors (
     high_school TEXT,
     fav_high_school_class TEXT
 );
+-- inputed: through the website during onboarding form
+-- updated: through the website during semesterly forms when tutor details change
+-- updated: through interface when tutor details change
+-- deleted: never deleted
 
 -- =========================
 -- SESSIONS
@@ -111,17 +125,14 @@ CREATE TABLE IF NOT EXISTS student_tutor (
     tutor_id INTEGER NOT NULL REFERENCES tutors(tutor_id),
     usual_duration NUMERIC(4, 2) NOT NULL,
     hourly_rate NUMERIC(6, 2) NOT NULL,
-    start_date DATE NOT NULL,
-    end_date DATE NULL,
     subjects TEXT NOT NULL,
     count INTEGER NOT NULL DEFAULT 0,
-    CHECK (end_date IS NULL OR end_date >= start_date),
-    UNIQUE (student_id, tutor_id, start_date)
+    UNIQUE (student_id, tutor_id)
 );
-
-CREATE UNIQUE INDEX IF NOT EXISTS one_active_assignment
-ON student_tutor (student_id, tutor_id)
-WHERE end_date IS NULL;
+-- inputed: through interface when a tutor is assigned to a student
+-- updated: through interface when assignment details change
+-- updated: through invoice system when count is incremented
+-- deleted: never deleted
 
 CREATE TABLE IF NOT EXISTS sessions (
     session_id SERIAL PRIMARY KEY,
@@ -131,6 +142,9 @@ CREATE TABLE IF NOT EXISTS sessions (
     exam_prep BOOLEAN DEFAULT FALSE,
     half_price BOOLEAN DEFAULT FALSE,
 );
+-- inputed: through interface or sheets ingestion when a session is completed
+-- updated: through interface when session details change
+-- deleted: never deleted
 
 CREATE UNIQUE INDEX IF NOT EXISTS one_session_per_day
 ON sessions (assignment_id, session_date);
@@ -148,12 +162,18 @@ CREATE TABLE IF NOT EXISTS billing_accounts (
     email TEXT UNIQUE NOT NULL,
     first_invoice BOOLEAN DEFAULT TRUE
 );
+-- inputed: through website when a student chooses a billing account during sign up
+-- updated: through interface when billing account details change
+-- deleted: never deleted
 
 CREATE TABLE IF NOT EXISTS student_billing (
     student_id INTEGER NOT NULL REFERENCES students(student_id),
     billing_id INTEGER NOT NULL REFERENCES billing_accounts(billing_id),
     PRIMARY KEY (student_id)
 );
+-- inputed: through website when a student chooses a billing account during sign up
+-- updated: through interface when a student's billing account changes
+-- deleted: never deleted
 
 -- =========================
 -- INVOICING
@@ -168,6 +188,9 @@ CREATE TABLE IF NOT EXISTS invoices (
     total_amount NUMERIC(8, 2) NOT NULL,
     UNIQUE (billing_id, biweek_start)
 );
+-- inputed: through invoice system when an invoice is generated
+-- updated: never updated
+-- deleted: never deleted
 
 CREATE TABLE IF NOT EXISTS payments (
     payment_id SERIAL PRIMARY KEY,
@@ -177,6 +200,9 @@ CREATE TABLE IF NOT EXISTS payments (
     payment_date DATE NOT NULL,
     method TEXT NOT NULL CHECK (method IN ('eTransfer', 'cash'))
 );
+-- inputed: through invoice system when a payment is recorded
+-- updated: never updated
+-- deleted: never deleted
 
 -- =========================
 -- PAYROLL
@@ -191,6 +217,9 @@ CREATE TABLE IF NOT EXISTS payroll (
     date_paid DATE NOT NULL,
     UNIQUE (tutor_id, biweek_start)
 );
+-- inputed: through invoice system when payroll completed
+-- updated: never updated
+-- deleted: never deleted
 
 COMMIT;
 

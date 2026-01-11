@@ -23,6 +23,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(me
 # Module imports
 from sheets_ingest import ingest_sessions
 from invoice import generate_and_send_invoices
+from helper import get_valid_yes_no
 # from payroll import generate_tutor_payroll
 
 # Main function
@@ -40,7 +41,8 @@ def run_billing_cycle(biweek_start: date = date.today() - timedelta(days=14)):
     """
     biweek_end = biweek_start + timedelta(days=14)
     logging.info(f"Starting billing cycle for period: {biweek_start} (inclusive) → {biweek_end} (exclusive)")
-    # ingest_sessions(biweek_start, biweek_end)
+    if(get_valid_yes_no(f"Would you like to ingest new sessions? (y/n): ")):
+        ingest_sessions(biweek_start, biweek_end)
     generate_and_send_invoices(biweek_start, biweek_end)
     # generate_tutor_payroll(biweek_start, biweek_end)
 

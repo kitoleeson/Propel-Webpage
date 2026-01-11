@@ -83,8 +83,8 @@ def ingest_sessions(biweek_start: date, biweek_end: date):
                         
                         # Find assignment_id
                         cursor.execute(
-                            """SELECT assignment_id FROM student_tutor WHERE student_id = %s AND tutor_id = %s AND start_date <= %s AND (end_date IS NULL OR end_date >= %s)""",
-                            (session["student_id"], int(tutor_id), session["date"].date(), session["date"].date())
+                            """SELECT assignment_id FROM student_tutor WHERE student_id = %s AND tutor_id = %s""",
+                            (session["student_id"], int(tutor_id))
                         )
                         result = cursor.fetchone()
                         if not result:
