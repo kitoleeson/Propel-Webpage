@@ -64,6 +64,9 @@ def ingest_sessions(biweek_start: date, biweek_end: date):
             sheets_bar = progress.add_task(format_progress_update("Ingesting sessions from sheets", "cyan"), total=len(sheets))
             for sheet in sheets:
                 progress.update(sheets_bar, description=format_progress_update(f"Processing sheet: {sheet.title}", "yellow"))
+                if " - " not in sheet.title:
+                    progress.update(sheets_bar, advance=1)
+                    continue
                 tutor_id, tutor_name = sheet.title.split(" - ", 1)
                 rows = sheet.get(os.getenv("SESSION_RANGE"), value_render_option='UNFORMATTED_VALUE')
                 rows_bar = progress.add_task(format_progress_update(f"Processing rows for tutor: {tutor_name}", "cyan"), total=len(rows))

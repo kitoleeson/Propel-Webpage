@@ -4,7 +4,7 @@ Orchestrates the generation and sending of student invoices.
 """
 
 # Imports
-from datetime import date
+from datetime import date, timedelta, datetime
 import psycopg2
 from psycopg2.extras import DictCursor
 import os
@@ -60,15 +60,16 @@ def find_sessions(biweek_start: date, biweek_end: date):
             COALESCE(t.pref_name, t.gov_first_name) AS tutor_name,
             s.session_date,
             s.duration_hours,
-            st.hourly_rate,
-            (s.duration_hours * st.hourly_rate) AS total_fee,
+            (st.hourly_rate + 5) AS hourly_rate,
+            (s.duration_hours * (st.hourly_rate + 5)) AS total_fee,
+            (s.duration_hours * st.hourly_rate) AS total_tutor_fee,
             st.subjects
         FROM sessions s
         JOIN student_tutor st ON s.assignment_id = st.assignment_id
         JOIN students d ON st.student_id = d.student_id
         JOIN tutors t ON st.tutor_id = t.tutor_id
         JOIN student_billing sb ON st.student_id = sb.student_id
-        WHERE s.session_date >= %s AND s.session_date < %s
+        WHERE s.session_date::date >= %s AND s.session_date::date < %s
         ORDER BY sb.billing_id, s.session_date;
     """
     with psycopg2.connect(os.getenv("DATABASE_URL")) as conn, conn.cursor(cursor_factory=DictCursor) as cursor:
@@ -85,10 +86,11 @@ def find_sessions(biweek_start: date, biweek_end: date):
                 'subjects': session['subjects'],
                 'tutor_id': session['tutor_id'],
                 'tutor_name': session['tutor_name'],
-                'session_date': session['session_date'],
+                'session_date': session['session_date'].strftime("%b %d"),
                 'duration_hours': float(session['duration_hours']),
                 'hourly_rate': float(session['hourly_rate']),
-                'total_fee': float(session['total_fee'])
+                'total_fee': float(session['total_fee']),
+                'total_tutor_fee': float(session['total_tutor_fee']),
             })
             progress.update(session_bar, advance=1)
         progress.update(session_bar, description=format_progress_update("All sessions ingested ✓", "green"))
@@ -106,63 +108,71 @@ def build_invoice(billing_id: int, sessions: list, biweek_start: date, biweek_en
 
     # Determine invoice number and current tab
     with psycopg2.connect(os.getenv("DATABASE_URL"), cursor_factory=DictCursor) as conn, conn.cursor() as cursor:
-        # Calculate current tab before this biweek
-        query = """
-            SELECT
-                COALESCE(SUM(i.total_amount), 0) - COALESCE(SUM(p.amount), 0) AS current_tab
-            FROM invoices i
-            LEFT JOIN payments p ON p.invoice_id = i.invoice_id
-            WHERE i.billing_id = %s
-            AND i.biweek_start < %s;
+        try:
+            # Calculate current tab before this biweek
+            query = """
+                SELECT
+                    COALESCE(SUM(i.total_amount), 0) - COALESCE(SUM(p.total_paid), 0) AS current_tab
+                FROM invoices i
+                LEFT JOIN (
+                    SELECT invoice_id, SUM(amount) AS total_paid
+                    FROM payments
+                    GROUP BY invoice_id
+                ) p ON p.invoice_id = i.invoice_id
+                WHERE i.billing_id = %s
+                AND i.biweek_start < %s;
+            """
+            cursor.execute(query, (billing_id, biweek_start))
+            result = cursor.fetchone()
+            current_tab = float(result[0]) if result else 0.0
 
-        """
-        cursor.execute(query, (billing_id, biweek_start))
-        result = cursor.fetchone()
-        current_tab = float(result[0]) if result else 0.0
+            # Insert invoice record
+            cursor.execute(
+                """INSERT INTO invoices (billing_id, biweek_start, date_sent, total_hours, total_amount) VALUES (%s, %s, %s, %s, %s) ON CONFLICT (billing_id, biweek_start) DO NOTHING RETURNING invoice_id""",
+                (billing_id, biweek_start, date.today(), sum(session['duration_hours'] for session in sessions), sum(session['total_fee'] for session in sessions))
+            )
+            result = cursor.fetchone()
+            invoice_number = int(result[0]) if result else 1
 
-        # Insert invoice record
-        cursor.execute(
-            """INSERT INTO invoices (billing_id, biweek_start, date_sent, total_hours, total_amount) VALUES (%s, %s, %s, %s, %s) RETURNING invoice_id""",
-            (billing_id, biweek_start, date.today(), sum(session['duration_hours'] for session in sessions), sum(session['total_fee'] for session in sessions))
-        )
-        result = cursor.fetchone()
-        invoice_number = int(result[0]) if result else 1
-        conn.commit()
+            # Prepare invoice data
+            invoice_data = {
+                "invoice_number": invoice_number,
+                "invoice_date": date.today().strftime("%B %d, %Y"),
+                "biweek": f"{biweek_start.strftime('%b %d')} - {biweek_end.strftime('%b %d, %Y')}",
+                "billing_id": billing_id,
+                "student_name": ", ".join(sorted({session['student_name'] for session in sessions})),
+                "subjects_list": ", ".join(sorted({session['subjects'] for session in sessions})),
+                "sessions": sessions,
+                "current_tab": current_tab,
+                "propel_email": os.getenv("PROPEL_EMAIL"),
+                "propel_phone": os.getenv("PROPEL_PHONE"),
+            }
 
-    # Prepare invoice data
-    invoice_data = {
-        "invoice_number": invoice_number,
-        "invoice_date": date.today().strftime("%B %d, %Y"),
-        "biweek": f"{biweek_start.strftime('%b %d')} - {biweek_end.strftime('%b %d, %Y')}",
-        "billing_id": billing_id,
-        "student_name": ", ".join(sorted({session['student_name'] for session in sessions})),
-        "subjects_list": ", ".join(sorted({session['subjects'] for session in sessions})),
-        "sessions": sessions,
-        "current_tab": current_tab,
-        "propel_email": os.getenv("PROPEL_EMAIL"),
-        "propel_phone": os.getenv("PROPEL_PHONE"),
-    }
+            # Render LaTeX template
+            env = Environment(
+                loader=FileSystemLoader(Path(__file__).parent / "latex_templates"),
+                autoescape=False
+            )
+            template = env.get_template("invoice.j2")
 
-    # Render LaTeX template
-    env = Environment(
-        loader=FileSystemLoader(Path(__file__).parent / "latex_templates"),
-        autoescape=False
-    )
-    template = env.get_template("invoice.j2")
+            # Generate PDF
+            output_path = Path(f"invoices/{os.getenv('CURRENT_SEMESTER')}/INV-{invoice_number:04}.pdf")
+            output_path.parent.mkdir(parents=True, exist_ok=True)
 
-    # Generate PDF
-    output_path = Path(f"invoices/{os.getenv('CURRENT_SEMESTER')}/INV-{invoice_number:04}-{billing_id:02}.pdf")
-    output_path.parent.mkdir(parents=True, exist_ok=True)
+            # Render and compile LaTeX
+            rendered_tex = template.render(**invoice_data)
+            tex_path = output_path.with_suffix(".tex")
+            with open(tex_path, "w") as f:
+                f.write(rendered_tex)
+            subprocess.run(["pdflatex", "-interaction=batchmode", "-output-directory", str(output_path.parent), str(tex_path)], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            cleanup_latex_artifacts(output_path.parent)
 
-    # Render and compile LaTeX
-    rendered_tex = template.render(**invoice_data)
-    tex_path = output_path.with_suffix(".tex")
-    with open(tex_path, "w") as f:
-        f.write(rendered_tex)
-    subprocess.run(["pdflatex", "-interaction=batchmode", "-output-directory", str(output_path.parent), str(tex_path)], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    cleanup_latex_artifacts(output_path.parent)
-
-    return str(output_path.with_suffix(".pdf"))
+            conn.commit()
+            return str(output_path.with_suffix(".pdf"))
+        except Exception as e:
+            logging.error(f"Error generating invoice for billing ID {billing_id}: {e}")
+            conn.rollback()
+            raise e
 
 def send_invoice(billing_id: int, invoice_path: str, biweek_start: date, biweek_end: date):
     """
@@ -190,14 +200,14 @@ def send_invoice(billing_id: int, invoice_path: str, biweek_start: date, biweek_
 
     if first_invoice:
         if email in os.getenv("KNOWN_EMAILS").split(", "):
-            body = f"""Hi {name},|I'd like to welcome you to Propel Tutoring, the expansion of my tutoring business.|For Propel, I have updated my invoicing system to handle more tutors and upgrade to a full database backend. For you, not very much changes compared to our current invoicing system:\n• Invoices are still sent biweekly directly to your email.\n• All fees can still be paid via e-transfer to the email and phone number listed on each invoice. Please include the invoice number in the message.\n• All sessions are still billed in increments of 15 mins, rounded up or down to the nearest 0.25 hours; and no matter if you continue tutoring with me, another one of my tutors, or both, hourly rates per tutor remain locked in forever once set.\nPlease do note, however, that the email for e-transfer has been changed -- I am now using the official Propel Tutoring email (propeltutoringyeg@gmail.com), so please direct your e-transfers to that address. Payment is now due within 7 days from the day you receive the invoice, no longer 10 days; this allows me to make sure my tutors get paid on time for their work.|More information on our billing policies can be found in the client agreement which you will be getting an email about shortly.|Here are some of the improvements I've made with the new invoicing system:\n• Redesign of the database backend to improve data integrity and allow for easier expansion in the future (this will not affect your experience).\n• Improved invoice layout for better readability.\n• Introduction of "billing accounts" allowing you to manage multiple students under one email if needed in the future. Each current student you have with me is already linked to a billing account under your email.\n• More information for each session including tutor name, client name, and rate. This way if you have multiple students or tutors, everything is clearly laid out in one invoice.|Please find attached your first Propel Tutoring invoice, for {biweek_start.strftime('%B %d')} (inclusive) to {biweek_end.strftime('%B %d, %Y')} (exclusive).|Please feel free to reach out if you have any questions or concerns regarding invoices, payments, or scheduling. I'm here to help!\nAs always, I appreciate your continued trust and support, and I'm excited to see the progress we will achieve in this coming semester!|Kito Lee Son"""
+            body = f"""Hi {name},|I'd like to welcome you to Propel Tutoring, the expansion of my tutoring business.|For Propel, I have updated my invoicing system to handle more tutors and upgrade to a full database backend. For you, not very much changes compared to our current invoicing system:\n• Invoices are still sent biweekly directly to your email.\n• All fees can still be paid via e-transfer to the email and phone number listed on each invoice. Please include the invoice number in the message.\n• All sessions are still billed in increments of 15 mins, rounded up or down to the nearest 0.25 hours; and no matter if you continue tutoring with me, another one of my tutors, or both, hourly rates per tutor remain locked in forever once set.\nPlease do note, however, that the email for e-transfer has been changed -- I am now using the official Propel Tutoring email (propeltutoringyeg@gmail.com), so please direct your e-transfers to that address. Payment is now due within 7 days from the day you receive the invoice, no longer 10 days; this allows me to make sure my tutors get paid on time for their work.|More information on our billing policies can be found in the client agreement which you will be getting an email about shortly.|Here are some of the improvements I've made with the new invoicing system:\n• Redesign of the database backend to improve data integrity and allow for easier expansion in the future (this will not affect your experience).\n• Improved invoice layout for better readability.\n• Introduction of "billing accounts" allowing you to manage multiple students under one email if needed in the future. Each current student you have with me is already linked to a billing account under your email.\n• More information for each session including tutor name, client name, and rate. This way if you have multiple students or tutors, everything is clearly laid out in one invoice.|I'd also like to thank you. I never thought that my tutoring would grow to a point that I couldn't handle the amount of client requests I had coming in. It is because of your support that I'm able to start this business and help as many students chase their dreams as possible, so thank you.|I'm currently working on building my website so that I can direct incoming client traffic through a controlled platform. Once it is complete I will send the link out in another email for your reference, but until then, if you know of anybody that is looking for tutoring, please send them my way via this business email (propeltutoringyeg@gmail.com).|Please find attached your first Propel Tutoring invoice, for {biweek_start.strftime('%B %d')} (inclusive) to {biweek_end.strftime('%B %d, %Y')} (exclusive).|Please feel free to reach out if you have any questions or concerns regarding invoices, payments, or scheduling. I'm here to help!\nAs always, I appreciate your continued trust and support, and I'm excited to see the progress we will achieve in this upcoming semester!|Kito Lee Son"""
         else:
             body = f"""Hello {name},|I'd like to welcome you to Propel Tutoring.|We use an automated invoicing system to keep our billing simple and consistent, and to make it easier for you to keep track of your tutoring expenses. Here's what to expect going forward:\n• Invoices are sent biweekly directly to your email, each covering a 2-week period of tutoring sessions.\n• Payment is due within 7 days from the day you receive the invoice.\n• All fees can be paid via e-transfer to the email and phone number listed on each invoice. Please include the invoice number in the message.\n• Our system operates based on "billing accounts", which allow you to manage multiple students under one email if needed. Your email is already linked to a billing account that includes your current student(s).\n• Each invoice will contain information for each session including tutor name, client name, and rate. This way if you have multiple students or tutors, everything is clearly laid out in one invoice.|More information on our billing policies can be found in the client agreement which you should have already gotten an email about.|I'd also like to inform/remind you that my sessions are billed in increments of 15 mins, rounded up or down to the nearest 0.25 hours; and that once set, hourly rates per tutor are locked in forever. More information on our billing policies can be found in the client agreement which you have already signed.|Please find attached your first tutoring invoice for the semester, for {biweek_start.strftime('%B %d')} (inclusive) to {biweek_end.strftime('%B %d, %Y')} (exclusive).|Please feel free to reach out if you have any questions or concerns regarding invoices, payments, or scheduling. I'm here to help!\nI appreciate your trust and support, and I'm excited to see the progress this semester will bring!|Kito Lee Son"""
     else:
         body = f"Hello {name},|Please find attached your tutoring invoice for the period of {biweek_start.strftime('%B %d')} (inclusive) to {biweek_end.strftime('%B %d, %Y')} (exclusive).|If you have any questions or concerns regarding invoices, payments, or scheduling, please feel free to reach out. I'm here to help!|Kito Lee Son"
 
     options = {
-        "subject": f"Propel Tutoring Invoice",
+        "subject": f"Propel Tutoring Invoice (Kito Lee Son)",
         "from": os.getenv("PROPEL_EMAIL"),
         "to": email,
         "body": body.replace("|", "\n\n"),
@@ -209,7 +219,7 @@ def send_invoice(billing_id: int, invoice_path: str, biweek_start: date, biweek_
         # Update first_invoice flag
         if first_invoice:
             cursor.execute(
-                """UPDATE billing_accounts SET first_invoice = FALSE WHERE billing_id = %s""",
+                """UPDATE billing_accounts SET first_invoice = FALSE WHERE billing_id = %s AND first_invoice = TRUE""",
                 (billing_id,)
             )
             conn.commit()
@@ -241,17 +251,30 @@ def generate_and_send_tutor_payroll(sessions_by_biller: dict, biweek_start: date
             "num_sessions": len(sessions),
             "num_hours": sum(session['duration_hours'] for session in sessions),
             "num_students": len(set(session['student_id'] for session in sessions)),
-            "total_earned": sum(session['total_fee'] for session in sessions)
+            "total_earned": sum(session['total_tutor_fee'] for session in sessions)
         })
-    
+
     # Determine payroll number
     with psycopg2.connect(os.getenv("DATABASE_URL"), cursor_factory=DictCursor) as conn, conn.cursor() as cursor:
-        cursor.execute(
-            """INSERT INTO payroll (tutor_id, biweek_start, total_hours, total_amount, date_paid) VALUES (%s, %s, %s, %s, %s) RETURNING payroll_id""",
-            (tutors[0]['tutor_id'], biweek_start, sum(tutor['num_hours'] for tutor in tutors), sum(tutor['total_earned'] for tutor in tutors), date.today())
-        )
-        result = cursor.fetchone()
-        payroll_number = int(result[0]) + 1 if result else 1
+        try:
+            cursor.execute(
+                """INSERT INTO payroll (biweek_start, total_hours, total_amount, date_paid, date_generated) VALUES (%s, %s, %s, %s, %s) RETURNING payroll_id""",
+                (biweek_start, sum(tutor['num_hours'] for tutor in tutors), sum(tutor['total_earned'] for tutor in tutors), date.today() + timedelta(days=7), date.today())
+            )
+            result = cursor.fetchone()
+            payroll_number = int(result[0]) if result else 1
+
+            # Insert payroll entries
+            for tutor in tutors:
+                cursor.execute(
+                    """INSERT INTO payroll_entries (payroll_id, tutor_id, total_hours, total_amount) VALUES (%s, %s, %s, %s)""",
+                    (payroll_number, tutor['tutor_id'], tutor['num_hours'], tutor['total_earned'])
+                )
+            conn.commit()
+        except Exception as e:
+            logging.error(f"Error generating payroll record: {e}")
+            conn.rollback()
+            raise e
 
     # Prepare payroll data
     payroll_data = {
@@ -317,18 +340,14 @@ def generate_and_send_invoices(biweek_start: date, biweek_end: date):
         progress.update(invoice_bar, description=format_progress_update("All invoices generated ✓", "green"))
 
         # Send invoices
-        if(get_valid_yes_no("Would you like to email out the invoices? (y/n): ")):
-            email_bar = progress.add_task(format_progress_update("Sending invoices", "cyan"), total=len(invoices))
-            for billing_id, invoice_path in invoices.items():
-                progress.update(email_bar, description=format_progress_update(f"Sending invoice for billing ID: {billing_id}", "yellow"))
-                send_invoice(billing_id, invoice_path, biweek_start, biweek_end)
-                progress.update(email_bar, advance=1)
-            progress.update(email_bar, description=format_progress_update("All invoices sent ✓", "green"))
+        email_bar = progress.add_task(format_progress_update("Sending invoices", "cyan"), total=len(invoices))
+        for billing_id, invoice_path in invoices.items():
+            progress.update(email_bar, description=format_progress_update(f"Sending invoice for billing ID: {billing_id}", "yellow"))
+            send_invoice(billing_id, invoice_path, biweek_start, biweek_end)
+            progress.update(email_bar, advance=1)
+        progress.update(email_bar, description=format_progress_update("All invoices sent ✓", "green"))
 
         # Generate and send tutor payroll summary
         payroll_bar = progress.add_task(format_progress_update("Generating and sending tutor payroll summary", "cyan"), total=3)
         generate_and_send_tutor_payroll(sessions_by_biller, biweek_start, biweek_end, progress, payroll_bar)
         progress.update(payroll_bar, description=format_progress_update("Tutor payroll summary sent ✓", "green"))
-
-        
-# ADD DATABASE INSERTIONS FOR INVOICES AND PAYROLLS

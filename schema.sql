@@ -5,26 +5,27 @@ BEGIN;
 -- DROP TABLES
 -- =========================
 
-DROP TABLE IF EXISTS payments;
-DROP TABLE IF EXISTS invoices;
-DROP TABLE IF EXISTS student_billing;
-DROP TABLE IF EXISTS billing_accounts;
-DROP TABLE IF EXISTS sessions;
-DROP TABLE IF EXISTS student_tutor;
-DROP TABLE IF EXISTS payroll;
-DROP TABLE IF EXISTS student_guardian;
-DROP TABLE IF EXISTS tutors;
-DROP TABLE IF EXISTS guardians;
-DROP TABLE IF EXISTS students;
+-- DROP TABLE IF EXISTS payments;
+-- DROP TABLE IF EXISTS invoices;
+-- DROP TABLE IF EXISTS student_billing;
+-- DROP TABLE IF EXISTS billing_accounts;
+-- DROP TABLE IF EXISTS sessions;
+-- DROP TABLE IF EXISTS student_tutor;
+-- DROP TABLE IF EXISTS payroll_entries;
+-- DROP TABLE IF EXISTS payroll;
+-- DROP TABLE IF EXISTS student_guardian;
+-- DROP TABLE IF EXISTS tutors;
+-- DROP TABLE IF EXISTS guardians;
+-- DROP TABLE IF EXISTS students;
 
 -- SELECT table_name
 -- FROM information_schema.tables
 -- WHERE table_schema = 'public'
 -- ORDER BY table_name;
 
-COMMIT;
+-- COMMIT;
 
-BEGIN;
+-- BEGIN;
 
 -- =========================
 -- CLIENTS
@@ -37,7 +38,8 @@ CREATE TABLE IF NOT EXISTS students (
     pref_name TEXT,
     grade TEXT,
     city TEXT NOT NULL,
-    email TEXT NOT NULL UNIQUE,
+    -- email TEXT NOT NULL UNIQUE,
+    email TEXT UNIQUE,
     phone TEXT,
     pref_communication TEXT NOT NULL
         CHECK (pref_communication IN ('email','text message')),
@@ -47,6 +49,9 @@ CREATE TABLE IF NOT EXISTS students (
 -- inputed: through the website form during sign up
 -- updated: through interface when student details change, eventually app
 -- deleted: never deleted
+-- email is currently nullable. add not null afterwards:
+-- ALTER TABLE students
+-- ALTER COLUMN email SET NOT NULL;
 
 CREATE TABLE IF NOT EXISTS guardians (
     guardian_id SERIAL PRIMARY KEY,
@@ -126,7 +131,6 @@ CREATE TABLE IF NOT EXISTS student_tutor (
     usual_duration NUMERIC(4, 2) NOT NULL,
     hourly_rate NUMERIC(6, 2) NOT NULL,
     subjects TEXT NOT NULL,
-    count INTEGER NOT NULL DEFAULT 0,
     UNIQUE (student_id, tutor_id)
 );
 -- inputed: through interface when a tutor is assigned to a student
@@ -210,10 +214,11 @@ CREATE TABLE IF NOT EXISTS payments (
 
 CREATE TABLE IF NOT EXISTS payroll (
     payroll_id SERIAL PRIMARY KEY,
-    biweek_start DATE NOT NULL,
+    biweek_start DATE NOT NULL UNIQUE,
     total_hours NUMERIC(5, 2) NOT NULL CHECK (total_hours > 0),
     total_amount NUMERIC(8, 2) NOT NULL CHECK (total_amount > 0),
-    date_paid DATE NOT NULL
+    date_paid DATE NOT NULL,
+    date_generated DATE NOT NULL DEFAULT CURRENT_DATE
 );
 -- inputed: through invoice system when payroll completed
 -- updated: never updated
