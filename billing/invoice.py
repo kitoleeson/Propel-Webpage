@@ -24,6 +24,8 @@ from send_email import send_email
 logging.basicConfig(level=logging.INFO, format="%(message)s", handlers=[RichHandler()])
 load_dotenv()
 
+DATABASE_URL = os.getenv("DATABASE_URL_DEV") if os.getenv("APP_ENV") == "dev" else os.getenv("DATABASE_URL_PROD")
+
 # Helper functions
 def cleanup_latex_artifacts(directory: Path, keep_exts={".pdf", ".tex"}):
     """
@@ -60,8 +62,8 @@ def find_sessions(biweek_start: date, biweek_end: date):
             COALESCE(t.pref_name, t.gov_first_name) AS tutor_name,
             s.session_date,
             s.duration_hours,
-            (st.hourly_rate + 5) AS hourly_rate,
-            (s.duration_hours * (st.hourly_rate + 5)) AS total_fee,
+            (st.hourly_rate + st.markup) AS hourly_rate,
+            (s.duration_hours * (st.hourly_rate + st.markup)) AS total_fee,
             (s.duration_hours * st.hourly_rate) AS total_tutor_fee,
             st.subjects
         FROM sessions s
@@ -72,7 +74,7 @@ def find_sessions(biweek_start: date, biweek_end: date):
         WHERE s.session_date::date >= %s AND s.session_date::date < %s
         ORDER BY sb.billing_id, s.session_date;
     """
-    with psycopg2.connect(os.getenv("DATABASE_URL")) as conn, conn.cursor(cursor_factory=DictCursor) as cursor:
+    with psycopg2.connect(DATABASE_URL) as conn, conn.cursor(cursor_factory=DictCursor) as cursor:
         cursor.execute(query, (biweek_start, biweek_end))
         results = cursor.fetchall()
     sessions_by_biller = defaultdict(list)
@@ -107,7 +109,7 @@ def build_invoice(billing_id: int, sessions: list, biweek_start: date, biweek_en
     """
 
     # Determine invoice number and current tab
-    with psycopg2.connect(os.getenv("DATABASE_URL"), cursor_factory=DictCursor) as conn, conn.cursor() as cursor:
+    with psycopg2.connect(DATABASE_URL, cursor_factory=DictCursor) as conn, conn.cursor() as cursor:
         try:
             # Calculate current tab before this biweek
             query = """
@@ -156,7 +158,8 @@ def build_invoice(billing_id: int, sessions: list, biweek_start: date, biweek_en
             template = env.get_template("invoice.j2")
 
             # Generate PDF
-            output_path = Path(f"invoices/{os.getenv('CURRENT_SEMESTER')}/INV-{invoice_number:04}.pdf")
+            test_str = "test/" if os.getenv('APP_ENV') == "dev" else ""
+            output_path = Path(f"invoices/{test_str}{os.getenv('CURRENT_SEMESTER')}/INV-{invoice_number:04}.pdf")
             output_path.parent.mkdir(parents=True, exist_ok=True)
 
             # Render and compile LaTeX
@@ -185,7 +188,7 @@ def send_invoice(billing_id: int, invoice_path: str, biweek_start: date, biweek_
     Returns:
         None
     """
-    with psycopg2.connect(os.getenv("DATABASE_URL"), cursor_factory=DictCursor) as conn, conn.cursor() as cursor:
+    with psycopg2.connect(DATABASE_URL, cursor_factory=DictCursor) as conn, conn.cursor() as cursor:
         query = """
             SELECT email, display_name, first_invoice
             FROM billing_accounts
@@ -209,13 +212,15 @@ def send_invoice(billing_id: int, invoice_path: str, biweek_start: date, biweek_
     options = {
         "subject": f"Propel Tutoring Invoice (Kito Lee Son)",
         "from": os.getenv("PROPEL_EMAIL"),
-        "to": email,
+        "to": "kito.leeson@gmail.com",
         "body": body.replace("|", "\n\n"),
         "attachments": [invoice_path]
     }
+    if os.getenv('APP_ENV') == "dev":
+        options["to"] = "kleeson@ualberta.ca"
     send_email(options)
 
-    with psycopg2.connect(os.getenv("DATABASE_URL"), cursor_factory=DictCursor) as conn, conn.cursor() as cursor:
+    with psycopg2.connect(DATABASE_URL, cursor_factory=DictCursor) as conn, conn.cursor() as cursor:
         # Update first_invoice flag
         if first_invoice:
             cursor.execute(
@@ -255,7 +260,7 @@ def generate_and_send_tutor_payroll(sessions_by_biller: dict, biweek_start: date
         })
 
     # Determine payroll number
-    with psycopg2.connect(os.getenv("DATABASE_URL"), cursor_factory=DictCursor) as conn, conn.cursor() as cursor:
+    with psycopg2.connect(DATABASE_URL, cursor_factory=DictCursor) as conn, conn.cursor() as cursor:
         try:
             cursor.execute(
                 """INSERT INTO payroll (biweek_start, total_hours, total_amount, date_paid, date_generated) VALUES (%s, %s, %s, %s, %s) RETURNING payroll_id""",
@@ -293,7 +298,8 @@ def generate_and_send_tutor_payroll(sessions_by_biller: dict, biweek_start: date
     template = env.get_template("payroll.j2")
 
     # Generate PDF
-    output_path = Path(f"payroll/{os.getenv('CURRENT_SEMESTER')}/PAY-{payroll_number:04}.pdf")
+    test_str = "test/" if os.getenv('APP_ENV') == "dev" else ""
+    output_path = Path(f"payroll/{test_str}{os.getenv('CURRENT_SEMESTER')}/PAY-{payroll_number:04}.pdf")
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
     # Render and compile LaTeX

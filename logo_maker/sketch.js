@@ -29,10 +29,8 @@ const logoPoint = (theta) => {
 }
 
 function drawSketch() {
-  // background(colours.background);
-
-  fill(colours.accent);
-  stroke(colours.accent);
+  background(colours.accent);
+  stroke(255);
   strokeWeight(6);
 
   const bounds = (a, b) => (Math.PI / 6) * (3 + (8 * a) + (14 * b));

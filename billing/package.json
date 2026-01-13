@@ -4,6 +4,6 @@
 	"private": true,
 	"scripts": {
 		"bill": "python3 sketch.py",
-		"test_billing": "python3 sketch.py --start 2025-11-28"
+		"test_billing": "python3 sketch.py --start 2025-12-28"
 	}
 }

@@ -21,6 +21,8 @@ from helper import format_progress_update
 logging.basicConfig(level=logging.INFO, format="%(message)s", handlers=[RichHandler()])
 load_dotenv()
 
+DATABASE_URL = os.getenv("DATABASE_URL_DEV") if os.getenv("APP_ENV") == "dev" else os.getenv("DATABASE_URL_PROD")
+
 def parse_datetime(serial_number):
     """Convert Google Sheets serial date to Python datetime."""
     return datetime(1899, 12, 30) + timedelta(days=float(serial_number))
@@ -59,7 +61,7 @@ def ingest_sessions(biweek_start: date, biweek_end: date):
     count = 0
 
     # Ingest sessions in biweek from each tutor's sheet
-    with psycopg2.connect(os.getenv("DATABASE_URL"), cursor_factory=DictCursor) as conn:
+    with psycopg2.connect(DATABASE_URL, cursor_factory=DictCursor) as conn:
         with Progress() as progress:
             sheets_bar = progress.add_task(format_progress_update("Ingesting sessions from sheets", "cyan"), total=len(sheets))
             for sheet in sheets:
