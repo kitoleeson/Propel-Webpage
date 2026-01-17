@@ -15,7 +15,6 @@ export default function Home() {
   let size = 250;
   let center: Vec;
   let lastPoint: Vec;
-  let points = [];
   let propeller: any;
   let x = 0;
   let r = 0;
@@ -66,7 +65,7 @@ export default function Home() {
       p.rect(-center.x, -center.y, canvasSize.width, 480);
       p.push();
       p.rotate(r);
-      p.image(propeller, -center.x, -center.y);
+      p.image(propeller, -center.x + x, -center.y);
       p.pop()
       // p.fill(colors.accent);
       // p.ellipse(0, 0, 85);
@@ -79,7 +78,7 @@ export default function Home() {
   
   return (
     <main>
-      <P5VizWrapper title="Logo Generator" setup={setup} draw={draw} />
+      <P5VizWrapper title="" setup={setup} draw={draw} />
       {/* <Link className="text-blue-600"  href="/about">about</Link>
       <h1 className="bg-blue-300 pt-20 px-7 text-6xl font-bold">Helping students take charge of their learning.</h1>
       <h2 className="bg-blue-300 pt-5 pb-20 px-7 text-2xl">Personalized, student-led tutoring that adapts to how you learn best.</h2>
