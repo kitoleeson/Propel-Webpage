@@ -1,40 +1,79 @@
-<!-- @format -->
+<img width="100" height="100" alt="image" src="https://github.com/user-attachments/assets/38655d90-de16-46c8-b585-cc820ffea65e" />
 
-# Propel-Webpage
+# Propel Webpage
 
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+A full-stack web application designed to power my tutoring business.
 
-## Getting Started
+## Overview
 
-First, run the development server:
+This site is the foundation of a scalable tutoring platform, built to grow alongside the business. The focus is on automation, clarity, and simplicity. Here’s what you'll find:
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+### **Public Website** *(In Progress)*
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+A client-facing website that introduces the tutoring service and makes it easy for new clients to get started.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Pages and features:
+* **Home**: general information about the company featuring a canvas that draws the company logo from a polar equation
+* **About Us**: highlights each tutor’s background and strengths, as well as the team as a whole
+* **FAQ and Contact Information**: frequently asked questions and contact information for prospective clients' easy access
+* **Client Intake Form**: information gathering for new students and guardians to sign up for tutoring
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### **Automated Invoicing System**
 
-## Learn More
+A Python-based backend automation that:
+* Pulls session and client data from our Google Sheets input spreadsheet
+* Generates professional LaTeX invoices for a specified time period and compiles into PDFs
+* Distributes invoices automatically through email to clients
+* Generates and sends a summary of each tutor's sessions over the same time period for payment distribution
 
-To learn more about Next.js, take a look at the following resources:
+This system significantly reduces manual billing work and ensures consistency across invoices.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### **Full-Stack Mobile Application** *(Coming Soon)*
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+The long-term goal is a unified mobile application that connects:
+* Communication
+* Scheduling
+* Payments
+* Administration
 
-## Deploy on Vercel
+This webpage will continue operation as the entrypoint for new clients, and the mobile app will act as the central hub for business operations, replacing fragmented manual workflows with reliable private systems.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🛠 Tech Stack
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+* **Frontend:** React, Next.js
+* **Backend:** Python, Node.js
+* **Database:** PostgreSQL
+* **Automation:** Python, LaTeX (pdflatex)
+* **Infrastructure:** Docker, Google Cloud Platform
+* **Data Source:** Google Sheets
+* **Design & Planning:** UML diagrams, technical design documents
+
+## 🧭 Project Status
+
+### ✅ Completed
+
+* Backend automation for invoice generation and distribution
+* Google Sheets → LaTeX → PDF billing pipeline
+
+### 🚧 Currently Working On
+
+* Public-facing website (Home, About, FAQ, Contact)
+* Client intake and signup workflow
+
+### 🔮 Future Plans
+
+* Mobile app rollout strategy
+* Technical design documents and UML diagrams for mobile architecture
+* User stories for incremental feature development
+* In-app communication between tutors and clients
+* Scheduling and availability management
+* File sharing and lesson resources
+* Administrative dashboards to replace manual tracking
+
+## 🎯 Vision
+
+This project is built with growth in mind. Starting as a tutoring website, evolving into a full business platform, and eventually expanding into a mobile-first ecosystem that supports students, tutors, and administrators seamlessly.
+
+## 📖 License
+
+MIT — feel free to explore, fork, and learn from this project. Attribution appreciated.
