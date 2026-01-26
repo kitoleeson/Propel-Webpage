@@ -2,10 +2,11 @@ import psycopg2
 import os
 from datetime import date
 from dotenv import load_dotenv
+from helper import get_valid_date
+from decimal import Decimal
 load_dotenv()
 
-DATABASE_URL = os.getenv("DATABASE_URL")
-
+DATABASE_URL = os.getenv("DATABASE_URL_DEV") if os.getenv("APP_ENV") == "dev" else os.getenv("DATABASE_URL_PROD")
 
 # -------------------------
 # DB CONNECTION
@@ -217,6 +218,28 @@ def add_student_tutor():
     values
   )
 
+def add_payment():
+  print("\nAdd Payment")
+  values = [
+    int(input("Billing ID: ")),
+    int(input("Invoice ID: ")),
+    Decimal(input("Amount: ")),
+    get_valid_date("Date: "),
+    input("Method (eTransfer, cash) [default: 'eTransfer']: ") or "eTransfer"
+  ]
+
+  insert_row(
+    "payments",
+    [
+        "billing_id",
+        "invoice_id",
+        "amount",
+        "payment_date",
+        "method"
+    ],
+    values
+  )
+
 
 # -------------------------
 # MAIN CLI
@@ -231,10 +254,11 @@ def main():
       "5": add_billing_account,
       "6": add_student_billing,
       "7": add_student_tutor,
+      "8": add_payment,
   }
 
   while True:
-    print("\nChoose an action:\n1. Add student\n2. Add guardian\n3. Add tutor\n4. Link student & guardian\n5. Add billing account\n6. Link student to billing account\n7. Assign tutor to student\nQ. Quit")
+    print("\nChoose an action:\n1. Add student\n2. Add guardian\n3. Add tutor\n4. Link student & guardian\n5. Add billing account\n6. Link student to billing account\n7. Assign tutor to student\n8. Record payment\nQ. Quit")
 
     choice = input(">> ").strip().upper()
 
