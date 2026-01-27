@@ -2,6 +2,7 @@
 
 import P5VizWrapper from "@/components/dom/P5Viz/P5VizWrapper";
 import { P5SetupCallback, P5SketchCallback } from "@/utils/p5";
+import Link from "next/link";
 
 export default function Home() {
 
@@ -78,16 +79,18 @@ export default function Home() {
   
   return (
     <main>
-      <P5VizWrapper title="" setup={setup} draw={draw} />
-      {/* <Link className="text-blue-600"  href="/about">about</Link>
-      <h1 className="bg-blue-300 pt-20 px-7 text-6xl font-bold">Helping students take charge of their learning.</h1>
-      <h2 className="bg-blue-300 pt-5 pb-20 px-7 text-2xl">Personalized, student-led tutoring that adapts to how you learn best.</h2>
-      <p className="font-bold mt-5">One-size-fits-all teaching doesn't work / Every student learns differently.</p>
+      {/* <P5VizWrapper title="" setup={setup} draw={draw} /> */}
+      <Link className="text-blue-600"  href="/about">about</Link>
+      <h1 className="bg-blue-300 pt-20 px-7 text-6xl font-bold">Handing the keys back to students.</h1>
+      <h2 className="bg-blue-300 pt-5 pb-20 px-7 text-2xl">Propel Tutoring offers personalized, student-led tutoring that adapts to how you learn best. We seek to support students in taking ownership of their education, and build confidence in their learning.</h2>
+      <p className="font-bold mt-5">Every student learns differently.</p>
       <p>
-        Propel provides personalized tutoring that adapts to individual goals, pace, and learning style.
-        We meet students where they are, guide with intention, and raise their confidence and skills to new heights.
-        We help students understand how they learn best, and let them show us how best to help them.
-      </p> */}
+        Propel Tutoring is a catalyst for students taking ownership of, and investing in, their education.
+        We believe students must have room to explore different learning styles and ways of thinking; because in this exploration, students gain a deeper understanding of their inner processes, setting them up for continued and fulfilling learning.
+        Our personalized style adapts to individual goals, pace, and learning style, to help students understand how they learn best, and let them show us how best to help them.
+        We meet students where they are and guide with intention, raising students' confidence and skills to new heights.
+        Propel exists to give students the power to choose a style of learning which best suits them, and to break down the principles of math and science in the pursuit of intuitive understanding, not just memorization.
+      </p>
     </main>
   );
 }
