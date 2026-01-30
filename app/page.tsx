@@ -80,7 +80,9 @@ export default function Home() {
   return (
     <main>
       {/* <P5VizWrapper title="" setup={setup} draw={draw} /> */}
-      <Link className="text-blue-600"  href="/about">about</Link>
+      <Link className="text-blue-600 px-4"  href="/about">about</Link>
+      <Link className="text-blue-600 px-4"  href="/signup">signup</Link>
+      <Link className="text-blue-600 px-4"  href="/support">support</Link>
       <h1 className="bg-blue-300 pt-20 px-7 text-6xl font-bold">Handing the keys back to students.</h1>
       <h2 className="bg-blue-300 pt-5 pb-20 px-7 text-2xl">Propel Tutoring offers personalized, student-led tutoring that adapts to how you learn best. We seek to support students in taking ownership of their education, and build confidence in their learning.</h2>
       <p className="font-bold mt-5">Every student learns differently.</p>

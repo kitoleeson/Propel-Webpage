@@ -10,7 +10,7 @@
 	},
 	"dependencies": {
 		"@react-hook/resize-observer": "^2.0.2",
-		"next": "16.1.1",
+		"next": "^16.1.6",
 		"p5": "^2.1.2",
 		"pg": "^8.16.3",
 		"react": "19.2.3",
