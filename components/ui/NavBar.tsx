@@ -12,3 +12,7 @@ const NavBar = () => {
 }
 
 export default NavBar
+
+// TODO:
+// - use global css file to dictate default: colours, fonts, textsizes, etc
+// - use css modules per component where needed for extra functionality
