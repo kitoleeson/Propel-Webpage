@@ -241,3 +241,27 @@ COMMIT;
 -- ADD UNIQUE CONSTRAINT BACK TO EMAIL AFTER TESTING
 -- ALTER TABLE billing_accounts
 -- ADD CONSTRAINT billing_accounts_email_key UNIQUE (email);
+
+-- -- invoices.invoice_id
+-- SELECT setval(
+--     pg_get_serial_sequence('invoices', 'invoice_id'),
+--     (SELECT COALESCE(MAX(invoice_id), 1) FROM invoices)
+-- );
+
+-- -- payroll.payroll_id
+-- SELECT setval(
+--     pg_get_serial_sequence('payroll', 'payroll_id'),
+--     (SELECT COALESCE(MAX(payroll_id), 1) FROM payroll)
+-- );
+
+-- -- payroll_entries.entry_id
+-- SELECT setval(
+--     pg_get_serial_sequence('payroll_entries', 'entry_id'),
+--     (SELECT COALESCE(MAX(entry_id), 1) FROM payroll_entries)
+-- );
+
+-- -- sessions.session_id
+-- SELECT setval(
+--     pg_get_serial_sequence('sessions', 'session_id'),
+--     (SELECT COALESCE(MAX(session_id), 1) FROM sessions)
+-- );
