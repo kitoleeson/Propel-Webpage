@@ -11,12 +11,8 @@ function setup() {
 }
 
 let colours = {
-  background: "#1652df",
-  accent: "#1eb9c2",
-  accentLight: "#ff9b8a",
-  accentDark: "#698ad6",
-  textPrimary: "#ffffff",
-  textSecondary: "#bbbbbb",
+  white: "#ffffff",
+  teal: "#1eb9c2",
 };
 
 let theta = 0;
@@ -29,8 +25,8 @@ const logoPoint = (theta) => {
 }
 
 function drawSketch() {
-  background(colours.accent);
-  stroke(255);
+  background(colours.white);
+  stroke(colours.teal);
   strokeWeight(6);
 
   const bounds = (a, b) => (Math.PI / 6) * (3 + (8 * a) + (14 * b));
