@@ -5,7 +5,7 @@ const NavBar = () => {
   return (
     <div className='flex items-center justify-between w-full py-4'>
       <div className='flex items-center'>
-        <IconLink iconName='instagram' href='https://www.instagram.com/yourprofile' label='Instagram' className="text-blue-600 hover:text-blue-300" />
+        <IconLink iconName='instagram' href='https://www.instagram.com' label='Instagram' className="text-blue-600 hover:text-blue-300" />
         <IconLink iconName='email' href='mailto:propeltutoringyeg@gmail.com' label='Email' className="text-blue-600 hover:text-blue-300" />
       </div>
       <div className='flex items-center gap-4'>
