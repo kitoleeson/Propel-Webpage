@@ -1,4 +1,17 @@
 @import "tailwindcss";
+@layer theme, base, components, utilities;
+
+@theme {
+  /* Fonts */
+  --font-body: var(--font-body);
+  --font-heading: var(--font-heading);
+
+  /* Brand Colors */
+  --color-primary: #1eb9c2;
+  --color-primary-hover: #67b4b8;
+  --color-accent: #0b80ed;
+  --color-accent-hover: #2578c6;
+}
 
 @media (prefers-color-scheme: dark) {
   :root {
@@ -10,8 +23,8 @@
 @layer base {
   body {
     font-family: var(--font-body);
-    color: var(--colour-text);
-    background-color: var(--colour-background);
+    color: var(--color-text);
+    background-color: var(--color-background);
   }
 
   h1, h2, h3, h4 {
@@ -23,14 +36,23 @@
   p  { font-size: var(--text-body); }
 }
 
+@layer components {
+  .nav-link {
+    @apply font-heading text-primary p-2 transition-transform duration-200 hover:scale-110 hover:text-primary-hover;
+  }
+  .nav-icon {
+    @apply text-primary hover:text-primary-hover;
+  }
+}
+
 :root {
-  /* Brand Colours */
-  --colour-primary: #1eb9c2;
-  --colour-primary-hover: #67b4b8;
-  --colour-accent: #0b80ed;
-  --colour-accent-hover: #2578c6;
-  --colour-background: #ffffff;
-  --colour-text: #111827;
+  /* Brand Colors */
+  --color-primary: #1eb9c2;
+  --color-primary-hover: #3d8589;
+  --color-accent: #0b80ed;
+  --color-accent-hover: #2578c6;
+  --color-background: #ffffff;
+  --color-text: #111827;
 
   /* Text Sizes */
   --text-body: 1rem;
