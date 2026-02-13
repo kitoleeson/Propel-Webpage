@@ -1,18 +1,16 @@
-import React from 'react'
+"use client";
 
 import Instagram from "@/icons/instagram.svg";
-import Facebook from "@/icons/facebook.svg";
-import Twitter from "@/icons/twitter.svg";
+import Email from "@/icons/email.svg";
 
 const icons = {
-  instagram: Instagram,
-  facebook: Facebook,
-  twitter: Twitter,
+   instagram: Instagram,
+   email: Email,
 };
 
 type IconName = keyof typeof icons;
 
 export default function Icon({ name, className }: { name: IconName; className?: string }) {
-  const IconComponent = icons[name];
-  return <IconComponent className={className} />;
+   const IconComponent = icons[name];
+   return <IconComponent className={`inline-block ${className}`} />;
 }
