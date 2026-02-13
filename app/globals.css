@@ -1,17 +1,5 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #ffffff;
@@ -19,9 +7,34 @@
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-  padding: 1rem;
+@layer base {
+  body {
+    font-family: var(--font-body);
+    color: var(--colour-text);
+    background-color: var(--colour-background);
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-heading);
+  }
+
+  h1 { font-size: var(--text-h1); }
+  h2 { font-size: var(--text-h2); }
+  p  { font-size: var(--text-body); }
+}
+
+:root {
+  /* Brand Colours */
+  --colour-primary: #1eb9c2;
+  --colour-primary-hover: #67b4b8;
+  --colour-accent: #0b80ed;
+  --colour-accent-hover: #2578c6;
+  --colour-background: #ffffff;
+  --colour-text: #111827;
+
+  /* Text Sizes */
+  --text-body: 1rem;
+  --text-small: 0.875rem;
+  --text-h1: 2.25rem;
+  --text-h2: 1.75rem;
 }
