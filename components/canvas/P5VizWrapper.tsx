@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useMemo } from "react";
 import P5Viz from "./P5Viz";
 import { createSketch } from "@utils/p5";
 import { useAppStore } from "@/store/app";
@@ -13,7 +13,7 @@ type Props = {
 
 const P5VizWrapper = ({ setup, draw, title }: Props) => {
   const ref = useRef<HTMLDivElement | null>(null);
-  const sketch = createSketch(setup, draw);
+  const sketch = useMemo(() => createSketch(setup, draw), [setup, draw]);
   const setCanvasSize = useAppStore((s) => s.setCanvasSize);
 
   useEffect(() => {

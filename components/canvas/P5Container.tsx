@@ -16,9 +16,9 @@ type Props = {
 
 const P5Container = forwardRef<HTMLDivElement, Props>( ({ title, width = "100%", height = 400, className, children }, ref) => {
     return (
-      <div ref={ref} className={className} style={{ width, height, position: "relative" }}>
+      <div ref={ref} className={className} style={{ width, height, position: "relative", overflow: "hidden" }}>
         {title && (<div style={{ position: "absolute", top: 8, left: 12, zIndex: 10, fontSize: 14, opacity: 0.8,}}>{title}</div>)}
-        {children}
+        <div style={{ position: "absolute", inset: 0 }}>{children}</div>
       </div>
     );
   }
