@@ -53,7 +53,8 @@ def run_billing_cycle(biweek_start: date = date.today() - timedelta(days=14)):
     )
     if get_valid_yes_no("Would you like to ingest new sessions?"):
         ingest_sessions(biweek_start, biweek_end)
-    generate_and_send_invoices(biweek_start, biweek_end)
+    if get_valid_yes_no("Would you like to generate and send invoices?"):
+        generate_and_send_invoices(biweek_start, biweek_end)
 
 
 # Manual entry point

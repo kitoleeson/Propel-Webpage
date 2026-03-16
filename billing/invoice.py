@@ -18,7 +18,7 @@ from pathlib import Path
 import subprocess
 
 # Module imports
-from helper import format_progress_update, get_valid_yes_no
+from helper import format_progress_update
 from send_email import send_email
 
 logging.basicConfig(level=logging.INFO, format="%(message)s", handlers=[RichHandler()])
@@ -264,17 +264,17 @@ def send_invoice(
             result["first_invoice"],
         )
 
-    # if first_invoice:
-    #     if email in os.getenv("KNOWN_EMAILS").split(", "):
-    #         body = f"""Hi {name},|I'd like to welcome you to Propel Tutoring, the expansion of my tutoring business.|For Propel, I have updated my invoicing system to handle more tutors and upgrade to a full database backend. For you, not very much changes compared to our current invoicing system:\n• Invoices are still sent biweekly directly to your email.\n• All fees can still be paid via e-transfer to the email and phone number listed on each invoice. Please include the invoice number in the message.\n• All sessions are still billed in increments of 15 mins, rounded up or down to the nearest 0.25 hours; and no matter if you continue tutoring with me, another one of my tutors, or both, hourly rates per tutor remain locked in forever once set.\nPlease do note, however, that the email for e-transfer has been changed -- I am now using the official Propel Tutoring email (propeltutoringyeg@gmail.com), so please direct your e-transfers to that address. Payment is now due within 7 days from the day you receive the invoice, no longer 10 days; this allows me to make sure my tutors get paid on time for their work.|More information on our billing policies can be found in the client agreement which you will be getting an email about shortly.|Here are some of the improvements I've made with the new invoicing system:\n• Redesign of the database backend to improve data integrity and allow for easier expansion in the future (this will not affect your experience).\n• Improved invoice layout for better readability.\n• Introduction of "billing accounts" allowing you to manage multiple students under one email if needed in the future. Each current student you have with me is already linked to a billing account under your email.\n• More information for each session including tutor name, client name, and rate. This way if you have multiple students or tutors, everything is clearly laid out in one invoice.|I'd also like to thank you. I never thought that my tutoring would grow to a point that I couldn't handle the amount of client requests I had coming in. It is because of your support that I'm able to start this business and help as many students chase their dreams as possible, so thank you.|I'm currently working on building my website so that I can direct incoming client traffic through a controlled platform. Once it is complete I will send the link out in another email for your reference, but until then, if you know of anybody that is looking for tutoring, please send them my way via this business email (propeltutoringyeg@gmail.com).|Please find attached your first Propel Tutoring invoice, for {biweek_start.strftime("%B %d")} (inclusive) to {biweek_end.strftime("%B %d, %Y")} (exclusive).|Please feel free to reach out if you have any questions or concerns regarding invoices, payments, or scheduling. I'm here to help!\nAs always, I appreciate your continued trust and support, and I'm excited to see the progress we will achieve in this upcoming semester!|Kito Lee Son"""
-    #     else:
-    #         body = f"""Hello {name},|I'd like to welcome you to Propel Tutoring.|We use an automated invoicing system to keep our billing simple and consistent, and to make it easier for you to keep track of your tutoring expenses. Here's what to expect going forward:\n• Invoices are sent biweekly directly to your email, each covering a 2-week period of tutoring sessions.\n• Payment is due within 7 days from the day you receive the invoice.\n• All fees can be paid via e-transfer to the email and phone number listed on each invoice. Please include the invoice number in the message.\n• Our system operates based on "billing accounts", which allow you to manage multiple students under one email if needed. Your email is already linked to a billing account that includes your current student(s).\n• Each invoice will contain information for each session including tutor name, client name, and rate. This way if you have multiple students or tutors, everything is clearly laid out in one invoice.|I'd also like to inform/remind you that my sessions are billed in increments of 15 mins, rounded up or down to the nearest 0.25 hours; and that once set, hourly rates per tutor are locked in forever. More information on our billing policies can be found in the client agreement which you will be getting an email about shortly.|Please find attached your first tutoring invoice for the semester, for {biweek_start.strftime("%B %d")} (inclusive) to {biweek_end.strftime("%B %d, %Y")} (exclusive).|Please feel free to reach out if you have any questions or concerns regarding invoices, payments, or scheduling. I'm here to help!\nI appreciate your trust and support, and I'm excited to see the progress this semester will bring!|Kito Lee Son"""
-    # else:
-    #     body = f"Hello {name},|Please find attached your tutoring invoice for the period of {biweek_start.strftime('%B %d')} (inclusive) to {biweek_end.strftime('%B %d, %Y')} (exclusive).|If you have any questions or concerns regarding invoices, payments, or scheduling, please feel free to reach out. I'm here to help!|Kito Lee Son"
-    body = f"Hi again {name},|I am so sorry for the confusion, but I just realized that there was a bug in my code which sent you the wrong invoice! I have fixed the error and attached the corrected invoice to this email.|Please use this updated invoice for your records and disregard the previous one. I apologize for any inconvenience this may have caused, especially since this happened last invoice day too! The development process has been a rocky road, however all bugs are now fixed and we will not be having this issue again.|Please let me know if you have any questions or concerns!|Kito Lee Son"
+    if first_invoice:
+        if email in os.getenv("KNOWN_EMAILS").split(", "):
+            body = f"""Hi {name},|I'd like to welcome you to Propel Tutoring, the expansion of my tutoring business.|For Propel, I have updated my invoicing system to handle more tutors and upgrade to a full database backend. For you, not very much changes compared to our current invoicing system:\n• Invoices are still sent biweekly directly to your email.\n• All fees can still be paid via e-transfer to the email and phone number listed on each invoice. Please include the invoice number in the message.\n• All sessions are still billed in increments of 15 mins, rounded up or down to the nearest 0.25 hours; and no matter if you continue tutoring with me, another one of my tutors, or both, hourly rates per tutor remain locked in forever once set.\nPlease do note, however, that the email for e-transfer has been changed -- I am now using the official Propel Tutoring email (propeltutoringyeg@gmail.com), so please direct your e-transfers to that address. Payment is now due within 7 days from the day you receive the invoice, no longer 10 days; this allows me to make sure my tutors get paid on time for their work.|More information on our billing policies can be found in the client agreement which you will be getting an email about shortly.|Here are some of the improvements I've made with the new invoicing system:\n• Redesign of the database backend to improve data integrity and allow for easier expansion in the future (this will not affect your experience).\n• Improved invoice layout for better readability.\n• Introduction of "billing accounts" allowing you to manage multiple students under one email if needed in the future. Each current student you have with me is already linked to a billing account under your email.\n• More information for each session including tutor name, client name, and rate. This way if you have multiple students or tutors, everything is clearly laid out in one invoice.|I'd also like to thank you. I never thought that my tutoring would grow to a point that I couldn't handle the amount of client requests I had coming in. It is because of your support that I'm able to start this business and help as many students chase their dreams as possible, so thank you.|I'm currently working on building my website so that I can direct incoming client traffic through a controlled platform. Once it is complete I will send the link out in another email for your reference, but until then, if you know of anybody that is looking for tutoring, please send them my way via this business email (propeltutoringyeg@gmail.com).|Please find attached your first Propel Tutoring invoice, for {biweek_start.strftime("%B %d")} (inclusive) to {biweek_end.strftime("%B %d, %Y")} (exclusive).|Please feel free to reach out if you have any questions or concerns regarding invoices, payments, or scheduling. I'm here to help!\nAs always, I appreciate your continued trust and support, and I'm excited to see the progress we will achieve in this upcoming semester!|Kito Lee Son"""
+        else:
+            body = f"""Hello {name},|I'd like to welcome you to Propel Tutoring.|We use an automated invoicing system to keep our billing simple and consistent, and to make it easier for you to keep track of your tutoring expenses. Here's what to expect going forward:\n• Invoices are sent biweekly directly to your email, each covering a 2-week period of tutoring sessions.\n• Payment is due within 7 days from the day you receive the invoice.\n• All fees can be paid via e-transfer to the email and phone number listed on each invoice. Please include the invoice number in the message.\n• Our system operates based on "billing accounts", which allow you to manage multiple students under one email if needed. Your email is already linked to a billing account that includes your current student(s).\n• Each invoice will contain information for each session including tutor name, client name, and rate. This way if you have multiple students or tutors, everything is clearly laid out in one invoice.|I'd also like to inform/remind you that my sessions are billed in increments of 15 mins, rounded up or down to the nearest 0.25 hours; and that once set, hourly rates per tutor are locked in forever. More information on our billing policies can be found in the client agreement which you will be getting an email about shortly.|Please find attached your first tutoring invoice for the semester, for {biweek_start.strftime("%B %d")} (inclusive) to {biweek_end.strftime("%B %d, %Y")} (exclusive).|Please feel free to reach out if you have any questions or concerns regarding invoices, payments, or scheduling. I'm here to help!\nI appreciate your trust and support, and I'm excited to see the progress this semester will bring!|Kito Lee Son"""
+    else:
+        body = f"Hello {name},|Please find attached your tutoring invoice for the period of {biweek_start.strftime('%B %d')} (inclusive) to {biweek_end.strftime('%B %d, %Y')} (exclusive).|If you have any questions or concerns regarding invoices, payments, or scheduling, please feel free to reach out. I'm here to help!|Kito Lee Son"
+    # body = f"Hi again {name},|I am so sorry for the confusion, but I just realized that there was a bug in my code which sent you the wrong invoice! I have fixed the error and attached the corrected invoice to this email.|Please use this updated invoice for your records and disregard the previous one. I apologize for any inconvenience this may have caused, especially since this happened last invoice day too! The development process has been a rocky road, however all bugs are now fixed and we will not be having this issue again.|Please let me know if you have any questions or concerns!|Kito Lee Son"
 
     options = {
-        "subject": f"Propel Tutoring Invoice (Kito Lee Son)",
+        "subject": f"Propel Tutoring Invoice ({biweek_start.strftime('%B %d')} - {biweek_end.strftime('%B %d, %Y')})",
         "from": os.getenv("PROPEL_EMAIL"),
         "to": email,
         "body": body.replace("|", "\n\n"),
@@ -318,7 +318,7 @@ def generate_and_send_tutor_payroll(
     # Generate tutor payroll summaries
     progress.update(
         payroll_bar,
-        description=format_progress_update(f"Gathering payroll data", "yellow"),
+        description=format_progress_update("Gathering payroll data", "yellow"),
     )
     # Build tutor payroll data
     sessions_by_tutor = defaultdict(list)
@@ -385,7 +385,7 @@ def generate_and_send_tutor_payroll(
     progress.update(
         payroll_bar,
         advance=1,
-        description=format_progress_update(f"Generating payroll summary", "yellow"),
+        description=format_progress_update("Generating payroll summary", "yellow"),
     )
     # Render LaTeX template
     env = Environment(
@@ -426,12 +426,140 @@ def generate_and_send_tutor_payroll(
     progress.update(
         payroll_bar,
         advance=1,
-        description=format_progress_update(f"Sending email", "yellow"),
+        description=format_progress_update("Sending email", "yellow"),
     )
 
     # Send email
     options = {
         "subject": f"Payroll Summary - PAY-{payroll_number:04}",
+        "from": os.getenv("PROPEL_EMAIL"),
+        "to": os.getenv("PROPEL_EMAIL"),
+        "body": f"Tutor payroll summary for {biweek_start.strftime('%b %d')} to {biweek_end.strftime('%b %d, %Y')}.",
+        "attachments": [output_path.with_suffix(".pdf")],
+    }
+    send_email(options)
+
+    progress.update(payroll_bar, advance=1)
+
+    return payroll_number, output_path.with_suffix(".pdf")
+
+
+# TO DO
+# gather billing info during build_invoice, and save into data structure to pass into generate_and_send_invoice_summary
+def generate_and_send_invoice_summary(
+    sessions_by_biller: dict,
+    invoice_summary_number: int,
+    biweek_start: date,
+    biweek_end: date,
+    progress: Progress,
+    payroll_bar: TaskID,
+):
+    """
+    Generate and send invoice summary for the specified biweekly period.
+    Arguments:
+        sessions_by_biller (dict): Session records sorted by billing_id
+        biweek_start (date): The start date of the 2-week billing period.
+        biweek_end (date): The end date of the 2-week billing period.
+        progress (Progress): Rich Progress instance for updating progress bars
+        payroll_bar (TaskID): Specific progress bar for payroll generation
+    Returns:
+        None
+    """
+    # Generate tutor payroll summaries
+    progress.update(
+        payroll_bar,
+        description=format_progress_update("Gathering payroll data", "yellow"),
+    )
+    # Build biller data: billing_id, biller_name, invoice_num, num_sessions, num_students, total_due
+    billers = []
+    for billing_id, sessions in sessions_by_biller.items():
+        billers.append(
+            {
+                "billing_id": billing_id,
+                "biller_name": sessions[0]["student_name"],
+                "invoice_num": sessions[0]["billing_id"],
+                "num_sessions": len(sessions),
+                "num_students": len(set(session["student_id"] for session in sessions)),
+                "total_due": sum(session["total_fee"] for session in sessions),
+            }
+        )
+
+    # Build tutor payroll data
+    sessions_by_tutor = defaultdict(list)
+    for session_list in sessions_by_biller.values():
+        for session in session_list:
+            sessions_by_tutor[session["tutor_id"]].append(session)
+    tutors = []
+    for tutor_id, sessions in sessions_by_tutor.items():
+        tutors.append(
+            {
+                "tutor_id": tutor_id,
+                "pref_name": sessions[0]["tutor_name"],
+                "num_sessions": len(sessions),
+                "num_hours": sum(session["duration_hours"] for session in sessions),
+                "num_students": len(set(session["student_id"] for session in sessions)),
+                "total_earned": sum(session["total_tutor_fee"] for session in sessions),
+            }
+        )
+
+    # Prepare payroll data
+    payroll_data = {
+        "invoice_summary_number": invoice_summary_number,
+        "invoice_summary_date": date.today().strftime("%B %d, %Y"),
+        "biweek": f"{biweek_start.strftime('%b %d')} - {biweek_end.strftime('%b %d, %Y')}",
+        "tutors": sorted(tutors, key=lambda t: t["tutor_id"]),
+    }
+
+    progress.update(
+        payroll_bar,
+        advance=1,
+        description=format_progress_update("Generating payroll summary", "yellow"),
+    )
+    # Render LaTeX template
+    env = Environment(
+        loader=FileSystemLoader(Path(__file__).parent / "latex_templates"),
+        autoescape=False,
+    )
+    template = env.get_template("payroll.j2")
+
+    # Generate PDF
+    test_str = (
+        "test/"
+        if os.getenv("APP_ENV") == "dev" or os.getenv("APP_ENV") == "test"
+        else ""
+    )
+    output_path = Path(
+        f"payroll/{test_str}{os.getenv('CURRENT_SEMESTER')}/IVS-{invoice_summary_number:04}.pdf"
+    )
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+
+    # Render and compile LaTeX
+    rendered_tex = template.render(**payroll_data)
+    tex_path = output_path.with_suffix(".tex")
+    with open(tex_path, "w") as f:
+        f.write(rendered_tex)
+    subprocess.run(
+        [
+            "pdflatex",
+            "-interaction=batchmode",
+            "-output-directory",
+            str(output_path.parent),
+            str(tex_path),
+        ],
+        check=True,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+    cleanup_latex_artifacts(output_path.parent)
+    progress.update(
+        payroll_bar,
+        advance=1,
+        description=format_progress_update("Sending email", "yellow"),
+    )
+
+    # Send email
+    options = {
+        "subject": f"Payroll Summary - IVS-{invoice_summary_number:04}",
         "from": os.getenv("PROPEL_EMAIL"),
         "to": os.getenv("PROPEL_EMAIL"),
         "body": f"Tutor payroll summary for {biweek_start.strftime('%b %d')} to {biweek_end.strftime('%b %d, %Y')}.",
