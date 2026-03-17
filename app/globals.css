@@ -60,3 +60,12 @@
   --text-h1: 2.25rem;
   --text-h2: 1.75rem;
 }
+
+h1-container {
+  text-align: center;
+  height: 480px;
+  background: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
