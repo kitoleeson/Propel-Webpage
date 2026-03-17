@@ -5,7 +5,7 @@ import FormTextInput from "@/components/ui/form/inputs/FormTextInput";
 import FormPhoneInput from "@/components/ui/form/inputs/FormPhoneInput";
 import FormSelectInput from "@/components/ui/form/inputs/FormSelectInput";
 import FormRadioInput from "@/components/ui/form/inputs/FormRadioInput";
-import type { FormValues } from "@/app/signup/ClientSignUpForm";
+import type { FormValues } from "@/lib/validation/clientFormSchema";
 
 const StudentSection = () => {
   const { register, formState: { errors } } = useFormContext<FormValues>();
@@ -27,14 +27,11 @@ const StudentSection = () => {
       <div className='landscape:mt-6 portrait:mt-14 flex landscape:flex-row portrait:flex-col gap-6'>
         <FormTextInput label='Email' type='email' register={register('student.email')} placeholder='joyce@example.ca' error={errors.student?.email?.message} />
         <FormPhoneInput label='Phone' register={register('student.phone')} placeholder='(123) 456-7890' error={errors.student?.phone?.message} />
+        <FormRadioInput label='Preferred Communication' register={register('student.pref_comm')} options={['Email', 'Text Message']} error={errors.student?.pref_comm?.message} />
       </div>
 
       <div className='landscape:mt-6 portrait:mt-14 flex landscape:flex-row portrait:flex-col gap-6'>
-        <FormSelectInput label='Preferred Communication' register={register('student.pref_comm')} options={['Email', 'Text Message']} error={errors.student?.pref_comm?.message} />
         <FormSelectInput label='How Did You Find Us?' register={register('student.how_found')} options={['Teacher', 'Word of Mouth', 'Advertisement', 'Web Search', 'Other']} error={errors.student?.how_found?.message} />
-      </div>
-
-      <div className='landscape:mt-6 portrait:mt-14 flex landscape:flex-row portrait:flex-col gap-6'>
         <FormRadioInput label='Who Will Be Paying For Tutoring Sessions?' register={register('student.biller')} options={['Student', 'Guardian']} error={errors.student?.biller?.message} />
       </div>
     </>
