@@ -6,14 +6,14 @@ const personBase = z.object({
   pref_name: z.string().optional(),
   email: z.string().email('Invalid email address'),
   phone: z.string().min(1, 'Phone number is required'),
-  pref_comm: z.enum(['email', 'text message'], 'Preferred communication method is required'),
+  pref_comm: z.enum(['email', 'text message']).optional().refine(val => val !== undefined, { message: 'Required' }),
 });
 
 const studentSchema = personBase.extend({
   grade: z.number().min(1, 'Grade is required').max(12, 'Grade must be between 1 and 12').optional().refine(val => val !== undefined, { message: 'Required' }),
   city: z.string().min(1, 'City is required'),
   how_found: z.enum(['teacher', 'word of mouth', 'adversisement', 'web search', 'other']).optional().refine(val => val !== undefined, { message: 'Required' }),
-  biller: z.enum(['student', 'guardian'], 'Biller is required'),
+  biller: z.enum(['student', 'guardian']).optional().refine(val => val !== undefined, { message: 'Required' }),
 });
 
 const guardianSchema = personBase.extend({
@@ -27,11 +27,11 @@ export const defaultStudent: FormValues['student'] = {
   pref_name: '',
   email: '',
   phone: '',
-  pref_comm: 'email',
+  pref_comm: undefined,
   grade: undefined,
   city: '',
   how_found: undefined,
-  biller: 'guardian',
+  biller: undefined,
 };
 
 export const defaultGuardian: FormValues['guardians'][0] = {
@@ -40,7 +40,7 @@ export const defaultGuardian: FormValues['guardians'][0] = {
   pref_name: '',
   email: '',
   phone: '',
-  pref_comm: 'email',
+  pref_comm: undefined,
   relationship: '',
   is_primary_biller: false,
 };

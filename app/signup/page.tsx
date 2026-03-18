@@ -12,7 +12,7 @@ const SignupPage = () => {
 			<div className="h-120 px-20 flex flex-col justify-center bg-primary">
 				<h1 className="text-white text-8xl">Signup Page</h1>
 			</div>
-			<div className="mx-7 my-10">
+			<div className="mx-10 my-10">
 				<p>
 					this page will host the signup form for incoming clients to the company. it will take in all the information we need from them, add their
 					profiles to the database, and allow them to choose a tutor. on submission, it will email me a summary of their answers so that i can ensure

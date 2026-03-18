@@ -20,7 +20,7 @@ const GuardianSection = ({ index, placeholder }: Props) => {
 
 	return (
 		<>
-			<h1>Guardian Information</h1>
+			<h1>Guardian Information{index > 0 && ` ${index + 1}`}</h1>
 			<div className="landscape:mt-6 portrait:mt-14 flex landscape:flex-row portrait:flex-col gap-6">
 				<FormTextInput
 					label="First Name"
