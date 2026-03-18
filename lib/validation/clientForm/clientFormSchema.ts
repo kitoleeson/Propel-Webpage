@@ -10,7 +10,7 @@ const personBase = z.object({
 });
 
 const studentSchema = personBase.extend({
-  grade: z.number().min(1, 'Grade is required').max(12, 'Grade must be between 1 and 12'),
+  grade: z.number().min(1, 'Grade is required').max(12, 'Grade must be between 1 and 12').optional().refine(val => val !== undefined, { message: 'Required' }),
   city: z.string().min(1, 'City is required'),
   how_found: z.enum(['teacher', 'word of mouth', 'adversisement', 'web search', 'other']).optional().refine(val => val !== undefined, { message: 'Required' }),
   biller: z.enum(['student', 'guardian'], 'Biller is required'),
@@ -28,7 +28,7 @@ export const defaultStudent: FormValues['student'] = {
   email: '',
   phone: '',
   pref_comm: 'email',
-  grade: 10,
+  grade: undefined,
   city: '',
   how_found: undefined,
   biller: 'guardian',
