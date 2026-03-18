@@ -1,3 +1,5 @@
+/** @format */
+
 "use client";
 
 import { useEffect, useRef, useMemo } from "react";
@@ -6,33 +8,32 @@ import { createSketch } from "@utils/p5";
 import { useAppStore } from "@/store/app";
 
 type Props = {
-    setup: any;
-    draw: any;
-    title: string;
+	setup: any;
+	draw: any;
+	title: string;
 };
 
 const P5VizWrapper = ({ setup, draw, title }: Props) => {
-  const ref = useRef<HTMLDivElement | null>(null);
-  const sketch = useMemo(() => createSketch(setup, draw), [setup, draw]);
-  const setCanvasSize = useAppStore((s) => s.setCanvasSize);
+	const ref = useRef<HTMLDivElement | null>(null);
+	const sketch = useMemo(() => createSketch(setup, draw), [setup, draw]);
+	const setCanvasSize = useAppStore((s) => s.setCanvasSize);
 
-  useEffect(() => {
-    if (!ref.current) return;
+	useEffect(() => {
+		if (!ref.current) return;
 
-    const observer = new ResizeObserver(([entry]) => {
-      setCanvasSize({
-        width: entry.contentRect.width,
-        height: entry.contentRect.height,
-      });
-    });
+		const observer = new ResizeObserver(([entry]) => {
+			setCanvasSize({
+				width: entry.contentRect.width,
+				height: entry.contentRect.height,
+			});
+		});
 
-    observer.observe(ref.current);
+		observer.observe(ref.current);
 
-    return () => observer.disconnect();
-  }, [setCanvasSize]);
+		return () => observer.disconnect();
+	}, [setCanvasSize]);
 
-  return <P5Viz ref={ref} title={title} sketch={sketch} height={480} />;
+	return <P5Viz ref={ref} title={title} sketch={sketch} height={480} />;
 };
-
 
 export default P5VizWrapper;

@@ -6,6 +6,8 @@ import P5VizWrapper from "@/components/canvas/P5VizWrapper";
 import { P5SetupCallback, P5SketchCallback } from "@/utils/p5";
 import NavBar from "@/components/ui/NavBar";
 import Image from "next/image";
+import { useCallback } from "react";
+import type P5 from "p5";
 
 export default function Home() {
 	type Vec = {
@@ -13,32 +15,34 @@ export default function Home() {
 		y: number;
 	};
 
-	let theta = 0;
-	let radius = 0;
-	let size = 200;
-	let center: Vec;
-	let lastPoint: Vec;
-	let propeller: any;
-	let x = 0;
-	let r = 0;
-	let state = "axes";
-	let fadeColour: any;
-	let numFades = 0;
-
-	const logoPoint = (theta: number) => {
-		radius = Math.pow(Math.cos((3 / 7) * theta), 2);
-		return { x: radius * size * Math.cos(theta), y: radius * size * Math.sin(theta) } as Vec;
+	type SketchState = {
+		theta: number;
+		radius: number;
+		size: number;
+		center: Vec;
+		lastPoint: Vec;
+		propeller: any;
+		x: number;
+		r: number;
+		state: string;
+		fadeColour: any;
+		numFades: number;
 	};
 
-	const drawLogo = (thickness: number, p: any, colors: any) => {
+	const logoPoint = (theta: number, s: SketchState) => {
+		s.radius = Math.pow(Math.cos((3 / 7) * theta), 2);
+		return { x: s.radius * s.size * Math.cos(theta), y: s.radius * s.size * Math.sin(theta) } as Vec;
+	};
+
+	const drawLogo = (thickness: number, p: any, s: SketchState, colors: any) => {
 		const bounds = (a: number, b: number) => (Math.PI / 6) * (3 + 8 * a + 14 * b);
 
 		const image = p.createGraphics(p.width, p.height);
 		image.clear();
-		image.translate(center.x, center.y);
+		image.translate(s.center.x, s.center.y);
 		for (let k = 0; k < 6; k++)
 			for (let t = bounds(0, k); t < bounds(1, k); t += 0.005) {
-				const point = logoPoint(t);
+				const point = logoPoint(t, s);
 				image.stroke(colors.textPrimary);
 				image.strokeWeight(1);
 				image.ellipse(point.x, point.y, thickness);
@@ -46,66 +50,87 @@ export default function Home() {
 		return image;
 	};
 
-	const setup: P5SetupCallback = (p, colors, scene) => {
+	const setup: P5SetupCallback = useCallback((p, colors, scene) => {
 		p.background(colors.accent);
 
+		const ps = p as P5 & { state: SketchState };
+
+		ps.state = {
+			theta: 0,
+			radius: 0,
+			size: 200,
+			center: { x: p.width / 2, y: p.height / 2 },
+			lastPoint: { x: 0, y: 0 },
+			propeller: null,
+			x: 0,
+			r: 0,
+			state: "axes",
+			fadeColour: p.color(colors.accent),
+			numFades: 0,
+		};
+		ps.state.fadeColour.setAlpha(25);
+
 		const { canvasSize } = scene;
-		center = {
+		const s = ps.state;
+		s.center = {
 			x: p.width / 2,
 			y: p.height / 2,
 		};
 
-		fadeColour = p.color(colors.accent);
-		fadeColour.setAlpha(25);
+		s.fadeColour = p.color(colors.accent);
+		s.fadeColour.setAlpha(25);
 
-		lastPoint = logoPoint(theta);
+		s.lastPoint = logoPoint(s.theta, s);
 
 		// draw logo
-		propeller = drawLogo(1, p, colors);
-	};
+		s.propeller = drawLogo(1, p, s, colors);
+	}, []);
 
-	const draw: P5SketchCallback = (p, colors, scene) => {
+	const draw: P5SketchCallback = useCallback((p, colors, scene) => {
 		const { canvasSize } = scene;
-		let axisLen = p.millis() / 2;
-		p.text(state, 10, 20);
+		const ps = p as P5 & { state: SketchState };
+		const s = ps.state;
 
-		if (state == "axes") {
+		let axisLen = p.millis() / 2;
+		p.text(s.state, 10, 20);
+
+		if (s.state == "axes") {
 			p.stroke(colors.textPrimary);
 			p.strokeWeight(1);
-			p.line(center.x, center.y - axisLen, center.x, center.y + axisLen);
-			p.line(center.x - axisLen, center.y, center.x + axisLen, center.y);
-			if (axisLen >= p.width / 2 && axisLen >= p.height / 2) state = "logo";
-		} else if (state == "logo") {
+			p.line(s.center.x, s.center.y - axisLen, s.center.x, s.center.y + axisLen);
+			p.line(s.center.x - axisLen, s.center.y, s.center.x + axisLen, s.center.y);
+			if (axisLen >= p.width / 2 && axisLen >= p.height / 2) s.state = "logo";
+		} else if (s.state == "logo") {
 			p.stroke(colors.textPrimary);
 			p.strokeWeight(2);
 
 			// p.textSize(16);
-			// p.text(`cos((3/7) * ${(theta / Math.PI).toFixed(2)}π)`, 10, 40);
+			// p.text(`cos((3/7) * ${(s.theta / Math.PI).toFixed(2)}π)`, 10, 40);
 
-			p.translate(center.x, center.y);
-			const point = logoPoint(theta);
-			p.line(lastPoint.x, lastPoint.y, point.x, point.y);
-			lastPoint = point;
-			theta += 0.1;
-			if (theta > Math.PI * 14.1) state = "fade";
-		} else if (state == "fade") {
-			propeller = drawLogo(p.map(numFades, 0, 50, 1, 4), p, colors);
-			p.fill(fadeColour);
+			p.translate(s.center.x, s.center.y);
+			const point = logoPoint(s.theta, s);
+			p.line(s.lastPoint.x, s.lastPoint.y, point.x, point.y);
+			s.lastPoint = point;
+			s.theta += 0.1;
+			if (s.theta > Math.PI * 14.1) s.state = "fade";
+		} else if (s.state == "fade") {
+			s.propeller = drawLogo(p.map(s.numFades, 0, 50, 1, 4), p, s, colors);
+			p.fill(s.fadeColour);
 			p.rect(0, 0, p.width, p.height);
-			p.image(propeller, 0, 0);
-			numFades++;
-			if (numFades >= 50) state = "spin";
-		} else if (state == "spin") {
-			if (x < p.width / 4) x += 7;
+			p.image(s.propeller, 0, 0);
+			s.numFades++;
+			if (s.numFades >= 50) s.state = "spin";
+		} else if (s.state == "spin") {
+			if (s.x < p.width / 4) s.x += 7;
 			p.background(colors.accent);
 			p.push();
-			p.translate(center.x + x, center.y);
-			p.rotate(r);
-			p.image(propeller, -center.x, -center.y);
+			p.translate(s.center.x + s.x, s.center.y);
+			p.rotate(s.r);
+			p.image(s.propeller, -s.center.x, -s.center.y);
 			p.pop();
-			r -= 1;
+			s.r -= 1;
 		}
-	};
+	}, []);
 
 	return (
 		<main>
