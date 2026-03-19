@@ -43,7 +43,7 @@ const P5Viz = ({ title, width = "100%", height, sketch, ...props }: Props, ref: 
 	}, [sketch]);
 
 	return (
-		<P5Container ref={ref} className="p5-viz" title={title} width={width} height={height} {...props}>
+		<P5Container ref={ref} className="p5-viz pointer-events-none" title={title} width={width} height={height} {...props}>
 			<div ref={divRef}></div>
 		</P5Container>
 	);
