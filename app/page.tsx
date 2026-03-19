@@ -30,6 +30,7 @@ export default function Home() {
 		numFades: number;
 		mathFont: any;
 		equationCoords: any;
+		equationCoords2: any;
 	};
 
 	const logoPoint = (theta: number, s: SketchState) => {
@@ -80,12 +81,13 @@ export default function Home() {
 			numFades: 0,
 			mathFont: italic,
 			equationCoords: { x: p.width - 10, y: p.height - 20 },
+			equationCoords2: { x: 10, y: 20 },
 		};
 
 		const s = ps.state;
 		s.fadeColour.setAlpha(50);
 		s.lastPoint = logoPoint(s.theta, s);
-		s.lastPoint2 = logoPoint(s.theta, s);
+		s.lastPoint2 = logoPoint(s.theta + 7 * Math.PI, s);
 		s.propeller = drawLogo(1, p, s, colors);
 		if (italic) p.textFont(italic);
 	}, []);
@@ -95,7 +97,6 @@ export default function Home() {
 		const s = ps.state;
 
 		let axisLen = p.millis();
-		p.text(s.state, 10, 20);
 
 		if (s.state == "axes") {
 			p.stroke(colors.textPrimary);
@@ -109,26 +110,35 @@ export default function Home() {
 
 			// draw equation
 			p.push();
-
 			p.stroke(colors.accent);
 			p.fill(colors.accent);
-			p.rect(s.equationCoords.x + 5, s.equationCoords.y + 15, -135, -75);
+			p.rect(s.equationCoords.x - 5, s.equationCoords.y + 5, -130, -30);
+			p.rect(s.equationCoords.x - 5, s.equationCoords.y - 30, -90, -20);
+			p.rect(s.equationCoords2.x + 5, s.equationCoords2.y - 5, 170, 30);
 
 			// θ = θ
+			p.textAlign(p.RIGHT, p.CENTER);
 			p.textSize(20);
 			p.stroke(colors.textPrimary);
 			p.fill(colors.textPrimary);
 			p.strokeWeight(0.3);
-			p.text(`θ = ${(s.theta / Math.PI).toFixed(2)}`, s.equationCoords.x - 90, s.equationCoords.y - 35);
+			p.text(`θ = ${(s.theta / Math.PI).toFixed(2)}`, s.equationCoords.x - 10, s.equationCoords.y - 40);
 
-			// equation: r = cos^2(3/7 θ)
-			p.text("r = cos (   θ)", s.equationCoords.x - 125, s.equationCoords.y);
+			// equations: r = cos^2(3/7 θ), r = cos^2(3/7 θ + 7π)
+			p.text("r = cos (  θ)", s.equationCoords.x - 10, s.equationCoords.y - 10);
+			p.textAlign(p.LEFT, p.CENTER);
+			p.text("r = cos (  θ + 7π)", s.equationCoords2.x + 10, s.equationCoords2.y + 10);
 			p.textSize(15);
-			p.text(`3\n7`, s.equationCoords.x - 38, s.equationCoords.y - 10);
-			p.text(`2`, s.equationCoords.x - 58, s.equationCoords.y - 11);
+			p.text(`3`, s.equationCoords.x - 38, s.equationCoords.y - 18);
+			p.text(`7`, s.equationCoords.x - 38, s.equationCoords.y - 2);
+			p.text(`2`, s.equationCoords.x - 56, s.equationCoords.y - 18);
+			p.text(`3`, s.equationCoords2.x + 94, s.equationCoords2.y + 2);
+			p.text(`7`, s.equationCoords2.x + 94, s.equationCoords2.y + 18);
+			p.text(`2`, s.equationCoords2.x - 56, s.equationCoords2.y - 18);
 
 			p.strokeWeight(1);
-			p.line(s.equationCoords.x - 38, s.equationCoords.y - 5.5, s.equationCoords.x - 28, s.equationCoords.y - 5.5);
+			p.line(s.equationCoords.x - 38, s.equationCoords.y - 9.5, s.equationCoords.x - 28, s.equationCoords.y - 9.5);
+			p.line(s.equationCoords2.x + 104, s.equationCoords2.y + 10, s.equationCoords2.x + 94, s.equationCoords2.y + 10);
 			p.pop();
 
 			p.push();
@@ -151,6 +161,7 @@ export default function Home() {
 			if (s.numFades >= 25) s.state = "spin";
 		} else if (s.state == "spin") {
 			if (s.x < p.width / 4) s.x += 7;
+			else s.state = "done";
 			p.background(colors.accent);
 			p.push();
 			p.translate(s.center.x + s.x, s.center.y);
@@ -158,6 +169,12 @@ export default function Home() {
 			p.image(s.propeller, -s.center.x, -s.center.y);
 			p.pop();
 			s.r -= 1;
+		} else if (s.state == "done") {
+			p.background(colors.accent);
+			p.push();
+			p.translate(s.center.x + s.x, s.center.y);
+			p.image(s.propeller, -s.center.x, -s.center.y);
+			p.pop();
 		}
 	}, []);
 
