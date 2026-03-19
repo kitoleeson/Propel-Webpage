@@ -7,7 +7,7 @@ interface P5SceneInfo {
 }
 
 export type P5SetupCallback = (p: p5, colors: GraphicsColors, scene: P5SceneInfo) => void;
-export type P5SketchCallback = (p: p5, colors: GraphicsColors, scene: P5SceneInfo) => void;
+export type P5SketchCallback = (p: p5, colors: GraphicsColors, scene: P5SceneInfo) => void | Promise<void>;
 
 /**
  * Wrapper for the `sketch` prop passed to P5 to create blog viz.
@@ -21,7 +21,7 @@ export const createSketch = (setup: P5SetupCallback, draw: P5SketchCallback) => 
   let canvasSize = { width: 480, height: 400 };
   
   return (p: p5) => {
-    p.setup = () => {
+    p.setup = async () => {
       const { canvasSize: canvasSizeStore } = useAppStore.getState();
       canvasSize.width = canvasSizeStore.width;
       //   canvasSize.height = canvasSizeStore.height;
@@ -31,24 +31,13 @@ export const createSketch = (setup: P5SetupCallback, draw: P5SketchCallback) => 
       p.background(colors.background);
 
       const scene = { canvasSize };
-      setup(p, colors, scene);
+      await setup(p, colors, scene);
     };
 
     p.draw = () => {
       if (typeof window === "undefined") return;
       const scene = { canvasSize };
       draw(p, colors, scene);
-    };
-
-    p.windowResized = () => {
-      const container = document.querySelector(".p5-viz");
-      if (!container) return;
-      const containerSize = container.getBoundingClientRect();
-
-      canvasSize.width = containerSize.width;
-      //   canvasSize.height = containerSize.height;
-
-      p.resizeCanvas(containerSize.width, containerSize.height);
     };
   };
 };

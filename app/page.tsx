@@ -21,12 +21,15 @@ export default function Home() {
 		size: number;
 		center: Vec;
 		lastPoint: Vec;
+		lastPoint2: Vec;
 		propeller: any;
 		x: number;
 		r: number;
 		state: string;
 		fadeColour: any;
 		numFades: number;
+		mathFont: any;
+		equationCoords: any;
 	};
 
 	const logoPoint = (theta: number, s: SketchState) => {
@@ -50,48 +53,48 @@ export default function Home() {
 		return image;
 	};
 
-	const setup: P5SetupCallback = useCallback((p, colors, scene) => {
+	const setup: P5SetupCallback = useCallback(async (p, colors, scene) => {
+		const { canvasSize } = scene;
 		p.background(colors.accent);
 
-		const ps = p as P5 & { state: SketchState };
+		let italic: any;
+		try {
+			italic = await p.loadFont("/fonts/computerModern-italic.ttf");
+		} catch (error) {
+			italic = null;
+		}
 
+		const ps = p as P5 & { state: SketchState };
 		ps.state = {
 			theta: 0,
 			radius: 0,
 			size: 200,
 			center: { x: p.width / 2, y: p.height / 2 },
 			lastPoint: { x: 0, y: 0 },
+			lastPoint2: { x: 0, y: 0 },
 			propeller: null,
 			x: 0,
 			r: 0,
 			state: "axes",
 			fadeColour: p.color(colors.accent),
 			numFades: 0,
+			mathFont: italic,
+			equationCoords: { x: p.width - 10, y: p.height - 20 },
 		};
-		ps.state.fadeColour.setAlpha(25);
 
-		const { canvasSize } = scene;
 		const s = ps.state;
-		s.center = {
-			x: p.width / 2,
-			y: p.height / 2,
-		};
-
-		s.fadeColour = p.color(colors.accent);
-		s.fadeColour.setAlpha(25);
-
+		s.fadeColour.setAlpha(50);
 		s.lastPoint = logoPoint(s.theta, s);
-
-		// draw logo
+		s.lastPoint2 = logoPoint(s.theta, s);
 		s.propeller = drawLogo(1, p, s, colors);
+		if (italic) p.textFont(italic);
 	}, []);
 
 	const draw: P5SketchCallback = useCallback((p, colors, scene) => {
-		const { canvasSize } = scene;
 		const ps = p as P5 & { state: SketchState };
 		const s = ps.state;
 
-		let axisLen = p.millis() / 2;
+		let axisLen = p.millis();
 		p.text(s.state, 10, 20);
 
 		if (s.state == "axes") {
@@ -104,22 +107,48 @@ export default function Home() {
 			p.stroke(colors.textPrimary);
 			p.strokeWeight(2);
 
-			// p.textSize(16);
-			// p.text(`cos((3/7) * ${(s.theta / Math.PI).toFixed(2)}π)`, 10, 40);
+			// draw equation
+			p.push();
 
+			p.stroke(colors.accent);
+			p.fill(colors.accent);
+			p.rect(s.equationCoords.x + 5, s.equationCoords.y + 15, -135, -75);
+
+			// θ = θ
+			p.textSize(20);
+			p.stroke(colors.textPrimary);
+			p.fill(colors.textPrimary);
+			p.strokeWeight(0.3);
+			p.text(`θ = ${(s.theta / Math.PI).toFixed(2)}`, s.equationCoords.x - 90, s.equationCoords.y - 35);
+
+			// equation: r = cos^2(3/7 θ)
+			p.text("r = cos (   θ)", s.equationCoords.x - 125, s.equationCoords.y);
+			p.textSize(15);
+			p.text(`3\n7`, s.equationCoords.x - 38, s.equationCoords.y - 10);
+			p.text(`2`, s.equationCoords.x - 58, s.equationCoords.y - 11);
+
+			p.strokeWeight(1);
+			p.line(s.equationCoords.x - 38, s.equationCoords.y - 5.5, s.equationCoords.x - 28, s.equationCoords.y - 5.5);
+			p.pop();
+
+			p.push();
 			p.translate(s.center.x, s.center.y);
 			const point = logoPoint(s.theta, s);
 			p.line(s.lastPoint.x, s.lastPoint.y, point.x, point.y);
 			s.lastPoint = point;
+			const point2 = logoPoint(s.theta + 7 * Math.PI, s);
+			p.line(s.lastPoint2.x, s.lastPoint2.y, point2.x, point2.y);
+			s.lastPoint2 = point2;
+			p.pop();
 			s.theta += 0.1;
-			if (s.theta > Math.PI * 14.1) s.state = "fade";
+			if (s.theta > Math.PI * 7.1) s.state = "fade";
 		} else if (s.state == "fade") {
 			s.propeller = drawLogo(p.map(s.numFades, 0, 50, 1, 4), p, s, colors);
 			p.fill(s.fadeColour);
 			p.rect(0, 0, p.width, p.height);
 			p.image(s.propeller, 0, 0);
 			s.numFades++;
-			if (s.numFades >= 50) s.state = "spin";
+			if (s.numFades >= 25) s.state = "spin";
 		} else if (s.state == "spin") {
 			if (s.x < p.width / 4) s.x += 7;
 			p.background(colors.accent);
