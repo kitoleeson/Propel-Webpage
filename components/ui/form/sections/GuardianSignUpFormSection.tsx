@@ -12,6 +12,9 @@ type Props = {
 	placeholder: PersonPlaceholder;
 };
 
+// make it so that if student is billed by guardian, at least one guardian section is shown and cannot be removed, but if student is not billed by guardian, guardian sections can be added or removed at will (including having zero guardians)
+// also needs radio buttons per guardian for primary biller (probably do in ClientSignUpForm)
+
 const GuardianSection = ({ index, placeholder }: Props) => {
 	const {
 		register,

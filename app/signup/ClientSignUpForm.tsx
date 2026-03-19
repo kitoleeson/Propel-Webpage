@@ -41,6 +41,7 @@ const ClientSignUpForm = () => {
 	});
 
 	const onSubmit: SubmitHandler<z.infer<typeof formSchema>> = (data) => {
+		console.log("Form submitted with data:");
 		console.log(data);
 	};
 
