@@ -17,7 +17,7 @@ const FormRadioInput = ({ label, register, options, error, placeholder }: Props)
 			<label>{label}</label>
 			<div className="flex flex-row gap-4">
 				{options.map((option) => (
-					<label key={option.toLowerCase()} className="flex flex-1 items-center gap-2 border border-gray-300 rounded-md p-1">
+					<label key={option.toLowerCase()} className="flex flex-1 items-center gap-2 border border-gray-300 rounded-md px-2 py-1">
 						<input type="radio" value={option.toLowerCase()} {...register} />
 						{option}
 					</label>

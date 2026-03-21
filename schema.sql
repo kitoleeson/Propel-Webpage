@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS students (
     gov_first_name TEXT NOT NULL,
     gov_last_name TEXT NOT NULL,
     pref_name TEXT,
-    grade TEXT,
+    grade INTEGER NOT NULL CHECK (grade >= 1 AND grade <= 12),
     city TEXT NOT NULL,
     -- email TEXT NOT NULL UNIQUE,
     email TEXT UNIQUE,

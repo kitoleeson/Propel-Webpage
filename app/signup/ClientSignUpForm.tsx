@@ -3,7 +3,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FormProvider, SubmitHandler, useFieldArray, useForm } from "react-hook-form";
+import { FormProvider, SubmitHandler, useFieldArray, useForm, useFormContext } from "react-hook-form";
 import { z } from "zod";
 import { FormButtonInput, StudentSection, GuardianSection } from "@/components/ui/form";
 import { defaultStudent, defaultGuardian, formSchema, FormValues } from "@/lib/validation/clientForm/clientFormSchema";
@@ -30,10 +30,18 @@ const ClientSignUpForm = () => {
 		defaultValues: {
 			student: defaultStudent,
 			guardians: [defaultGuardian],
+			primary_biller_index: 0,
 		},
 	});
 
-	const { handleSubmit, watch, control } = methods;
+	const {
+		register,
+		formState: { errors },
+		handleSubmit,
+		watch,
+		control,
+		setValue,
+	} = methods;
 
 	const { fields, append, remove } = useFieldArray({
 		control,
@@ -51,6 +59,16 @@ const ClientSignUpForm = () => {
 		append(defaultGuardian);
 	};
 
+	const biller_index = watch("primary_biller_index");
+	const removeGuardian = (index: number) => {
+		remove(index);
+		if (biller_index === index) {
+			setValue("primary_biller_index", 0);
+		} else if (biller_index > index) {
+			setValue("primary_biller_index", biller_index - 1);
+		}
+	};
+
 	return (
 		<div className="mt-10">
 			<FormProvider {...methods}>
@@ -59,8 +77,19 @@ const ClientSignUpForm = () => {
 					{/* make it so that guardians are always shown when student is billed by guardian, but optionally added when not */}
 					{fields.map((field, index) => (
 						<div key={field.id} className="mt-10">
-							<GuardianSection index={index} placeholder={shuffledPlaceholders[(index + 1) % shuffledPlaceholders.length]} />
-							{fields.length > 1 && <FormButtonInput label="Remove Guardian" onClick={() => remove(index)} format="text-red-500" />}
+							<GuardianSection index={index} placeholder={shuffledPlaceholders[(index + 1) % shuffledPlaceholders.length]} optional={!guardianBilling || index > 0} />
+							{fields.length > 1 && (
+								<div className="landscape:mt-6 portrait:mt-14 flex flex-row gap-6 items-center">
+									<FormButtonInput label="Remove Guardian" onClick={() => removeGuardian(index)} format="self-auto text-red-500 flex-1" />
+									<div className="flex flex-col gap-1 flex-1">
+										<label key={index} className="flex flex-1 items-center gap-2 border border-gray-300 rounded-md px-3 py-1">
+											<input type="radio" value={index} {...register("primary_biller_index", { valueAsNumber: true })} />
+											{"Guardian is Primary Biller"}
+										</label>
+										{errors.primary_biller_index?.message && <p className="text-red-500">{errors.primary_biller_index?.message}</p>}
+									</div>
+								</div>
+							)}
 						</div>
 					))}
 					<FormButtonInput label="Add Guardian" onClick={addGuardian} />

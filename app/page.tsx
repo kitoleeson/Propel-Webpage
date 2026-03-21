@@ -217,18 +217,14 @@ export default function Home() {
 			<div className="mx-7 my-10">
 				<h1 className="text-6xl font-bold">Handing the keys back to students.</h1>
 				<h2 className="pt-3 text-2xl">
-					Propel Tutoring offers personalized, student-led tutoring that adapts to how you learn best. We seek to support students in taking ownership
-					of their education, and build confidence in their learning.
+					Propel Tutoring offers personalized, student-led tutoring that adapts to how you learn best. We seek to support students in taking ownership of their education, and build confidence in their learning.
 				</h2>
 				<p className="font-bold mt-15">Every student learns differently.</p>
 				<p className="mt-2">
-					Propel Tutoring is a catalyst for students taking ownership of, and investing in, their education. We believe students must have room to
-					explore different learning styles and ways of thinking; because in this exploration, students gain a deeper understanding of their inner
-					processes, setting them up for continued and fulfilling learning. Our personalized style adapts to individual goals, pace, and learning
-					style, to help students understand how they learn best, and let them show us how best to help them. We meet students where they are and
-					guide with intention, raising students' confidence and skills to new heights. Propel exists to give students the power to choose a style of
-					learning which best suits them, and to break down the principles of math and science in the pursuit of intuitive understanding, not just
-					memorization.
+					Propel Tutoring is a catalyst for students taking ownership of, and investing in, their education. We believe students must have room to explore different learning styles and ways of thinking; because in this
+					exploration, students gain a deeper understanding of their inner processes, setting them up for continued and fulfilling learning. Our personalized style adapts to individual goals, pace, and learning style, to help
+					students understand how they learn best, and let them show us how best to help them. We meet students where they are and guide with intention, raising students' confidence and skills to new heights. Propel exists to give
+					students the power to choose a style of learning which best suits them, and to break down the principles of math and science in the pursuit of intuitive understanding, not just memorization.
 				</p>
 			</div>
 		</main>
