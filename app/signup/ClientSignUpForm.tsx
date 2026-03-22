@@ -62,7 +62,6 @@ const ClientSignUpForm = () => {
 		setValue("primary_biller_index", current, { shouldDirty: true, shouldTouch: true, shouldValidate: true });
 	};
 
-	// const biller_index = watch("primary_biller_index");
 	const removeGuardian = (index: number) => {
 		const current = methods.getValues("primary_biller_index");
 		if (current == index) setValue("primary_biller_index", 0, { shouldDirty: true, shouldTouch: true, shouldValidate: true });
@@ -95,7 +94,7 @@ const ClientSignUpForm = () => {
 							)}
 						</div>
 					))}
-					<FormButtonInput label="Add Guardian" onClick={addGuardian} divFormat="mt-14" format="w-full" />
+					<FormButtonInput label="Add New Guardian" onClick={addGuardian} divFormat="mt-14" format="w-full" />
 					<FormButtonInput label="Sign Up" onClick={handleSubmit(onSubmit)} format="self-stretch text-primary font-bold text-primary" />
 				</form>
 			</FormProvider>
