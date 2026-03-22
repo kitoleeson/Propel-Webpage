@@ -58,7 +58,7 @@ export const defaultGuardian: FormValues["guardians"][0] = {
 	phone: "1234567890",
 	pref_comm: "text message",
 	relationship: "mother",
-	is_primary_biller: true,
+	is_primary_biller: false,
 };
 
 // export const defaultStudent: FormValues['student'] = {
