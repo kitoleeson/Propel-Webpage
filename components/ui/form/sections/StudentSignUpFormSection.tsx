@@ -38,7 +38,12 @@ const StudentSection = ({ placeholder }: Props) => {
 			</div>
 
 			<div className="landscape:mt-6 portrait:mt-14 flex landscape:flex-row portrait:flex-col gap-6">
-				<FormSelectInput label="How Did You Find Us?" register={register("student.how_found")} options={["Teacher", "Word of Mouth", "Advertisement", "Web Search", "Other"]} error={errors.student?.how_found?.message} />
+				<FormSelectInput
+					label="How Did You Find Us?"
+					register={register("student.how_found")}
+					options={["Teacher", "Family Member", "Word of Mouth", "Advertisement", "Web Search", "Other"]}
+					error={errors.student?.how_found?.message}
+				/>
 				<FormRadioInput label="Who Will Be Paying For Tutoring Sessions?" register={register("student.biller")} options={["Student", "Guardian"]} error={errors.student?.biller?.message} />
 			</div>
 		</>

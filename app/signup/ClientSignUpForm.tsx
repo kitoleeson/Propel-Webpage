@@ -49,12 +49,17 @@ const ClientSignUpForm = () => {
 	});
 
 	const onSubmit: SubmitHandler<z.infer<typeof formSchema>> = (data) => {
-		data.guardians[data.primary_biller_index].is_primary_biller = true;
+		if (data.student.biller === "student") data.primary_biller_index = -1;
+		else data.guardians[data.primary_biller_index].is_primary_biller = true;
 		console.log("Form submitted with data:");
 		console.log(data);
 	};
 
 	const guardianBilling = watch("student.biller") === "guardian";
+
+	if (guardianBilling && fields.length === 0) {
+		append(defaultGuardian);
+	}
 
 	const addGuardian = () => {
 		const current = methods.getValues("primary_biller_index");
@@ -78,8 +83,8 @@ const ClientSignUpForm = () => {
 					{fields.map((field, index) => (
 						<div key={field.id} className="landscape:mt-10 portrait:mt-14">
 							<GuardianSection index={index} placeholder={shuffledPlaceholders[(index + 1) % shuffledPlaceholders.length]} optional={!guardianBilling || index > 0} />
-							{fields.length > 1 && (
-								<div className="flex flex-row gap-6 items-center">
+							{(fields.length > 1 || !guardianBilling) && (
+								<div className="portrait:mt-8 flex flex-row gap-6 items-center">
 									<FormButtonInput label="Remove Guardian" onClick={() => removeGuardian(index)} format="self-stretch text-red-500 flex-1" />
 									{guardianBilling && (
 										<div className="mt-6 flex flex-col gap-1 flex-1">
