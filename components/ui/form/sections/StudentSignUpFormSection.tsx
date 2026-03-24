@@ -4,7 +4,7 @@
 import React from "react";
 import { useFormContext } from "react-hook-form";
 import { FormTextInput, FormPhoneInput, FormSelectInput, FormRadioInput } from "@/components/ui/form/inputs";
-import type { FormValues } from "@/lib/validation/clientForm/clientFormSchema";
+import type { ClientFormValues } from "@/lib/validation/clientForm/clientFormSchema";
 import type { PersonPlaceholder } from "@/lib/validation/clientForm/clientFormPersonPlaceholders";
 
 type Props = {
@@ -15,11 +15,12 @@ const StudentSection = ({ placeholder }: Props) => {
 	const {
 		register,
 		formState: { errors },
-	} = useFormContext<FormValues>();
+	} = useFormContext<ClientFormValues>();
 
 	return (
 		<>
 			<h1>Student Information</h1>
+
 			<div className="landscape:mt-6 portrait:mt-14 flex landscape:flex-row portrait:flex-col gap-6">
 				<FormTextInput label="First Name" register={register("student.gov_first")} placeholder={placeholder.gov_first} error={errors.student?.gov_first?.message} />
 				<FormTextInput label="Last Name" register={register("student.gov_last")} placeholder={placeholder.gov_last} error={errors.student?.gov_last?.message} />

@@ -1,7 +1,6 @@
 /** @format */
 
 import NavBar from "@/components/ui/NavBar";
-import React from "react";
 import ClientSignUpForm from "./ClientSignUpForm";
 
 const SignupPage = () => {

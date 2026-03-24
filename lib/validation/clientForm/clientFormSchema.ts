@@ -17,6 +17,7 @@ const personBase = z.object({
 const studentSchema = personBase.extend({
 	grade: z
 		.number()
+		.int()
 		.min(1, "Grade is required")
 		.max(12, "Grade must be between 1 and 12")
 		.optional()
@@ -40,7 +41,7 @@ const guardianSchema = personBase.extend({
 	is_primary_biller: z.boolean(),
 });
 
-// export const defaultStudent: FormValues["student"] = {
+// export const defaultStudent: ClientFormValues["student"] = {
 // 	gov_first: "test",
 // 	gov_last: "student",
 // 	pref_name: "tessy",
@@ -53,7 +54,7 @@ const guardianSchema = personBase.extend({
 // 	biller: "guardian",
 // };
 
-// export const defaultGuardian: FormValues["guardians"][0] = {
+// export const defaultGuardian: ClientFormValues["guardians"][0] = {
 // 	gov_first: "test",
 // 	gov_last: "guardian",
 // 	pref_name: "tessa",
@@ -64,7 +65,7 @@ const guardianSchema = personBase.extend({
 // 	is_primary_biller: false,
 // };
 
-export const defaultStudent: FormValues["student"] = {
+export const defaultStudent: ClientFormValues["student"] = {
 	gov_first: "",
 	gov_last: "",
 	pref_name: "",
@@ -74,10 +75,10 @@ export const defaultStudent: FormValues["student"] = {
 	grade: undefined,
 	city: "",
 	how_found: undefined,
-	biller: "guardian",
+	biller: undefined,
 };
 
-export const defaultGuardian: FormValues["guardians"][0] = {
+export const defaultGuardian: ClientFormValues["guardians"][0] = {
 	gov_first: "",
 	gov_last: "",
 	pref_name: "",
@@ -114,4 +115,4 @@ export const formSchema = z
 		}
 	});
 
-export type FormValues = z.infer<typeof formSchema>;
+export type ClientFormValues = z.infer<typeof formSchema>;

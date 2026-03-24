@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { FormProvider, SubmitHandler, useFieldArray, useForm, useFormContext } from "react-hook-form";
 import { z } from "zod";
 import { FormButtonInput, StudentSection, GuardianSection } from "@/components/ui/form";
-import { defaultStudent, defaultGuardian, formSchema, FormValues } from "@/lib/validation/clientForm/clientFormSchema";
+import { defaultStudent, defaultGuardian, formSchema, ClientFormValues } from "@/lib/validation/clientForm/clientFormSchema";
 import { placeholders } from "@/lib/validation/clientForm/clientFormPersonPlaceholders";
 
 function shuffle(array: any[]) {
@@ -25,7 +25,7 @@ const ClientSignUpForm = () => {
 		setShuffledPlaceholders(shuffle(placeholders));
 	}, []);
 
-	const methods = useForm<FormValues>({
+	const methods = useForm<ClientFormValues>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
 			student: defaultStudent,
@@ -55,9 +55,9 @@ const ClientSignUpForm = () => {
 		console.log(data);
 	};
 
-	const guardianBilling = watch("student.biller") === "guardian";
+	const studentBilling = watch("student.biller") === "student";
 
-	if (guardianBilling && fields.length === 0) {
+	if (!studentBilling && fields.length === 0) {
 		append(defaultGuardian);
 	}
 
@@ -82,11 +82,11 @@ const ClientSignUpForm = () => {
 					<StudentSection placeholder={shuffledPlaceholders[0]} />
 					{fields.map((field, index) => (
 						<div key={field.id} className="landscape:mt-10 portrait:mt-14">
-							<GuardianSection index={index} placeholder={shuffledPlaceholders[(index + 1) % shuffledPlaceholders.length]} optional={!guardianBilling || index > 0} />
-							{(fields.length > 1 || !guardianBilling) && (
+							<GuardianSection index={index} placeholder={shuffledPlaceholders[(index + 1) % shuffledPlaceholders.length]} optional={studentBilling || index > 0} />
+							{(fields.length > 1 || studentBilling) && (
 								<div className="portrait:mt-8 flex flex-row gap-6 items-center">
 									<FormButtonInput label="Remove Guardian" onClick={() => removeGuardian(index)} format="self-stretch text-red-500 flex-1" />
-									{guardianBilling && (
+									{!studentBilling && (
 										<div className="mt-6 flex flex-col gap-1 flex-1">
 											<label key={index} className="flex flex-1 items-center gap-2 border border-gray-300 rounded-md px-3 py-1 text-center">
 												<input type="radio" value={index} checked={watch("primary_biller_index") === index} onChange={() => setValue("primary_biller_index", index)} />
@@ -108,3 +108,15 @@ const ClientSignUpForm = () => {
 };
 
 export default ClientSignUpForm;
+
+/**
+ * TO DO:
+ * - check if guardian exists during sign up
+ * - add choose tutor step as next page of form, or as part of this form if it doesn't make it too long
+ * - connect to database:
+ * 	- add student
+ * 	- add guardians
+ * 	- link guardians to student
+ * - send email to admin with form responses
+ * - send email to client with agreement contract
+ */

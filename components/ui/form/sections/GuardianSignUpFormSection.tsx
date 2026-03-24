@@ -4,7 +4,7 @@
 import React from "react";
 import { useFormContext } from "react-hook-form";
 import { FormTextInput, FormPhoneInput, FormSelectInput, FormRadioInput } from "@/components/ui/form/inputs";
-import type { FormValues } from "@/lib/validation/clientForm/clientFormSchema";
+import type { ClientFormValues } from "@/lib/validation/clientForm/clientFormSchema";
 import type { PersonPlaceholder } from "@/lib/validation/clientForm/clientFormPersonPlaceholders";
 
 type Props = {
@@ -20,7 +20,7 @@ const GuardianSection = ({ index, placeholder, optional }: Props) => {
 	const {
 		register,
 		formState: { errors },
-	} = useFormContext<FormValues>();
+	} = useFormContext<ClientFormValues>();
 
 	return (
 		<>
