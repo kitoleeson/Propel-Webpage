@@ -5,7 +5,7 @@ import React, { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormProvider, SubmitHandler, useFieldArray, useForm, useFormContext } from "react-hook-form";
 import { z } from "zod";
-import { FormButtonInput, StudentSection, GuardianSection } from "@/components/ui/form";
+import { FormButtonInput, StudentSection, GuardianSection, FormInputCluster } from "@/components/ui/form";
 import { defaultStudent, defaultGuardian, formSchema, ClientFormValues } from "@/lib/validation/clientForm/clientFormSchema";
 import { placeholders } from "@/lib/validation/clientForm/clientFormPersonPlaceholders";
 
@@ -84,7 +84,7 @@ const ClientSignUpForm = () => {
 						<div key={field.id} className="landscape:mt-10 portrait:mt-14">
 							<GuardianSection index={index} placeholder={shuffledPlaceholders[(index + 1) % shuffledPlaceholders.length]} optional={studentBilling || index > 0} />
 							{(fields.length > 1 || studentBilling) && (
-								<div className="portrait:mt-8 flex flex-row gap-6 items-center">
+								<FormInputCluster className="portrait:gap-0! portrait:mt-8! landscape:mt-3!">
 									<FormButtonInput label="Remove Guardian" onClick={() => removeGuardian(index)} format="self-stretch text-red-500 flex-1" />
 									{!studentBilling && (
 										<div className="mt-6 flex flex-col gap-1 flex-1">
@@ -95,7 +95,7 @@ const ClientSignUpForm = () => {
 											{errors.primary_biller_index?.message && <p className="text-red-500">{errors.primary_biller_index?.message}</p>}
 										</div>
 									)}
-								</div>
+								</FormInputCluster>
 							)}
 						</div>
 					))}

@@ -6,6 +6,7 @@ import { useFormContext } from "react-hook-form";
 import { FormTextInput, FormPhoneInput, FormSelectInput, FormRadioInput } from "@/components/ui/form/inputs";
 import type { ClientFormValues } from "@/lib/validation/clientForm/clientFormSchema";
 import type { PersonPlaceholder } from "@/lib/validation/clientForm/clientFormPersonPlaceholders";
+import { FormInputCluster } from "../layout";
 
 type Props = {
 	index: number;
@@ -28,26 +29,27 @@ const GuardianSection = ({ index, placeholder, optional }: Props) => {
 				Guardian Information{index > 0 && ` ${index + 1}`}
 				{optional && " (Optional)"}
 			</h1>
-			<div className="landscape:mt-6 portrait:mt-14 flex landscape:flex-row portrait:flex-col gap-6">
+
+			<FormInputCluster>
 				<FormTextInput label="First Name" register={register(`guardians.${index}.gov_first`)} placeholder={placeholder.gov_first} error={errors.guardians?.[index]?.gov_first?.message} />
 				<FormTextInput label="Last Name" register={register(`guardians.${index}.gov_last`)} placeholder={placeholder.gov_last} error={errors.guardians?.[index]?.gov_last?.message} />
 				<FormTextInput label="Preferred Name (if applicable)" register={register(`guardians.${index}.pref_name`)} placeholder={placeholder.pref_name} error={errors.guardians?.[index]?.pref_name?.message} />
-			</div>
+			</FormInputCluster>
 
-			<div className="landscape:mt-6 portrait:mt-14 flex landscape:flex-row portrait:flex-col gap-6">
+			<FormInputCluster>
 				<FormSelectInput
 					label="Relationship to Student"
 					register={register(`guardians.${index}.relationship`)}
 					options={["Mother", "Father", "Parent", "Legal Guardian", "Other"]}
 					error={errors.guardians?.[index]?.relationship?.message}
 				/>
-			</div>
+			</FormInputCluster>
 
-			<div className="landscape:mt-6 portrait:mt-14 flex landscape:flex-row portrait:flex-col gap-6">
+			<FormInputCluster>
 				<FormTextInput label="Email" type="email" register={register(`guardians.${index}.email`)} placeholder={placeholder.email} error={errors.guardians?.[index]?.email?.message} />
 				<FormPhoneInput label="Phone" register={register(`guardians.${index}.phone`)} placeholder={placeholder.phone} error={errors.guardians?.[index]?.phone?.message} />
 				<FormRadioInput label="Preferred Communication" register={register(`guardians.${index}.pref_comm`)} options={["Email", "Text Message"]} error={errors.guardians?.[index]?.pref_comm?.message} />
-			</div>
+			</FormInputCluster>
 		</>
 	);
 };

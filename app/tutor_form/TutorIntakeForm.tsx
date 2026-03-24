@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { FormProvider, SubmitHandler, useFieldArray, useForm, useFormContext } from "react-hook-form";
 import { z } from "zod";
 import { defaultTutor, FormValues, tutorSchema } from "@/lib/validation/tutorForm/tutorFormSchema";
-import { FormInputCluster, FormPhoneInput, FormRadioInput, FormSelectInput, FormTextInput } from "@/components/ui/form";
+import { FormButtonInput, FormInputCluster, FormPhoneInput, FormRadioInput, FormSelectInput, FormTextInput } from "@/components/ui/form";
 
 const TutorIntakeForm = () => {
 	const methods = useForm<FormValues>({
@@ -104,6 +104,8 @@ const TutorIntakeForm = () => {
 						<FormTextInput label="Favourite High School Class" register={register("fav_high_school_class")} error={errors.fav_high_school_class?.message} />
 						<FormTextInput label="AP/IB Credentials" register={register("ap_ib_credentials")} error={errors.ap_ib_credentials?.message} />
 					</FormInputCluster>
+
+					<FormButtonInput label="Submit" onClick={handleSubmit(onSubmit)} format="self-stretch text-primary font-bold text-primary mt-10 text-xl" />
 				</form>
 			</FormProvider>
 		</div>

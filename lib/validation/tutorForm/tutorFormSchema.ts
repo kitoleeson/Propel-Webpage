@@ -28,13 +28,13 @@ export const tutorSchema = z.object({
 	current_study_year: z.number().int().min(1, "Current year of study must be a positive integer"),
 	current_fav_class: z.string().min(1, "Current favorite class is required"),
 	academic_interests: z.string().min(1, "Academic interests are required"),
-	/** ^^^^^ added to sheet ^^^^^^ */
 	bio: z.string().min(1, "Bio is required"),
 	hobbies: z.string().min(1, "Hobbies are required"),
 	high_school: z.string().min(1, "High school is required"),
 	high_school_city: z.string().min(1, "High school city is required"),
 	fav_high_school_class: z.string().min(1, "Favorite high school class is required"),
 	ap_ib_credentials: z.string().min(1, "AP/IB credentials are required"),
+	/** ^^^^^ added to sheet ^^^^^^ */
 });
 
 export const defaultTutor: FormValues = {
