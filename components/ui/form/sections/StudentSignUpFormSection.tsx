@@ -3,7 +3,7 @@
 "use client";
 import React from "react";
 import { useFormContext } from "react-hook-form";
-import { FormTextInput, FormPhoneInput, FormSelectInput, FormRadioInput } from "@/components/ui/form/inputs";
+import { FormTextInput, FormPhoneInput, FormDropdownInput, FormRadioInput } from "@/components/ui/form/inputs";
 import type { ClientFormValues } from "@/lib/validation/clientForm/clientFormSchema";
 import type { PersonPlaceholder } from "@/lib/validation/clientForm/clientFormPersonPlaceholders";
 import { FormInputCluster } from "../layout";
@@ -40,7 +40,7 @@ const StudentSection = ({ placeholder }: Props) => {
 			</FormInputCluster>
 
 			<FormInputCluster>
-				<FormSelectInput
+				<FormDropdownInput
 					label="How Did You Find Us?"
 					register={register("student.how_found")}
 					options={["Teacher", "Family Member", "Word of Mouth", "Advertisement", "Web Search", "Other"]}

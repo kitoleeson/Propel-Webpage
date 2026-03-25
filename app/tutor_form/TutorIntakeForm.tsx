@@ -6,7 +6,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { FormProvider, SubmitHandler, useFieldArray, useForm, useFormContext } from "react-hook-form";
 import { z } from "zod";
 import { defaultTutor, FormValues, tutorSchema } from "@/lib/validation/tutorForm/tutorFormSchema";
-import { FormButtonInput, FormInputCluster, FormPhoneInput, FormRadioInput, FormSelectInput, FormTextInput } from "@/components/ui/form";
+import { FormButtonInput, FormInputCluster, FormPhoneInput, FormRadioInput, FormDropdownInput, FormTextInput, FormNumberInput, FormDateInput } from "@/components/ui/form";
+import FormCheckboxInput from "@/components/ui/form/inputs/FormCheckboxInput";
 
 const TutorIntakeForm = () => {
 	const methods = useForm<FormValues>({
@@ -45,10 +46,9 @@ const TutorIntakeForm = () => {
 					<h1 className="landscape:mt-8 portrait:mt-14">Tutoring Information</h1>
 
 					<FormInputCluster className="mt-3!">
-						<FormTextInput label="<DATE HIRED, PRIOR EXPERIENCE, CURRENT RATE>" type="email" register={register("email")} error={errors.email?.message} />
-						{/* INSERT DATE HIRED (DATE) */}
-						{/* INSERT PRIOR EXPERIENCE (NUMERIC) */}
-						{/* INSERT CURRENT RATE (NUMERIC) */}
+						<FormDateInput label="Date Hired" register={register("date_hired")} error={errors.date_hired?.message} />
+						<FormNumberInput label="Full years of tutoring experience before Propel?" register={register("prior_experience")} error={errors.prior_experience?.message} step={1} />
+						<FormNumberInput label="What is your current agreed-upon rate?" register={register("current_rate")} min={25} step={2.5} error={errors.current_rate?.message} />
 					</FormInputCluster>
 
 					<h1 className="landscape:mt-8 portrait:mt-14">Emergency Contact Information</h1>
@@ -63,21 +63,80 @@ const TutorIntakeForm = () => {
 
 					<FormInputCluster className="mt-3!">
 						<FormTextInput label="Availability" register={register("availability")} error={errors.availability?.message} />
-						{/* INSERT SUBJECTS (CHECKBOXES) */}
 					</FormInputCluster>
 
 					<FormInputCluster className="mt-3!">
-						<FormSelectInput label="In Person" register={register("in_person")} options={["In Person Only", "Online Only", "Both"]} error={errors.in_person?.message} />
+						<FormDropdownInput label="In Person" register={register("in_person")} options={["In Person Only", "Online Only", "Both"]} error={errors.in_person?.message} />
 						<FormTextInput label="City" register={register("city")} error={errors.city?.message} />
 						<FormTextInput label="Location" register={register("location")} error={errors.location?.message} />
+					</FormInputCluster>
+
+					<h1 className="landscape:mt-8 portrait:mt-14">Teaching Information</h1>
+
+					<FormInputCluster className="mt-3!">
+						<FormCheckboxInput label="What mathematics do you teach?" register={register("subjects.math")} options={["Math 10", "Math 20 (AP)", "Math 30 (AP)"]} error={errors.subjects?.math?.message} />
+					</FormInputCluster>
+
+					<FormInputCluster className="mt-3!">
+						<FormCheckboxInput
+							label="What calculus and statistics do you teach?"
+							register={register("subjects.advanced_math")}
+							options={["Math 31 (AP)", "Math 35 (AP)", "Stats 35 (AP)"]}
+							error={errors.subjects?.advanced_math?.message}
+						/>
+					</FormInputCluster>
+
+					<FormInputCluster className="mt-3!">
+						<FormCheckboxInput label="What science do you teach?" register={register("subjects.science")} options={["Science 10", "Science 20", "Science 30"]} error={errors.subjects?.science?.message} />
+					</FormInputCluster>
+
+					<FormInputCluster className="mt-3!">
+						<FormCheckboxInput label="What physics do you teach?" register={register("subjects.physics")} options={["Physics 20 (AP)", "Physics 30 (AP)", "Physics C (AP)"]} error={errors.subjects?.physics?.message} />
+					</FormInputCluster>
+
+					<FormInputCluster className="mt-3!">
+						<FormCheckboxInput label="What chemistry do you teach?" register={register("subjects.chemistry")} options={["Chemistry 20 (AP)", "Chemistry 30 (AP)"]} error={errors.subjects?.chemistry?.message} />
+					</FormInputCluster>
+
+					<FormInputCluster className="mt-3!">
+						<FormCheckboxInput label="What biology do you teach?" register={register("subjects.biology")} options={["Biology 20 (AP)", "Biology 30 (AP)"]} error={errors.subjects?.biology?.message} />
+					</FormInputCluster>
+
+					<FormInputCluster className="mt-3!">
+						<FormCheckboxInput
+							label="What computer science do you teach?"
+							register={register("subjects.computer_science")}
+							options={["Computer Science 10", "Computer Science 20 (AP)", "Computer Science 30 (AP)"]}
+							error={errors.subjects?.computer_science?.message}
+						/>
+					</FormInputCluster>
+
+					<FormInputCluster className="mt-3!">
+						<FormCheckboxInput
+							label="What social studies do you teach?"
+							register={register("subjects.social_studies")}
+							options={["Social Studies 10 (AP)", "Social Studies 20 (AP)", "Social Studies 30 (AP)"]}
+							error={errors.subjects?.social_studies?.message}
+						/>
+					</FormInputCluster>
+
+					<FormInputCluster className="mt-3!">
+						<FormCheckboxInput label="What english do you teach?" register={register("subjects.english")} options={["English 10 (AP)", "English 20 (AP)", "English 30 (AP)"]} error={errors.subjects?.english?.message} />
+					</FormInputCluster>
+
+					<FormInputCluster className="mt-3!">
+						<FormCheckboxInput label="What languages do you teach?" register={register("subjects.languages")} options={["French 10-30", "Spanish 10-30", "German 10-30"]} error={errors.subjects?.english?.message} />
 					</FormInputCluster>
 
 					<h1 className="landscape:mt-8 portrait:mt-14">Post-Secondary Information</h1>
 
 					<FormInputCluster className="mt-3!">
-						{/* add for currently in high school tutors */}
+						<FormNumberInput label="Year of Study in Current Degree (enter '-1' if currently in high school)" register={register("current_study_year")} min={-1} error={errors.current_study_year?.message} />
+					</FormInputCluster>
+
+					<FormInputCluster className="mt-3!">
 						<FormTextInput label="Current University" register={register("current_uni")} error={errors.current_uni?.message} />
-						<FormSelectInput label="Current Degree" register={register("current_degree")} options={["Bachelor's Degree", "Master's Degree", "PhD"]} error={errors.current_degree?.message} />
+						<FormDropdownInput label="Current Degree" register={register("current_degree")} options={["Bachelor's Degree", "Master's Degree", "PhD"]} error={errors.current_degree?.message} />
 						<FormTextInput label="Current Field of Study" register={register("current_study_field")} error={errors.current_study_field?.message} />
 					</FormInputCluster>
 

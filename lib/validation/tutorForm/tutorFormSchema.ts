@@ -2,6 +2,19 @@
 
 import { z } from "zod";
 
+const subjectSchema = z.object({
+	math: z.array(z.string()),
+	advanced_math: z.array(z.string()),
+	science: z.array(z.string()),
+	physics: z.array(z.string()),
+	chemistry: z.array(z.string()),
+	biology: z.array(z.string()),
+	computer_science: z.array(z.string()),
+	social_studies: z.array(z.string()),
+	english: z.array(z.string()),
+	languages: z.array(z.string()),
+});
+
 export const tutorSchema = z.object({
 	gov_first: z.string().min(1, "First name is required"),
 	gov_last: z.string().min(1, "Last name is required"),
@@ -21,7 +34,7 @@ export const tutorSchema = z.object({
 		.refine((val) => val !== undefined, { message: "Required" }),
 	city: z.string().min(1),
 	location: z.string().min(1, "Location is required if in-person tutoring is offered").optional(),
-	subjects: z.array(z.string()).min(1, "At least one subject must be selected"),
+	subjects: subjectSchema,
 	current_uni: z.string().min(1, "Current university is required"),
 	current_degree: z.string().min(1, "Current degree program is required"),
 	current_study_field: z.string().min(1, "Current field of study is required"),
@@ -53,15 +66,26 @@ export const defaultTutor: FormValues = {
 	in_person: undefined,
 	city: "",
 	location: "",
-	subjects: [],
+	subjects: {
+		math: [],
+		advanced_math: [],
+		science: [],
+		physics: [],
+		chemistry: [],
+		biology: [],
+		computer_science: [],
+		social_studies: [],
+		english: [],
+		languages: [],
+	},
 	current_uni: "",
 	current_degree: "",
 	current_study_field: "",
 	current_study_year: 0,
 	current_fav_class: "",
+	academic_interests: "",
 	bio: "",
 	hobbies: "",
-	academic_interests: "",
 	ap_ib_credentials: "",
 	high_school: "",
 	high_school_city: "",

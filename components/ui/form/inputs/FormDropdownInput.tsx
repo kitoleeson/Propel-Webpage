@@ -10,7 +10,7 @@ type Props = {
 	placeholder?: string;
 };
 
-const FormSelectInput = ({ label, register, options, error, placeholder }: Props) => {
+const FormDropdownInput = ({ label, register, options, error, placeholder }: Props) => {
 	return (
 		<div className="flex flex-col gap-1 flex-1">
 			<label>{label}</label>
@@ -29,4 +29,4 @@ const FormSelectInput = ({ label, register, options, error, placeholder }: Props
 	);
 };
 
-export default FormSelectInput;
+export default FormDropdownInput;

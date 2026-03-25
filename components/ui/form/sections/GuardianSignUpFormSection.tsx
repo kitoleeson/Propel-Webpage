@@ -3,7 +3,7 @@
 "use client";
 import React from "react";
 import { useFormContext } from "react-hook-form";
-import { FormTextInput, FormPhoneInput, FormSelectInput, FormRadioInput } from "@/components/ui/form/inputs";
+import { FormTextInput, FormPhoneInput, FormDropdownInput, FormRadioInput } from "@/components/ui/form/inputs";
 import type { ClientFormValues } from "@/lib/validation/clientForm/clientFormSchema";
 import type { PersonPlaceholder } from "@/lib/validation/clientForm/clientFormPersonPlaceholders";
 import { FormInputCluster } from "../layout";
@@ -37,7 +37,7 @@ const GuardianSection = ({ index, placeholder, optional }: Props) => {
 			</FormInputCluster>
 
 			<FormInputCluster>
-				<FormSelectInput
+				<FormDropdownInput
 					label="Relationship to Student"
 					register={register(`guardians.${index}.relationship`)}
 					options={["Mother", "Father", "Parent", "Legal Guardian", "Other"]}
