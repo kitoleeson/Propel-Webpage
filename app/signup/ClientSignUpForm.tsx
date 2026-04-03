@@ -49,13 +49,13 @@ const ClientSignUpForm = () => {
 	});
 
 	const onSubmit: SubmitHandler<z.infer<typeof formSchema>> = (data) => {
-		if (data.student.biller === "student") data.primary_biller_index = -1;
+		if (data.student.biller === "Student") data.primary_biller_index = -1;
 		else data.guardians[data.primary_biller_index].is_primary_biller = true;
 		console.log("Form submitted with data:");
 		console.log(data);
 	};
 
-	const studentBilling = watch("student.biller") === "student";
+	const studentBilling = watch("student.biller") === "Student";
 
 	if (!studentBilling && fields.length === 0) {
 		append(defaultGuardian);

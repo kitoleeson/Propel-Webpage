@@ -3,7 +3,7 @@
 "use client";
 import React from "react";
 import { useFormContext } from "react-hook-form";
-import { FormTextInput, FormPhoneInput, FormDropdownInput, FormRadioInput } from "@/components/ui/form/inputs";
+import { FormTextInput, FormPhoneInput, FormDropdownInput, FormRadioInput, FormNumberInput } from "@/components/ui/form/inputs";
 import type { ClientFormValues } from "@/lib/validation/clientForm/clientFormSchema";
 import type { PersonPlaceholder } from "@/lib/validation/clientForm/clientFormPersonPlaceholders";
 import { FormInputCluster } from "../layout";
@@ -29,7 +29,7 @@ const StudentSection = ({ placeholder }: Props) => {
 			</FormInputCluster>
 
 			<FormInputCluster>
-				<FormTextInput label="Grade" register={register("student.grade", { valueAsNumber: true })} placeholder={placeholder.grade.toString()} error={errors.student?.grade?.message} />
+				<FormNumberInput label="Grade" register={register("student.grade", { valueAsNumber: true })} min={1} max={12} step={1} placeholder={placeholder.grade.toString()} error={errors.student?.grade?.message} />
 				<FormTextInput label="City" register={register("student.city")} placeholder={placeholder.city} error={errors.student?.city?.message} />
 			</FormInputCluster>
 

@@ -15,12 +15,12 @@ type Props = {
 
 const FormCheckboxInput = ({ label, register, options, error, placeholder }: Props) => {
 	return (
-		<div className="flex flex-col gap-1 flex-1">
+		<div className="flex flex-col gap-1 flex-1 portrait:mt-2">
 			<label>{label}</label>
-			<div className="flex flex-row gap-4">
+			<div className="flex landscape:flex-row portrait:flex-col landscape:gap-4 portrait:gap-3">
 				{options.map((option) => (
-					<label key={option.toLowerCase()} className="flex flex-1 items-center gap-2 border border-gray-300 rounded-md px-2 py-1">
-						<input type="checkbox" value={option.toLowerCase()} {...register} />
+					<label key={option} className="flex flex-1 items-center gap-2 border border-gray-300 rounded-md px-1 py-1">
+						<input type="checkbox" value={option} {...register} />
 						{option}
 					</label>
 				))}

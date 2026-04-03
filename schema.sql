@@ -15,6 +15,7 @@ BEGIN;
 -- DROP TABLE IF EXISTS payroll;
 -- DROP TABLE IF EXISTS student_guardian;
 -- DROP TABLE IF EXISTS tutors;
+-- DROP TABLE IF EXISTS tutor_subjects;
 -- DROP TABLE IF EXISTS guardians;
 -- DROP TABLE IF EXISTS students;
 
@@ -86,39 +87,62 @@ WHERE is_primary_biller;
 -- =========================
 -- TUTORS
 -- =========================
+CREATE TYPE tutoring_mode AS ENUM ('Online Only', 'In-Person Only', 'Hybrid');
 
 CREATE TABLE IF NOT EXISTS tutors (
     tutor_id SERIAL PRIMARY KEY,
+    
     gov_first_name TEXT NOT NULL,
     gov_last_name TEXT NOT NULL,
     pref_name TEXT,
     email TEXT NOT NULL UNIQUE,
     phone TEXT NOT NULL UNIQUE,
+    
     date_hired DATE NOT NULL,
-    prior_experience INTEGER NOT NULL,
-    current_rate NUMERIC(6, 2) NOT NULL,
+    prior_experience INTEGER NOT NULL DEFAULT 0,
+    current_rate NUMERIC(6, 2) NOT NULL DEFAULT 25,
+    accepting_students INTEGER NOT NULL DEFAULT 0,
+    
     emerg_contact_name TEXT NOT NULL,
     emerg_contact_phone TEXT NOT NULL,
     emerg_contact_relationship TEXT,
+
     availability TEXT,
-    in_person BOOLEAN NOT NULL,
+    in_person tutoring_mode NOT NULL DEFAULT 'Hybrid',
+    city TEXT,
     location TEXT,
+    
     subjects TEXT NOT NULL,
+    
     current_uni TEXT,
     current_degree TEXT,
+    field_of_study TEXT,
     year_of_study INTEGER,
     current_fav_class TEXT,
+    academic_interests TEXT,
+
     bio TEXT,
     hobbies TEXT,
-    academic_interests TEXT,
-    ap_ib_credentials TEXT,
+
     high_school TEXT,
-    fav_high_school_class TEXT
+    high_school_city TEXT,
+    fav_high_school_class TEXT,
+    ap_ib_credentials TEXT
 );
 -- inputed: through the website during onboarding form
 -- updated: through the website during semesterly forms when tutor details change
 -- updated: through interface when tutor details change
 -- deleted: never deleted
+
+CREATE TABLE IF NOT EXISTS tutor_subjects (
+    tutor_subject_id SERIAL PRIMARY KEY,
+    tutor_id INTEGER NOT NULL REFERENCES tutors(tutor_id),
+    subject TEXT NOT NULL,
+    UNIQUE (tutor_id, subject)
+);
+-- inputed: through the website during onboarding form
+-- updated/deleted: through the website during semesterly forms when tutor details change
+-- updated/deleted: through interface when tutor details change
 
 -- =========================
 -- SESSIONS

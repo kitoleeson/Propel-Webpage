@@ -19,7 +19,7 @@ const FormDropdownInput = ({ label, register, options, error, placeholder }: Pro
 					{placeholder || "Select an option"}
 				</option>
 				{options.map((option) => (
-					<option key={option.toLowerCase()} value={option.toLowerCase()}>
+					<option key={option} value={option}>
 						{option}
 					</option>
 				))}

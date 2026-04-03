@@ -5,7 +5,6 @@
 import P5VizWrapper from "@/components/canvas/P5VizWrapper";
 import { P5SetupCallback, P5SketchCallback } from "@/utils/p5";
 import NavBar from "@/components/ui/NavBar";
-import Image from "next/image";
 import { useCallback } from "react";
 import type P5 from "p5";
 

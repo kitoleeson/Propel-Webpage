@@ -9,7 +9,7 @@ const personBase = z.object({
 	email: z.string().email("Invalid email address"),
 	phone: z.string().min(1, "Phone number is required"),
 	pref_comm: z
-		.enum(["email", "text message"])
+		.enum(["Email", "Text Message"])
 		.optional()
 		.refine((val) => val !== undefined, { message: "Required" }),
 });
@@ -24,18 +24,18 @@ const studentSchema = personBase.extend({
 		.refine((val) => val !== undefined, { message: "Required" }),
 	city: z.string().min(1, "City is required"),
 	how_found: z
-		.enum(["teacher", "family member", "word of mouth", "advertisement", "web search", "other"])
+		.enum(["Teacher", "Family Member", "Word of Mouth", "Advertisement", "Web Search", "Other"])
 		.optional()
 		.refine((val) => val !== undefined, { message: "Required" }),
 	biller: z
-		.enum(["student", "guardian"])
+		.enum(["Student", "Guardian"])
 		.optional()
 		.refine((val) => val !== undefined, { message: "Required" }),
 });
 
 const guardianSchema = personBase.extend({
 	relationship: z
-		.enum(["mother", "father", "parent", "legal guardian", "other"])
+		.enum(["Mother", "Father", "Parent", "Legal Guardian", "Other"])
 		.optional()
 		.refine((val) => val !== undefined, { message: "Required" }),
 	is_primary_biller: z.boolean(),
@@ -96,7 +96,7 @@ export const formSchema = z
 		primary_biller_index: z.number().min(-1),
 	})
 	.superRefine((data, ctx) => {
-		const guardianBilling = data.student.biller === "guardian";
+		const guardianBilling = data.student.biller === "Guardian";
 
 		if (guardianBilling) {
 			if (data.guardians.length < 1) {
