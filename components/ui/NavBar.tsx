@@ -14,7 +14,6 @@ const navLinks = [
 
 const NavBar = () => {
 	const pathname = usePathname();
-	const isActive = (path: string) => pathname === path;
 
 	return (
 		<div className="flex items-center justify-between w-full p-2">
@@ -23,12 +22,15 @@ const NavBar = () => {
 				<IconLink iconName="email" href="mailto:propeltutoringyeg@gmail.com" label="Email" className="nav-icon" />
 			</div>
 			<div className="flex items-center landscape:gap-3 portrait:gap-0">
-				{navLinks.map((link) => (
-					<Link key={link.href} href={link.href} className={`nav-link group relative py-0.5 transition-all duration-300 ${isActive(link.href) ? "font-bold" : "font-normal"}`}>
-						{link.name.toUpperCase()}
-						<span className={`absolute bottom-0 left-0 h-0.5 bg-current transition-all duration-200 ease-out origin-center ${isActive(link.href) ? "w-full scale-x-75" : "w-full scale-x-0 group-hover:scale-x-75"}`} />
-					</Link>
-				))}
+				{navLinks.map((link) => {
+					const isActive = pathname === link.href;
+					return (
+						<Link key={link.href} href={link.href} className={`nav-link group relative py-0.5 transition-all duration-300 ${isActive ? "font-bold" : "font-normal"}`}>
+							{link.name.toUpperCase()}
+							<span className={`absolute bottom-0 left-0 h-0.5 bg-current transition-all duration-200 ease-out origin-center ${isActive ? "w-full scale-x-75" : "w-full scale-x-0 group-hover:scale-x-75"}`} />
+						</Link>
+					);
+				})}
 			</div>
 		</div>
 	);
