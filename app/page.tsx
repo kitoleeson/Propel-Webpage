@@ -7,6 +7,7 @@ import { P5SetupCallback, P5SketchCallback } from "@/utils/p5";
 import NavBar from "@/components/ui/NavBar";
 import { useCallback } from "react";
 import type P5 from "p5";
+import { useAppStore } from "@/store/app";
 
 export default function Home() {
 	type Vec = {
@@ -22,15 +23,18 @@ export default function Home() {
 		lastPoint: Vec;
 		lastPoint2: Vec;
 		propeller: any;
-		x: number;
+		logoDisplacement: number;
 		r: number;
 		state: string;
 		fadeColour: any;
 		numFades: number;
 		mathFont: any;
+		titleFont: any;
 		equationCoords: any;
 		equationCoords2: any;
 		previousFurthestTick: number;
+		equations: any[];
+		landscape: boolean;
 	};
 
 	const logoPoint = (theta: number, s: SketchState) => {
@@ -38,32 +42,51 @@ export default function Home() {
 		return { x: s.radius * s.size * Math.cos(theta), y: s.radius * s.size * Math.sin(theta) } as Vec;
 	};
 
-	const drawLogo = (thickness: number, p: any, s: SketchState, colors: any) => {
+	const updateLogoBuffer = (thickness: number, pg: any, s: SketchState, colors: any) => {
+		pg.clear();
+		pg.push();
+		pg.translate(s.center.x, s.center.y);
+
 		const bounds = (a: number, b: number) => (Math.PI / 6) * (3 + 8 * a + 14 * b);
 
-		const image = p.createGraphics(p.width, p.height);
-		image.clear();
-		image.translate(s.center.x, s.center.y);
-		for (let k = 0; k < 6; k++)
+		for (let k = 0; k < 6; k++) {
 			for (let t = bounds(0, k); t < bounds(1, k); t += 0.005) {
 				const point = logoPoint(t, s);
-				image.stroke(colors.textPrimary);
-				image.strokeWeight(1);
-				image.ellipse(point.x, point.y, thickness);
+				pg.stroke(colors.textPrimary);
+				pg.strokeWeight(1);
+				pg.ellipse(point.x, point.y, thickness);
 			}
-		return image;
+		}
+		pg.pop();
 	};
 
 	const setup: P5SetupCallback = useCallback(async (p, colors, scene) => {
 		const { canvasSize } = scene;
 		p.background(colors.accent);
 
-		let italic: any;
+		let computerModern: any;
+		let gabarito: any;
 		try {
-			italic = await p.loadFont("/fonts/computerModern-italic.ttf");
+			computerModern = await p.loadFont("/fonts/cmunrm.ttf");
+			gabarito = await p.loadFont("/fonts/gabarito.ttf");
 		} catch (error) {
-			italic = null;
+			computerModern = null;
+			gabarito = null;
 		}
+
+		const equations: any[] = [];
+		// const texify = (s: string) => `https://latex.codecogs.com/png.latex?\\inline&space;\\dpi{300}&space;\\color{White}${s}`;
+		// const logoTex = (n: number) => `r = \\cos^2({\\frac{3}{7} \\theta_${n}})`;
+		// for (let i = 1; i <= 2; i++) {
+		// 	const equation = await p.loadImage(texify(logoTex(i)));
+		// 	equations.push(equation);
+		// }
+		// equations.push(await p.loadImage(texify(`\\theta_2 = \\theta_1 + 7\\pi`)));
+		// equations.push(await p.loadImage(texify(`\\theta_1 =`)));
+		equations.push(await p.loadImage("/images/equations/equation1.png"));
+		equations.push(await p.loadImage("/images/equations/equation2.png"));
+		equations.push(await p.loadImage("/images/equations/theta1.png"));
+		equations.push(await p.loadImage("/images/equations/theta2.png"));
 
 		const ps = p as P5 & { state: SketchState };
 		ps.state = {
@@ -73,24 +96,40 @@ export default function Home() {
 			center: { x: p.width / 2, y: p.height / 2 },
 			lastPoint: { x: 0, y: 0 },
 			lastPoint2: { x: 0, y: 0 },
-			propeller: null,
-			x: 0,
+			propeller: p.createGraphics(p.width || 480, p.height || 400),
+			logoDisplacement: 0,
 			r: 0,
 			state: "axes",
 			fadeColour: p.color(colors.accent),
 			numFades: 0,
-			mathFont: italic,
+			mathFont: computerModern,
+			titleFont: gabarito,
 			equationCoords: { x: p.width - 10, y: p.height - 20 },
 			equationCoords2: { x: 10, y: 20 },
 			previousFurthestTick: 0,
+			equations: equations,
+			landscape: p.width > p.height,
 		};
 
 		const s = ps.state;
 		s.fadeColour.setAlpha(50);
 		s.lastPoint = logoPoint(s.theta, s);
 		s.lastPoint2 = logoPoint(s.theta + 7 * Math.PI, s);
-		s.propeller = drawLogo(1, p, s, colors);
-		if (italic) p.textFont(italic);
+
+		// default text settings
+		if (computerModern) p.textFont(computerModern);
+		p.textAlign(p.RIGHT, p.CENTER);
+		p.textSize(20);
+
+		// equation images
+		p.image(s.equations[0], s.equationCoords.x - 125, s.equationCoords.y - 22, s.equations[0].width / 2.2, s.equations[0].height / 2.2);
+		p.image(s.equations[1], s.equationCoords2.x + 8, s.equationCoords2.y - 5, s.equations[1].width / 2.2, s.equations[1].height / 2.2);
+		p.image(s.equations[2], s.equationCoords.x - 95, s.equationCoords.y - 48, s.equations[2].width / 2.2, s.equations[2].height / 2.2);
+		p.image(s.equations[3], s.equationCoords2.x + 5, s.equationCoords2.y + 25, s.equations[3].width / 2.2, s.equations[3].height / 2.2);
+
+		// θ
+		p.fill(colors.textPrimary);
+		p.text((s.theta / Math.PI).toFixed(2), s.equationCoords.x - 5, s.equationCoords.y - 40);
 	}, []);
 
 	const axes = (p: any, colors: any, s: SketchState) => {
@@ -118,72 +157,63 @@ export default function Home() {
 	};
 
 	const logo = (p: any, colors: any, s: SketchState) => {
-		p.stroke(colors.textPrimary);
-		p.strokeWeight(2);
-
 		// equation boxes
-		p.push();
-		p.stroke(colors.accent);
+		p.noStroke();
 		p.fill(colors.accent);
-		p.rect(s.equationCoords.x - 5, s.equationCoords.y + 5, -130, -30);
+		p.rect(s.equationCoords.x - 5, s.equationCoords.y + 5, -120, -30);
 		p.rect(s.equationCoords.x - 5, s.equationCoords.y - 30, -90, -20);
-		p.rect(s.equationCoords2.x + 5, s.equationCoords2.y - 5, 170, 30);
+		p.rect(s.equationCoords2.x + 5, s.equationCoords2.y - 5, 125, 25);
+		p.rect(s.equationCoords2.x + 5, s.equationCoords2.y + 25, 115, 20);
+
+		// equation images
+		p.image(s.equations[0], s.equationCoords.x - 125, s.equationCoords.y - 22, s.equations[0].width / 2.2, s.equations[0].height / 2.2);
+		p.image(s.equations[1], s.equationCoords2.x + 8, s.equationCoords2.y - 5, s.equations[1].width / 2.2, s.equations[1].height / 2.2);
+		p.image(s.equations[2], s.equationCoords.x - 95, s.equationCoords.y - 48, s.equations[2].width / 2.2, s.equations[2].height / 2.2);
+		p.image(s.equations[3], s.equationCoords2.x + 5, s.equationCoords2.y + 25, s.equations[3].width / 2.2, s.equations[3].height / 2.2);
 
 		// θ
-		p.textAlign(p.RIGHT, p.CENTER);
-		p.textSize(20);
-		p.stroke(colors.textPrimary);
 		p.fill(colors.textPrimary);
-		p.strokeWeight(0.3);
-		p.text(`θ = ${(s.theta / Math.PI).toFixed(2)}`, s.equationCoords.x - 10, s.equationCoords.y - 40);
-
-		// equations: r = cos^2(3/7 θ), r = cos^2(3/7 θ + 7π)
-		p.text("r = cos (  θ)", s.equationCoords.x - 10, s.equationCoords.y - 10);
-		p.textAlign(p.LEFT, p.CENTER);
-		p.text("r = cos (  θ + 7π)", s.equationCoords2.x + 10, s.equationCoords2.y + 10);
-		p.textSize(15);
-		p.text(`3`, s.equationCoords.x - 38, s.equationCoords.y - 18);
-		p.text(`7`, s.equationCoords.x - 38, s.equationCoords.y - 2);
-		p.text(`2`, s.equationCoords.x - 56, s.equationCoords.y - 18);
-		p.text(`3`, s.equationCoords2.x + 94, s.equationCoords2.y + 2);
-		p.text(`7`, s.equationCoords2.x + 94, s.equationCoords2.y + 18);
-		p.text(`2`, s.equationCoords2.x + 76, s.equationCoords2.y + 2);
-
-		// fraction lines
-		p.strokeWeight(1);
-		p.line(s.equationCoords.x - 38, s.equationCoords.y - 9.5, s.equationCoords.x - 28, s.equationCoords.y - 9.5);
-		p.line(s.equationCoords2.x + 104, s.equationCoords2.y + 10, s.equationCoords2.x + 94, s.equationCoords2.y + 10);
-		p.pop();
+		p.text((s.theta / Math.PI).toFixed(2), s.equationCoords.x - 5, s.equationCoords.y - 40);
 
 		// logo
+		p.stroke(colors.textPrimary);
+		p.strokeWeight(2);
 		p.translate(s.center.x, s.center.y);
+
 		const point = logoPoint(s.theta, s);
 		p.line(s.lastPoint.x, s.lastPoint.y, point.x, point.y);
 		s.lastPoint = point;
+
 		const point2 = logoPoint(s.theta + 7 * Math.PI, s);
 		p.line(s.lastPoint2.x, s.lastPoint2.y, point2.x, point2.y);
 		s.lastPoint2 = point2;
+
 		s.theta += 0.1;
 
 		if (s.theta > Math.PI * 7.1) s.state = "fade";
 	};
 
 	const fade = (p: any, colors: any, s: SketchState) => {
-		s.propeller = drawLogo(p.map(s.numFades, 0, 50, 1, 4), p, s, colors);
+		if (!s.propeller || s.propeller.width === 0 || s.propeller.height === 0) return;
+
 		p.fill(s.fadeColour);
 		p.rect(0, 0, p.width, p.height);
+
+		updateLogoBuffer(p.map(s.numFades, 0, 25, 1, 5), s.propeller, s, colors);
 		p.image(s.propeller, 0, 0);
+
 		s.numFades++;
 		if (s.numFades >= 25) s.state = "spin";
 	};
 
 	const spin = (p: any, colors: any, s: SketchState) => {
 		const targetRotations = 2 * Math.PI;
-		if (s.x < p.width / 4 && p.width - s.x > s.size) s.x += 7;
+		if (s.landscape && s.logoDisplacement < p.width / 4 && p.width - s.logoDisplacement > s.size) s.logoDisplacement += 7;
+		if (!s.landscape && s.logoDisplacement < p.height / 4 && p.height - (s.center.y + s.logoDisplacement) > s.size / 1.3) s.logoDisplacement += 3;
 		else if (s.r >= targetRotations) s.state = "done";
 		p.background(colors.accent);
 		p.push();
-		p.translate(s.center.x + s.x, s.center.y);
+		s.landscape ? p.translate(s.center.x + s.logoDisplacement, s.center.y) : p.translate(s.center.x, s.center.y + s.logoDisplacement);
 		p.rotate(s.r);
 		p.image(s.propeller, -s.center.x, -s.center.y);
 		p.pop();
@@ -192,15 +222,26 @@ export default function Home() {
 
 	const done = (p: any, colors: any, s: SketchState) => {
 		p.background(colors.accent);
+
 		p.push();
-		p.translate(s.center.x + s.x, s.center.y);
+		s.landscape ? p.translate(s.center.x + s.logoDisplacement, s.center.y) : p.translate(s.center.x, s.center.y + s.logoDisplacement);
 		p.image(s.propeller, -s.center.x, -s.center.y);
 		p.pop();
+
+		p.textFont(s.titleFont);
+		p.fill(colors.textPrimary);
+		p.textSize(p.min(p.width / 6, p.height / 4));
+		s.landscape ? p.textAlign(p.LEFT, p.CENTER) : p.textAlign(p.CENTER, p.TOP);
+		const textCoords: Vec = s.landscape ? { x: p.width / 6, y: s.center.y } : { x: s.center.x, y: p.height / 12 };
+		p.textStyle(p.BOLD);
+		p.text("Propel\nTutoring", textCoords.x, textCoords.y);
 	};
 
 	const draw: P5SketchCallback = useCallback((p, colors, scene) => {
 		const ps = p as P5 & { state: SketchState };
 		const s = ps.state;
+
+		if (!s || !s.equations || s.equations.length < 4) return;
 
 		if (s.state == "axes") axes(p, colors, s);
 		else if (s.state == "logo") logo(p, colors, s);
@@ -209,10 +250,12 @@ export default function Home() {
 		else if (s.state == "done") done(p, colors, s);
 	}, []);
 
+	const canvasWidth = useAppStore((s) => s.canvasSize.width);
+
 	return (
 		<main>
 			<NavBar />
-			<P5VizWrapper title="" setup={setup} draw={draw} />
+			<P5VizWrapper title="" key={`propel-canvas-${canvasWidth}`} setup={setup} draw={draw} />
 			<div className="mx-7 my-10">
 				<h1 className="text-6xl font-bold">Handing the keys back to students.</h1>
 				<h2 className="pt-3 text-2xl">

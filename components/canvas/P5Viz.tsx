@@ -28,7 +28,11 @@ const P5Viz = ({ title, width = "100%", height, sketch, ...props }: Props, ref: 
 		const startP5 = async () => {
 			if (!divRef.current || !isMounted) return;
 
+			divRef.current.innerHTML = "";
+
 			const p5 = await import("p5");
+
+			if (!isMounted) return;
 			p5Instance = new p5.default(sketch, divRef.current);
 			p5ref.current = p5Instance;
 		};
