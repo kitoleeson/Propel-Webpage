@@ -2,7 +2,7 @@
 
 import { z } from "zod";
 
-const testing: boolean = true;
+const testing: boolean = false; // Set to true to enable default values for testing
 
 export const subjectSchema = z
 	.object({

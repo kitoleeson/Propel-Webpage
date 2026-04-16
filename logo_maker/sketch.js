@@ -3,7 +3,7 @@
 let canvas;
 
 function setup() {
-	canvas = createCanvas(400, 400);
+	canvas = createCanvas(650, 650);
 	noLoop(); // important for consistent high-res exports
 	drawSketch();
 
@@ -28,16 +28,20 @@ const logoPoint = (theta) => {
 
 function drawSketch() {
 	background(colours.teal);
-	// clear(); // for transparent background
+	clear(); // for transparent background
 	stroke(colours.teal);
 	strokeWeight(6);
 
+	fill(colours.teal);
+	// ellipse(width / 2, height / 2, size * 1.3);
+
 	const bounds = (a, b) => (Math.PI / 6) * (3 + 8 * a + 14 * b);
-	for (let k = 0; k < 6; k++)
-		for (let t = bounds(0, k); t < bounds(1, k); t += 0.005) {
-			const point = logoPoint(t);
-			ellipse(point.x, point.y, 4);
-		}
+	for (let k = 0; k < Math.PI * 14; k += 0.005) {
+		// for (let t = bounds(0, k); t < bounds(1, k); t += 0.005) {
+		const point = logoPoint(k);
+		ellipse(point.x, point.y, 4);
+		// }
+	}
 }
 
 function draw() {}
