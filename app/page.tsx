@@ -8,6 +8,7 @@ import NavBar from "@/components/ui/NavBar";
 import { useCallback } from "react";
 import type P5 from "p5";
 import { useAppStore } from "@/store/app";
+import Body from "@/components/ui/Body";
 
 export default function Home() {
 	type Vec = {
@@ -249,7 +250,7 @@ export default function Home() {
 		<main>
 			<NavBar />
 			<P5VizWrapper title="" key={`propel-canvas-${canvasWidth}`} setup={setup} draw={draw} />
-			<div className="mx-7 my-10">
+			<Body>
 				<h1 className="text-6xl font-bold">Handing the keys back to students.</h1>
 				<h2 className="pt-3 text-2xl">
 					Propel Tutoring offers personalized, student-led tutoring that adapts to how you learn best. We seek to support students in taking ownership of their education, and build confidence in their learning.
@@ -261,7 +262,7 @@ export default function Home() {
 					students understand how they learn best, and let them show us how best to help them. We meet students where they are and guide with intention, raising students' confidence and skills to new heights. Propel exists to give
 					students the power to choose a style of learning which best suits them, and to break down the principles of math and science in the pursuit of intuitive understanding, not just memorization.
 				</p>
-			</div>
+			</Body>
 		</main>
 	);
 }
