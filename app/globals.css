@@ -1,6 +1,9 @@
 @import "tailwindcss";
 @layer theme, base, components, utilities;
 
+@custom-variant @landscape (@container (orientation: landscape));
+@custom-variant @portrait (@container (orientation: portrait));
+
 @theme {
   /* Fonts */
   --font-body: var(--font-body);

@@ -2,6 +2,8 @@
 
 import { z } from "zod";
 
+const testing: boolean = true;
+
 export const subjectSchema = z
 	.object({
 		math: z.array(z.string()),
@@ -98,110 +100,110 @@ export const tutorSchema = z
 		}
 	});
 
-export const defaultTutor: FormValues = {
-	gov_first: "",
-	gov_last: "",
-	pref_name: "",
-	email: "",
-	phone: "",
+export const defaultTutor: FormValues = testing
+	? {
+			gov_first: "Test",
+			gov_last: "Tutor",
+			pref_name: "Tess",
+			email: "test@example.ca",
+			phone: "(123) 456-7890",
 
-	date_hired: new Date(),
-	prior_experience: undefined,
-	current_rate: undefined,
-	accepting_students: undefined,
+			date_hired: new Date(),
+			prior_experience: 0,
+			current_rate: 25,
+			accepting_students: 1,
 
-	emerg_contact_name: "",
-	emerg_contact_phone: "",
-	emerg_contact_relationship: "",
+			emerg_contact_name: "Emerg Contact",
+			emerg_contact_phone: "(098) 765-4321",
+			emerg_contact_relationship: "Mother",
 
-	availability: "",
-	in_person: undefined,
-	city: "",
-	location: "",
+			availability: "Thursdays maybe?",
+			in_person: undefined,
+			city: "",
+			location: "UAlberta Campus",
 
-	subjects: {
-		math: [],
-		advanced_math: [],
-		science: [],
-		physics: [],
-		chemistry: [],
-		biology: [],
-		computer_science: [],
-		social_studies: [],
-		english: [],
-		languages: [],
-	},
+			subjects: {
+				math: [],
+				advanced_math: [],
+				science: [],
+				physics: [],
+				chemistry: [],
+				biology: [],
+				computer_science: [],
+				social_studies: [],
+				english: [],
+				languages: [],
+			},
 
-	current_uni: "",
-	current_degree: undefined,
-	current_study_field: "",
-	current_study_year: undefined,
-	current_fav_class: "",
-	academic_interests: "",
+			current_uni: "University of Alberta",
+			current_degree: undefined,
+			current_study_field: "CS",
+			current_study_year: 1,
+			current_fav_class: "229",
+			academic_interests: "CS probably",
 
-	bio: "",
-	hobbies: "",
+			bio: "asdlfjasldkfjasdf",
+			hobbies: "ethernetting :)",
 
-	high_school: "",
-	high_school_city: "",
-	fav_high_school_class: "",
-	ap_ib_credentials: undefined,
-};
+			high_school: "Scona",
+			high_school_city: "Edmonton",
+			fav_high_school_class: "Physics",
+			ap_ib_credentials: undefined,
+		}
+	: {
+			gov_first: "",
+			gov_last: "",
+			pref_name: "",
+			email: "",
+			phone: "",
 
-// export const defaultTutor: FormValues = {
-// 	gov_first: "Test",
-// 	gov_last: "Tutor",
-// 	pref_name: "Tess",
-// 	email: "test@example.ca",
-// 	phone: "(123) 456-7890",
+			date_hired: new Date(),
+			prior_experience: undefined,
+			current_rate: undefined,
+			accepting_students: undefined,
 
-// 	date_hired: new Date(),
-// 	prior_experience: 0,
-// 	current_rate: 25,
-// 	accepting_students: 1,
+			emerg_contact_name: "",
+			emerg_contact_phone: "",
+			emerg_contact_relationship: "",
 
-// 	emerg_contact_name: "Emerg Contact",
-// 	emerg_contact_phone: "(098) 765-4321",
-// 	emerg_contact_relationship: "Mother",
+			availability: "",
+			in_person: undefined,
+			city: "",
+			location: "",
 
-// 	availability: "Thursdays maybe?",
-// 	in_person: undefined,
-// 	city: "",
-// 	location: "UAlberta Campus",
+			subjects: {
+				math: [],
+				advanced_math: [],
+				science: [],
+				physics: [],
+				chemistry: [],
+				biology: [],
+				computer_science: [],
+				social_studies: [],
+				english: [],
+				languages: [],
+			},
 
-// 	subjects: {
-// 		math: [],
-// 		advanced_math: [],
-// 		science: [],
-// 		physics: [],
-// 		chemistry: [],
-// 		biology: [],
-// 		computer_science: [],
-// 		social_studies: [],
-// 		english: [],
-// 		languages: [],
-// 	},
+			current_uni: "",
+			current_degree: undefined,
+			current_study_field: "",
+			current_study_year: undefined,
+			current_fav_class: "",
+			academic_interests: "",
 
-// 	current_uni: "University of Alberta",
-// 	current_degree: undefined,
-// 	current_study_field: "CS",
-// 	current_study_year: 1,
-// 	current_fav_class: "229",
-// 	academic_interests: "CS probably",
+			bio: "",
+			hobbies: "",
 
-// 	bio: "asdlfjasldkfjasdf",
-// 	hobbies: "ethernetting :)",
-
-// 	high_school: "Scona",
-// 	high_school_city: "Edmonton",
-// 	fav_high_school_class: "Physics",
-// 	ap_ib_credentials: undefined,
-// };
+			high_school: "",
+			high_school_city: "",
+			fav_high_school_class: "",
+			ap_ib_credentials: undefined,
+		};
 
 export const tutorPlaceholder: FormValues = {
 	gov_first: "Jane Catherine",
 	gov_last: "Ngila",
-	pref_name: "Jane",
+	pref_name: "Janie",
 	email: "jane@example.ca",
 	phone: "(123) 456-7890",
 

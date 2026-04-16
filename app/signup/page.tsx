@@ -2,15 +2,18 @@
 
 import NavBar from "@/components/ui/NavBar";
 import ClientSignUpForm from "./ClientSignUpForm";
+import PageHeader from "@/components/ui/PageHeader";
 
 const SignupPage = () => {
 	return (
 		<div>
 			<NavBar />
 			{/* <div style={{ padding: '213px', background: '#1eb9c2' }}></div> */}
-			<div className="h-120 px-20 flex flex-col justify-center bg-primary">
-				<h1 className="text-white text-8xl">Start Tutoring Today!</h1>
-			</div>
+			<PageHeader>
+				Start Tutoring
+				<br />
+				Today!
+			</PageHeader>
 			<div className="mx-10 my-10">
 				<p>
 					this page will host the signup form for incoming clients to the company. it will take in all the information we need from them, add their profiles to the database, and allow them to choose a tutor. on submission, it will

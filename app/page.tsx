@@ -75,14 +75,6 @@ export default function Home() {
 		}
 
 		const equations: any[] = [];
-		// const texify = (s: string) => `https://latex.codecogs.com/png.latex?\\inline&space;\\dpi{300}&space;\\color{White}${s}`;
-		// const logoTex = (n: number) => `r = \\cos^2({\\frac{3}{7} \\theta_${n}})`;
-		// for (let i = 1; i <= 2; i++) {
-		// 	const equation = await p.loadImage(texify(logoTex(i)));
-		// 	equations.push(equation);
-		// }
-		// equations.push(await p.loadImage(texify(`\\theta_2 = \\theta_1 + 7\\pi`)));
-		// equations.push(await p.loadImage(texify(`\\theta_1 =`)));
 		equations.push(await p.loadImage("/images/equations/equation1.png"));
 		equations.push(await p.loadImage("/images/equations/equation2.png"));
 		equations.push(await p.loadImage("/images/equations/theta1.png"));
@@ -92,7 +84,7 @@ export default function Home() {
 		ps.state = {
 			theta: 0,
 			radius: 0,
-			size: 200,
+			size: p.min(p.width, p.height) * 0.48,
 			center: { x: p.width / 2, y: p.height / 2 },
 			lastPoint: { x: 0, y: 0 },
 			lastPoint2: { x: 0, y: 0 },
@@ -207,9 +199,9 @@ export default function Home() {
 	};
 
 	const spin = (p: any, colors: any, s: SketchState) => {
-		const targetRotations = 2 * Math.PI;
+		const targetRotations = p.max(Math.floor(p.width / 1655), 1) * Math.PI;
 		if (s.landscape && s.logoDisplacement < p.width / 4 && p.width - s.logoDisplacement > s.size) s.logoDisplacement += 7;
-		if (!s.landscape && s.logoDisplacement < p.height / 4 && p.height - (s.center.y + s.logoDisplacement) > s.size / 1.3) s.logoDisplacement += 3;
+		else if (!s.landscape && s.logoDisplacement < p.height / 4 && p.height - (s.center.y + s.logoDisplacement) > s.size / 1.3) s.logoDisplacement += 3;
 		else if (s.r >= targetRotations) s.state = "done";
 		p.background(colors.accent);
 		p.push();
@@ -235,6 +227,7 @@ export default function Home() {
 		const textCoords: Vec = s.landscape ? { x: p.width / 6, y: s.center.y } : { x: s.center.x, y: p.height / 12 };
 		p.textStyle(p.BOLD);
 		p.text("Propel\nTutoring", textCoords.x, textCoords.y);
+		p.noLoop();
 	};
 
 	const draw: P5SketchCallback = useCallback((p, colors, scene) => {
