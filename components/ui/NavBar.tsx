@@ -18,7 +18,7 @@ const NavBar = () => {
 	return (
 		<div className="flex items-center justify-between w-full p-2">
 			<div className="flex items-center">
-				<IconLink iconName="instagram" href="https://www.instagram.com" label="Instagram" className="nav-icon" />
+				{/* <IconLink iconName="instagram" href="https://www.instagram.com" label="Instagram" className="nav-icon" /> */}
 				<IconLink iconName="email" href="mailto:propeltutoringyeg@gmail.com" label="Email" className="nav-icon" />
 			</div>
 			<div className="flex items-center landscape:gap-3 portrait:gap-0">
