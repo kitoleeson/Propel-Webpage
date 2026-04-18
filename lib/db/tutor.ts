@@ -77,17 +77,17 @@ export const parseSubjects = (subjects: z.infer<typeof subjectSchema>) => {
 	return subjectArray.filter(Boolean).join(", ");
 };
 
-export const createTutorRepo = (sql: any) => {
-	const find = async (gov_first_name: string, gov_last_name: string, db: any = sql) => {
+export const createTutorRepo = (pool: any) => {
+	const find = async (gov_first_name: string, gov_last_name: string, db: any = pool) => {
 		const result = await db`
          SELECT tutor_id
          FROM tutors
          WHERE gov_first_name = ${gov_first_name} AND gov_last_name = ${gov_last_name};
       `;
-		return result[0]?.tutor_id ?? null;
+		return result.rows[0]?.tutor_id ?? null;
 	};
 
-	const insert = (data: tutorType, db: any = sql) => {
+	const insert = (data: tutorType, db: any = pool) => {
 		return db`
          INSERT INTO tutors (
             gov_first_name, gov_last_name, pref_name, email, phone,
@@ -113,39 +113,41 @@ export const createTutorRepo = (sql: any) => {
       `;
 	};
 
-	const insertWithSubjects = async (data: FormValues, db: any = sql) => {
+	const insertWithSubjects = async (data: FormValues, db: any = pool) => {
 		const flattened = Object.values(data.subjects).flat();
 		const parsedTutor: tutorType = {
 			...data,
 			subjects: parseSubjects(data.subjects),
 		};
-
-		return db.transaction(async (tx: any) => {
-			const result = await insert(parsedTutor, tx);
-			const newId = result[0].tutor_id;
-
-			if (flattened.length > 0) {
-				await addSubjects(newId, flattened, tx);
-			}
-
+		const client = await pool.connect();
+		try {
+			await client.query("BEGIN");
+			const result = await insert(parsedTutor, client);
+			if (flattened.length > 0) await addSubjects(result.rows[0].tutor_id, flattened, client);
+			await client.query("COMMIT");
 			return result;
-		});
+		} catch (e) {
+			await client.query("ROLLBACK");
+			throw e;
+		} finally {
+			client.release();
+		}
 	};
 
-	const removeById = (id: number, db: any = sql) => {
+	const removeById = (id: number, db: any = pool) => {
 		return db`
          DELETE FROM tutors WHERE tutor_id = ${id};
       `;
 	};
 
-	const removeByName = (gov_first_name: string, gov_last_name: string, db: any = sql) => {
+	const removeByName = (gov_first_name: string, gov_last_name: string, db: any = pool) => {
 		return db`
          DELETE FROM tutors
          WHERE gov_first_name = ${gov_first_name} AND gov_last_name = ${gov_last_name};
       `;
 	};
 
-	const update = (id: number, data: tutorType, db: any = sql) => {
+	const update = (id: number, data: tutorType, db: any = pool) => {
 		return db`
          UPDATE tutors
          SET
@@ -190,7 +192,7 @@ export const createTutorRepo = (sql: any) => {
       `;
 	};
 
-	const addSubject = (id: number, subject: string, db: any = sql) => {
+	const addSubject = (id: number, subject: string, db: any = pool) => {
 		return db`
          INSERT INTO tutor_subjects (tutor_id, subject)
          VALUES (${id}, ${subject})
@@ -199,7 +201,7 @@ export const createTutorRepo = (sql: any) => {
       `;
 	};
 
-	const addSubjects = (id: number, subjects: string[], db: any = sql) => {
+	const addSubjects = (id: number, subjects: string[], db: any = pool) => {
 		if (!subjects.length) return;
 		const ids = Array(subjects.length).fill(id);
 		return db`
@@ -209,14 +211,14 @@ export const createTutorRepo = (sql: any) => {
       `;
 	};
 
-	const deleteSubjects = (id: number, db: any = sql) => {
+	const deleteSubjects = (id: number, db: any = pool) => {
 		return db`
          DELETE FROM tutor_subjects
          WHERE tutor_id = ${id};
       `;
 	};
 
-	const updateWithSubjects = async (data: FormValues, db: any = sql) => {
+	const updateWithSubjects = async (data: FormValues, db: any = pool) => {
 		const flattened = Object.values(data.subjects).flat();
 		const parsedTutor: tutorType = {
 			...data,
@@ -224,11 +226,20 @@ export const createTutorRepo = (sql: any) => {
 		};
 		const id = await find(data.gov_first_name, data.gov_last_name, db);
 		if (!id) throw new Error("Tutor not found");
-
-		return db.transaction((tx: any) => {
-			const queries = [update(id, parsedTutor, tx), deleteSubjects(id, tx), addSubjects(id, flattened, tx)];
-			return queries.filter(Boolean);
-		});
+		const client = await pool.connect();
+		try {
+			await client.query("BEGIN");
+			const result = await update(id, parsedTutor, client);
+			await deleteSubjects(id, client);
+			await addSubjects(id, flattened, client);
+			await client.query("COMMIT");
+			return result.rows;
+		} catch (e) {
+			await client.query("ROLLBACK");
+			throw e;
+		} finally {
+			client.release();
+		}
 	};
 
 	return {
