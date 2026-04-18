@@ -1,8 +1,8 @@
 /** @format */
 
 export type PersonPlaceholder = {
-	gov_first: string;
-	gov_last: string;
+	gov_first_name: string;
+	gov_last_name: string;
 	pref_name: string;
 	city: string;
 	grade: number;
@@ -12,8 +12,8 @@ export type PersonPlaceholder = {
 };
 
 const joyce: PersonPlaceholder = {
-	gov_first: "Joyce",
-	gov_last: "Nakatumba-Nabende",
+	gov_first_name: "Joyce",
+	gov_last_name: "Nakatumba-Nabende",
 	pref_name: "Joy",
 	city: "Kampala",
 	grade: 12,
@@ -23,8 +23,8 @@ const joyce: PersonPlaceholder = {
 };
 
 const verdiana: PersonPlaceholder = {
-	gov_first: "Verdiana",
-	gov_last: "Masanja",
+	gov_first_name: "Verdiana",
+	gov_last_name: "Masanja",
 	pref_name: "Diana",
 	city: "Arusha",
 	grade: 12,
@@ -34,8 +34,8 @@ const verdiana: PersonPlaceholder = {
 };
 
 const maryam: PersonPlaceholder = {
-	gov_first: "Maryam",
-	gov_last: "Mirzakhani",
+	gov_first_name: "Maryam",
+	gov_last_name: "Mirzakhani",
 	pref_name: "",
 	city: "Tehran",
 	grade: 12,
@@ -45,8 +45,8 @@ const maryam: PersonPlaceholder = {
 };
 
 const sameera: PersonPlaceholder = {
-	gov_first: "Sameera",
-	gov_last: "Moussa",
+	gov_first_name: "Sameera",
+	gov_last_name: "Moussa",
 	pref_name: "Sammy",
 	city: "Cairo",
 	grade: 12,
@@ -56,8 +56,8 @@ const sameera: PersonPlaceholder = {
 };
 
 const francisca: PersonPlaceholder = {
-	gov_first: "Francisca",
-	gov_last: "Nneka Okeke",
+	gov_first_name: "Francisca",
+	gov_last_name: "Nneka Okeke",
 	pref_name: "Keke",
 	city: "Onitsha",
 	grade: 12,
@@ -67,8 +67,8 @@ const francisca: PersonPlaceholder = {
 };
 
 const janaki: PersonPlaceholder = {
-	gov_first: "Janaki",
-	gov_last: "Ammal",
+	gov_first_name: "Janaki",
+	gov_last_name: "Ammal",
 	pref_name: "Naki",
 	city: "Thalassery",
 	grade: 12,
@@ -78,8 +78,8 @@ const janaki: PersonPlaceholder = {
 };
 
 const hayat: PersonPlaceholder = {
-	gov_first: "Hayat",
-	gov_last: "Sindi",
+	gov_first_name: "Hayat",
+	gov_last_name: "Sindi",
 	pref_name: "",
 	city: "Mecca",
 	grade: 12,

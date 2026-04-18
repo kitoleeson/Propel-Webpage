@@ -31,8 +31,8 @@ const GuardianSection = ({ index, placeholder, optional }: Props) => {
 			</h1>
 
 			<FormInputCluster>
-				<FormTextInput label="First Name" register={register(`guardians.${index}.gov_first`)} placeholder={placeholder.gov_first} error={errors.guardians?.[index]?.gov_first?.message} />
-				<FormTextInput label="Last Name" register={register(`guardians.${index}.gov_last`)} placeholder={placeholder.gov_last} error={errors.guardians?.[index]?.gov_last?.message} />
+				<FormTextInput label="First Name" register={register(`guardians.${index}.gov_first_name`)} placeholder={placeholder.gov_first_name} error={errors.guardians?.[index]?.gov_first_name?.message} />
+				<FormTextInput label="Last Name" register={register(`guardians.${index}.gov_last_name`)} placeholder={placeholder.gov_last_name} error={errors.guardians?.[index]?.gov_last_name?.message} />
 				<FormTextInput label="Preferred Name (if applicable)" register={register(`guardians.${index}.pref_name`)} placeholder={placeholder.pref_name} error={errors.guardians?.[index]?.pref_name?.message} />
 			</FormInputCluster>
 
@@ -48,7 +48,7 @@ const GuardianSection = ({ index, placeholder, optional }: Props) => {
 			<FormInputCluster>
 				<FormTextInput label="Email" type="email" register={register(`guardians.${index}.email`)} placeholder={placeholder.email} error={errors.guardians?.[index]?.email?.message} />
 				<FormPhoneInput label="Phone" register={register(`guardians.${index}.phone`)} placeholder={placeholder.phone} error={errors.guardians?.[index]?.phone?.message} />
-				<FormRadioInput label="Preferred Communication" register={register(`guardians.${index}.pref_comm`)} options={["Email", "Text Message"]} error={errors.guardians?.[index]?.pref_comm?.message} />
+				<FormRadioInput label="Preferred Communication" register={register(`guardians.${index}.pref_communication`)} options={["Email", "Text Message"]} error={errors.guardians?.[index]?.pref_communication?.message} />
 			</FormInputCluster>
 		</>
 	);

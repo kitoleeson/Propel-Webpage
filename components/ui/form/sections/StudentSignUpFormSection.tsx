@@ -23,8 +23,8 @@ const StudentSection = ({ placeholder }: Props) => {
 			<h1>Student Information</h1>
 
 			<FormInputCluster>
-				<FormTextInput label="First Name" register={register("student.gov_first")} placeholder={placeholder.gov_first} error={errors.student?.gov_first?.message} />
-				<FormTextInput label="Last Name" register={register("student.gov_last")} placeholder={placeholder.gov_last} error={errors.student?.gov_last?.message} />
+				<FormTextInput label="First Name" register={register("student.gov_first_name")} placeholder={placeholder.gov_first_name} error={errors.student?.gov_first_name?.message} />
+				<FormTextInput label="Last Name" register={register("student.gov_last_name")} placeholder={placeholder.gov_last_name} error={errors.student?.gov_last_name?.message} />
 				<FormTextInput label="Preferred Name (if applicable)" register={register("student.pref_name")} placeholder={placeholder.pref_name} error={errors.student?.pref_name?.message} />
 			</FormInputCluster>
 
@@ -36,15 +36,15 @@ const StudentSection = ({ placeholder }: Props) => {
 			<FormInputCluster>
 				<FormTextInput label="Email" type="email" register={register("student.email")} placeholder={placeholder.email} error={errors.student?.email?.message} />
 				<FormPhoneInput label="Phone" register={register("student.phone")} placeholder={placeholder.phone} error={errors.student?.phone?.message} />
-				<FormRadioInput label="Preferred Communication" register={register("student.pref_comm")} options={["Email", "Text Message"]} error={errors.student?.pref_comm?.message} />
+				<FormRadioInput label="Preferred Communication" register={register("student.pref_communication")} options={["Email", "Text Message"]} error={errors.student?.pref_communication?.message} />
 			</FormInputCluster>
 
 			<FormInputCluster>
 				<FormDropdownInput
 					label="How Did You Find Us?"
-					register={register("student.how_found")}
+					register={register("student.how_found_us")}
 					options={["Teacher", "Family Member", "Word of Mouth", "Advertisement", "Web Search", "Other"]}
-					error={errors.student?.how_found?.message}
+					error={errors.student?.how_found_us?.message}
 				/>
 				<FormRadioInput label="Who Will Be Paying For Tutoring Sessions?" register={register("student.biller")} options={["Student", "Guardian"]} error={errors.student?.biller?.message} />
 			</FormInputCluster>

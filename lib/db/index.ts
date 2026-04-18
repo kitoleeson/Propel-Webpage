@@ -7,10 +7,12 @@ if (!url) throw new Error("Database URL is not defined");
 const sql = neon(url);
 
 import { createTutorRepo } from "./tutor";
+import { createPendingTutorRepo } from "./pending_tutor";
 
 export const db = {
 	query: sql,
 	tutor: createTutorRepo(sql),
+	pending_tutor: createPendingTutorRepo(sql),
 	// student: student,
 	// guardian: guardian
 };

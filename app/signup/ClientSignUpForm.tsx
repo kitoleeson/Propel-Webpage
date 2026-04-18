@@ -85,7 +85,6 @@ const ClientSignUpForm = () => {
 							<GuardianSection index={index} placeholder={shuffledPlaceholders[(index + 1) % shuffledPlaceholders.length]} optional={studentBilling || index > 0} />
 							{(fields.length > 1 || studentBilling) && (
 								<FormInputCluster className="portrait:gap-0! portrait:mt-8! landscape:mt-3!">
-									<FormButtonInput label="Remove Guardian" onClick={() => removeGuardian(index)} format="self-stretch text-red-500 flex-1" />
 									{!studentBilling && (
 										<div className="mt-6 flex flex-col gap-1 flex-1">
 											<label key={index} className="flex flex-1 items-center gap-2 border border-gray-300 rounded-md px-3 py-1 text-center">
@@ -95,6 +94,7 @@ const ClientSignUpForm = () => {
 											{errors.primary_biller_index?.message && <p className="text-red-500">{errors.primary_biller_index?.message}</p>}
 										</div>
 									)}
+									<FormButtonInput label="Remove Guardian" onClick={() => removeGuardian(index)} format="self-stretch text-red-500 flex-1" />
 								</FormInputCluster>
 							)}
 						</div>

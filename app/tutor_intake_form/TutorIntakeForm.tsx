@@ -8,7 +8,7 @@ import { z } from "zod";
 import { defaultTutor, FormValues, tutorSchema, tutorPlaceholder } from "@/lib/validation/tutorForm/tutorFormSchema";
 import { FormInputCluster, FormPhoneInput, FormDropdownInput, FormTextInput, FormNumberInput, FormDateInput } from "@/components/ui/form";
 import FormCheckboxInput from "@/components/ui/form/inputs/FormCheckboxInput";
-import { updateTutorWithSubjectsAndGoHome } from "@/lib/db/actions";
+import { submitTutorForApproval } from "@/lib/db/actions";
 import { useEffect } from "react";
 import FormSubmitInput from "@/components/ui/form/inputs/FormSubmitInput";
 import FormTextAreaInput from "@/components/ui/form/inputs/FormTextAreaInput";
@@ -30,30 +30,27 @@ const TutorIntakeForm = () => {
 
 	useEffect(() => {
 		if (isDirty) clearErrors("root");
-	}, [watch("gov_first"), watch("gov_last"), isDirty, clearErrors]);
+	}, [watch("gov_first_name"), watch("gov_last_name"), isDirty, clearErrors]);
 
 	const onSubmit: SubmitHandler<z.infer<typeof tutorSchema>> = async (data) => {
 		try {
-			await updateTutorWithSubjectsAndGoHome(data);
+			clearErrors("root");
+			await submitTutorForApproval(data);
 		} catch (err: any) {
-			if (err.message == "TUTOR_NOT_FOUND") {
-				setError("root", {
-					type: "manual",
-					message: "No tutor found with inputted first and last name. Please ensure spelling and capitalization are correct",
-				});
-			} else {
-				setError("root", {
-					type: "manual",
-					message: "Something went wrong. Please try again",
-				});
-			}
+			if (err.message == "NEXT_REDIRECT") throw err;
+
+			console.error("Form Submission Error:", err);
+			setError("root", {
+				type: "manual",
+				message: "Something went wrong while submitting for approval. Please try again.",
+			});
 		}
 
 		console.log("Form submitted with data:");
 		console.log(data);
 	};
 
-	const isHighSchool = watch("current_study_year") === -1;
+	const isHighSchool = watch("year_of_study") === -1;
 	const uniIdentifier = isHighSchool ? "Prospective" : "Current";
 
 	return (
@@ -62,9 +59,17 @@ const TutorIntakeForm = () => {
 				<form onSubmit={handleSubmit(onSubmit)}>
 					<h1 className="landscape:mt-8 portrait:mt-14">Personal Information</h1>
 
+					{/* <FormInputCluster className="mt-3!">
+						<FormDropdownInput
+							label="Choose Your Profile"
+							options={process.env.TUTORS?.split(", ").map((tutor) => tutor.trim())}
+							placeholder="Select a profile"
+						/>
+					</FormInputCluster> */}
+
 					<FormInputCluster className="mt-3!">
-						<FormTextInput label="First Name" register={register("gov_first")} placeholder={tutorPlaceholder.gov_first} error={errors.gov_first?.message} />
-						<FormTextInput label="Last Name" register={register("gov_last")} placeholder={tutorPlaceholder.gov_last} error={errors.gov_last?.message} />
+						<FormTextInput label="First Name" register={register("gov_first_name")} placeholder={tutorPlaceholder.gov_first_name} error={errors.gov_first_name?.message} />
+						<FormTextInput label="Last Name" register={register("gov_last_name")} placeholder={tutorPlaceholder.gov_last_name} error={errors.gov_last_name?.message} />
 						<FormTextInput label="Preferred Name (if applicable)" register={register("pref_name")} placeholder={tutorPlaceholder.pref_name} error={errors.pref_name?.message} />
 					</FormInputCluster>
 
@@ -197,11 +202,11 @@ const TutorIntakeForm = () => {
 					<FormInputCluster className="mt-3!">
 						<FormNumberInput
 							label="Year of Study in Current Degree (enter '-1' if currently in high school)"
-							register={register("current_study_year", { valueAsNumber: true })}
-							placeholder={tutorPlaceholder.current_study_year?.toString()}
+							register={register("year_of_study", { valueAsNumber: true })}
+							placeholder={tutorPlaceholder.year_of_study?.toString()}
 							step={1}
 							min={-1}
-							error={errors.current_study_year?.message}
+							error={errors.year_of_study?.message}
 						/>
 					</FormInputCluster>
 
@@ -213,7 +218,7 @@ const TutorIntakeForm = () => {
 							options={["Bachelor's Degree", "Master's Degree", "Associate's Degree", "Doctorate", "Vocational Certificate", "Other"]}
 							error={errors.current_degree?.message}
 						/>
-						<FormTextInput label={`${uniIdentifier} Field of Study`} register={register("current_study_field")} placeholder={tutorPlaceholder.current_study_field} error={errors.current_study_field?.message} />
+						<FormTextInput label={`${uniIdentifier} Field of Study`} register={register("field_of_study")} placeholder={tutorPlaceholder.field_of_study} error={errors.field_of_study?.message} />
 					</FormInputCluster>
 
 					<FormInputCluster className="mt-3!">
