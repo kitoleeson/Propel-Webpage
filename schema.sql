@@ -332,3 +332,15 @@ COMMIT;
 --     pg_get_serial_sequence('sessions', 'session_id'),
 --     (SELECT COALESCE(MAX(session_id), 1) FROM sessions)
 -- );
+
+-- -- pending_tutors.pending_tutor_id
+-- SELECT setval(
+--     pg_get_serial_sequence('pending_tutors', 'pending_tutor_id'),
+--     (SELECT COALESCE(MAX(pending_tutor_id), 1) FROM pending_tutors)
+-- );
+
+-- -- tutor_subjects.tutor_subject_id
+-- SELECT setval(
+--     pg_get_serial_sequence('tutor_subjects', 'tutor_subject_id'),
+--     (SELECT COALESCE(MAX(tutor_subject_id), 1) FROM tutor_subjects)
+-- );

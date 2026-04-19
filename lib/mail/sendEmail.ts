@@ -108,7 +108,7 @@ export async function sendAdminApprovalPendingTutorEmail(pending_tutor_id: numbe
 	const mailOptions = {
 		from: `"Propel System" <${test ? process.env.TEST_SMTP_USER : process.env.SMTP_USER}>`,
 		to: process.env.ADMIN_EMAIL,
-		subject: `[${insertion ? "NEW" : "UPDATE"}] ${data.gov_first_name} ${data.gov_last_name}`,
+		subject: `Pending Tutor Request: [${insertion ? "NEW" : "UPDATE"}] ${data.gov_first_name} ${data.gov_last_name}`,
 		html: `
          <div style="font-family: sans-serif; max-width: 600px; margin: auto; color: #333; border: 1px solid #eee; border-radius: 10px; overflow: hidden;">
             <div style="background-color: #1eb9c2; color: white; padding: 20px; text-align: center;">
