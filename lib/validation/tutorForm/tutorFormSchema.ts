@@ -2,7 +2,10 @@
 
 import { z } from "zod";
 
-const testing: boolean = process.env.APP_ENV != "prod"; // Set to true to enable default values for testing
+const testing: boolean = false; // Set to true to enable default values for testing
+
+console.log(`[ENV CHECK] APP_ENV is: "${process.env.APP_ENV}"`);
+console.log(`[ENV CHECK] Testing mode is: ${process.env.APP_ENV != "prod"}`);
 
 export const subjectSchema = z
 	.object({
