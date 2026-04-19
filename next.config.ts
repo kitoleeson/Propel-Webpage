@@ -4,6 +4,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
 	/* config options here */
+	serverExternalPackages: ["bufferutil", "utf-8-validate"],
 	webpack(config) {
 		const imageRule = config.module.rules.find((rule: any) => rule?.test?.test?.(".svg"));
 		if (imageRule) imageRule.exclude = /\.svg$/i;

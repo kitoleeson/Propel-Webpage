@@ -22,7 +22,7 @@ export async function updateTutorWithSubjectsAndGoHome(data: FormValues) {
 export async function submitTutorForApproval(data: FormValues) {
 	const existing_id = await db.tutor.find(data.gov_first_name, data.gov_last_name);
 	const result = await db.pending_tutor.insert(existing_id ?? -1, data);
-	await sendAdminApprovalPendingTutorEmail(result[0].pending_tutor_id, { ...data, tutor_id: existing_id ?? -1 });
+	await sendAdminApprovalPendingTutorEmail(result.rows[0].pending_tutor_id, { ...data, tutor_id: existing_id ?? -1 });
 
 	revalidatePath("/");
 	redirect("/");
@@ -30,9 +30,9 @@ export async function submitTutorForApproval(data: FormValues) {
 
 export async function approvePendingTutor(pending_tutor_id: number) {
 	const pendingResults = await db.pending_tutor.getById(pending_tutor_id);
-	if (!pendingResults?.length) throw new Error("PENDING_NOT_FOUND");
+	if (!pendingResults.rows?.length) throw new Error("PENDING_NOT_FOUND");
 
-	const pending_tutor = pendingResults[0];
+	const pending_tutor = pendingResults.rows[0];
 
 	const formData = await mapDbToFormValues(pending_tutor);
 

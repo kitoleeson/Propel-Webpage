@@ -2,7 +2,7 @@
 
 import { FormValues } from "../validation/tutorForm/tutorFormSchema";
 
-export const createPendingTutorRepo = (sql: any) => {
+export const createPendingTutorRepo = (sql: any, pool: any) => {
 	const insert = (tutor_id: number, data: FormValues, db: any = sql) => {
 		return db`
          INSERT INTO pending_tutors (
