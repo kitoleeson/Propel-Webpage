@@ -14,7 +14,7 @@ export async function sendAdminApprovalPendingTutorEmail(pending_tutor_id: numbe
 		},
 	});
 
-	const baseUrl = test ? "http://localhost:3000/api" : "https://api.propeltutoring.ca";
+	const baseUrl = test ? "http://localhost:3000/api" : process.env.NEXT_PUBLIC_BASE_URL;
 	const approveUrl = `${baseUrl}/approve?id=${pending_tutor_id}`;
 	const insertion = data.tutor_id === -1;
 
