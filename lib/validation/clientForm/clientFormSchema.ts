@@ -3,12 +3,12 @@
 import { z } from "zod";
 
 const personBase = z.object({
-	gov_first: z.string().min(1, "First name is required"),
-	gov_last: z.string().min(1, "Last name is required"),
+	gov_first_name: z.string().min(1, "First name is required"),
+	gov_last_name: z.string().min(1, "Last name is required"),
 	pref_name: z.string().optional(),
 	email: z.string().email("Invalid email address"),
 	phone: z.string().min(1, "Phone number is required"),
-	pref_comm: z
+	pref_communication: z
 		.enum(["Email", "Text Message"])
 		.optional()
 		.refine((val) => val !== undefined, { message: "Required" }),
@@ -23,7 +23,7 @@ const studentSchema = personBase.extend({
 		.optional()
 		.refine((val) => val !== undefined, { message: "Required" }),
 	city: z.string().min(1, "City is required"),
-	how_found: z
+	how_found_us: z
 		.enum(["Teacher", "Family Member", "Word of Mouth", "Advertisement", "Web Search", "Other"])
 		.optional()
 		.refine((val) => val !== undefined, { message: "Required" }),
@@ -42,49 +42,49 @@ const guardianSchema = personBase.extend({
 });
 
 // export const defaultStudent: ClientFormValues["student"] = {
-// 	gov_first: "test",
-// 	gov_last: "student",
+// 	gov_first_name: "test",
+// 	gov_last_name: "student",
 // 	pref_name: "tessy",
 // 	email: "tessy@test.ca",
 // 	phone: "1234567890",
-// 	pref_comm: "email",
+// 	pref_communication: "email",
 // 	grade: 12,
 // 	city: "edmonton",
-// 	how_found: "word of mouth",
+// 	how_found_us: "word of mouth",
 // 	biller: "guardian",
 // };
 
 // export const defaultGuardian: ClientFormValues["guardians"][0] = {
-// 	gov_first: "test",
-// 	gov_last: "guardian",
+// 	gov_first_name: "test",
+// 	gov_last_name: "guardian",
 // 	pref_name: "tessa",
 // 	email: "tessa@test.ca",
 // 	phone: "1234567890",
-// 	pref_comm: "text message",
+// 	pref_communication: "text message",
 // 	relationship: "mother",
 // 	is_primary_biller: false,
 // };
 
 export const defaultStudent: ClientFormValues["student"] = {
-	gov_first: "",
-	gov_last: "",
+	gov_first_name: "",
+	gov_last_name: "",
 	pref_name: "",
 	email: "",
 	phone: "",
-	pref_comm: undefined,
+	pref_communication: undefined,
 	grade: undefined,
 	city: "",
-	how_found: undefined,
+	how_found_us: undefined,
 	biller: undefined,
 };
 
 export const defaultGuardian: ClientFormValues["guardians"][0] = {
-	gov_first: "",
-	gov_last: "",
+	gov_first_name: "",
+	gov_last_name: "",
 	pref_name: "",
 	email: "",
 	phone: "",
-	pref_comm: undefined,
+	pref_communication: undefined,
 	relationship: undefined,
 	is_primary_biller: false,
 };

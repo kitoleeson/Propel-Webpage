@@ -2,7 +2,7 @@
 
 import { z } from "zod";
 
-const testing: boolean = false; // Set to true to enable default values for testing
+const testing: boolean = true; // Set to true to enable default values for testing
 
 export const subjectSchema = z
 	.object({
@@ -23,8 +23,8 @@ export const subjectSchema = z
 
 export const tutorSchema = z
 	.object({
-		gov_first: z.string().min(1, "First name is required"),
-		gov_last: z.string().min(1, "Last name is required"),
+		gov_first_name: z.string().min(1, "First name is required"),
+		gov_last_name: z.string().min(1, "Last name is required"),
 		pref_name: z.string().optional(),
 		email: z.string().email("Invalid email address"),
 		phone: z.string().min(1, "Phone number is required"),
@@ -68,8 +68,8 @@ export const tutorSchema = z
 			.enum(["Bachelor's Degree", "Master's Degree", "Associate's Degree", "Doctorate", "Vocational Certificate", "Other"])
 			.optional()
 			.refine((val) => val !== undefined, { message: "Required" }),
-		current_study_field: z.string().min(1, "Current field of study is required"),
-		current_study_year: z
+		field_of_study: z.string().min(1, "Current field of study is required"),
+		year_of_study: z
 			.number()
 			.int()
 			.min(-1)
@@ -102,8 +102,8 @@ export const tutorSchema = z
 
 export const defaultTutor: FormValues = testing
 	? {
-			gov_first: "Test",
-			gov_last: "Tutor",
+			gov_first_name: "Test",
+			gov_last_name: "Tutor",
 			pref_name: "Tess",
 			email: "test@example.ca",
 			phone: "(123) 456-7890",
@@ -137,8 +137,8 @@ export const defaultTutor: FormValues = testing
 
 			current_uni: "University of Alberta",
 			current_degree: undefined,
-			current_study_field: "CS",
-			current_study_year: 1,
+			field_of_study: "CS",
+			year_of_study: 1,
 			current_fav_class: "229",
 			academic_interests: "CS probably",
 
@@ -151,8 +151,8 @@ export const defaultTutor: FormValues = testing
 			ap_ib_credentials: undefined,
 		}
 	: {
-			gov_first: "",
-			gov_last: "",
+			gov_first_name: "",
+			gov_last_name: "",
 			pref_name: "",
 			email: "",
 			phone: "",
@@ -186,8 +186,8 @@ export const defaultTutor: FormValues = testing
 
 			current_uni: "",
 			current_degree: undefined,
-			current_study_field: "",
-			current_study_year: undefined,
+			field_of_study: "",
+			year_of_study: undefined,
 			current_fav_class: "",
 			academic_interests: "",
 
@@ -201,8 +201,8 @@ export const defaultTutor: FormValues = testing
 		};
 
 export const tutorPlaceholder: FormValues = {
-	gov_first: "Jane Catherine",
-	gov_last: "Ngila",
+	gov_first_name: "Jane Catherine",
+	gov_last_name: "Ngila",
 	pref_name: "Janie",
 	email: "jane@example.ca",
 	phone: "(123) 456-7890",
@@ -236,8 +236,8 @@ export const tutorPlaceholder: FormValues = {
 
 	current_uni: "University of Johannesburg",
 	current_degree: undefined,
-	current_study_field: "Chemical Sciences",
-	current_study_year: 5,
+	field_of_study: "Chemical Sciences",
+	year_of_study: 5,
 	current_fav_class: "Nanotechnology in Water Purification",
 	academic_interests: "Analytical-environmental chemistry, nanotechnology, chemical resins and filters, and water resource management",
 

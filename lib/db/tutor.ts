@@ -60,7 +60,7 @@ const parseAdvancedMath = (courses: string[]) => {
 	}
 };
 
-const parseSubjects = (subjects: z.infer<typeof subjectSchema>) => {
+export const parseSubjects = (subjects: z.infer<typeof subjectSchema>) => {
 	const subjectArray: string[] = [];
 
 	subjectArray.push(parse1030("Math", subjects.math));
@@ -77,96 +77,62 @@ const parseSubjects = (subjects: z.infer<typeof subjectSchema>) => {
 	return subjectArray.filter(Boolean).join(", ");
 };
 
-export const createTutorRepo = (sql: any) => {
+export const createTutorRepo = (sql: any, pool: any) => {
 	const find = async (gov_first_name: string, gov_last_name: string, db: any = sql) => {
 		const result = await db`
          SELECT tutor_id
          FROM tutors
          WHERE gov_first_name = ${gov_first_name} AND gov_last_name = ${gov_last_name};
       `;
-		return result[0]?.tutor_id ?? null;
+		return result.rows[0]?.tutor_id ?? null;
 	};
 
-	const insert = (data: FormValues, db: any = sql) => {
+	const insert = (data: tutorType, db: any = sql) => {
 		return db`
          INSERT INTO tutors (
-            gov_first_name,
-            gov_last_name,
-            pref_name,
-            email,
-            phone,
-
-            date_hired,
-            prior_experience,
-            current_rate,
-            accepting_students,
-
-            emerg_contact_name,
-            emerg_contact_phone,
-            emerg_contact_relationship,
-
-            availability,
-            in_person,
-            city,
-            location,
-
+            gov_first_name, gov_last_name, pref_name, email, phone,
+            date_hired, prior_experience, current_rate, accepting_students,
+            emerg_contact_name, emerg_contact_phone, emerg_contact_relationship,
+            availability, in_person, city, location,
             subjects,
-
-            current_uni,
-            current_degree,
-            field_of_study,
-            year_of_study,
-            current_fav_class,
-            academic_interests,
-
-            bio,
-            hobbies,
-
-            high_school,
-            high_school_city,
-            fav_high_school_class,
-            ap_ib_credentials
+            current_uni, current_degree, field_of_study, year_of_study, current_fav_class, academic_interests,
+            bio, hobbies,
+            high_school, high_school_city, fav_high_school_class, ap_ib_credentials
          )
          VALUES (
-            ${data.gov_first},
-            ${data.gov_last},
-            ${data.pref_name || null},
-            ${data.email},
-            ${data.phone},
-
-            ${data.date_hired.toISOString().split("T")[0]},
-            ${data.prior_experience},
-            ${data.current_rate},
-            ${data.accepting_students},
-
-            ${data.emerg_contact_name},
-            ${data.emerg_contact_phone},
-            ${data.emerg_contact_relationship || null},
-
-            ${data.availability || null},
-            ${data.in_person},
-            ${data.city || null},
-            ${data.location || null},
-
+            ${data.gov_first_name}, ${data.gov_last_name}, ${data.pref_name || null}, ${data.email}, ${data.phone},
+            ${data.date_hired.toISOString().split("T")[0]}, ${data.prior_experience}, ${data.current_rate}, ${data.accepting_students},
+            ${data.emerg_contact_name}, ${data.emerg_contact_phone}, ${data.emerg_contact_relationship || null},
+            ${data.availability || null}, ${data.in_person}, ${data.city || null}, ${data.location || null},
             ${data.subjects},
-
-            ${data.current_uni || null},
-            ${data.current_degree || null},
-            ${data.current_study_field || null},
-            ${data.current_study_year || null},
-            ${data.current_fav_class || null},
-            ${data.academic_interests || null},
-            
-            ${data.bio || null},
-            ${data.hobbies || null},
-
-            ${data.high_school || null},
-            ${data.high_school_city || null},
-            ${data.fav_high_school_class || null},
-            ${data.ap_ib_credentials || null}
+            ${data.current_uni || null}, ${data.current_degree || null}, ${data.field_of_study || null}, ${data.year_of_study || null}, ${data.current_fav_class || null}, ${data.academic_interests || null},
+            ${data.bio || null}, ${data.hobbies || null},
+            ${data.high_school || null}, ${data.high_school_city || null}, ${data.fav_high_school_class || null}, ${data.ap_ib_credentials || null}
          )
          RETURNING *;
       `;
+	};
+
+	const insertWithSubjects = async (data: FormValues, db: any = sql) => {
+		const flattened = Object.values(data.subjects).flat();
+		const parsedTutor: tutorType = {
+			...data,
+			subjects: parseSubjects(data.subjects),
+		};
+		const client = await pool.connect();
+		const tx = sql(client);
+		try {
+			await client.query("BEGIN");
+			const result = await insert(parsedTutor, tx);
+			if (flattened.length > 0) await addSubjects(result.rows[0].tutor_id, flattened, tx);
+			await client.query("COMMIT");
+			return result.rows;
+		} catch (e) {
+			await client.query("ROLLBACK");
+			throw e;
+		} finally {
+			client.release();
+		}
 	};
 
 	const removeById = (id: number, db: any = sql) => {
@@ -186,8 +152,8 @@ export const createTutorRepo = (sql: any) => {
 		return db`
          UPDATE tutors
          SET
-            gov_first_name = ${data.gov_first},
-            gov_last_name = ${data.gov_last},
+            gov_first_name = ${data.gov_first_name},
+            gov_last_name = ${data.gov_last_name},
             pref_name = ${data.pref_name || null},
             email = ${data.email},
             phone = ${data.phone},
@@ -210,8 +176,8 @@ export const createTutorRepo = (sql: any) => {
 
             current_uni = ${data.current_uni || null},
             current_degree = ${data.current_degree || null},
-            field_of_study = ${data.current_study_field || null},
-            year_of_study = ${data.current_study_year || null},
+            field_of_study = ${data.field_of_study || null},
+            year_of_study = ${data.year_of_study || null},
             current_fav_class = ${data.current_fav_class || null},
             academic_interests = ${data.academic_interests || null},
 
@@ -259,18 +225,29 @@ export const createTutorRepo = (sql: any) => {
 			...data,
 			subjects: parseSubjects(data.subjects),
 		};
-		const id = await find(data.gov_first, data.gov_last, db);
-		if (!id) throw new Error("Tutor not found");
-
-		return db.transaction((tx: any) => {
-			const queries = [update(id, parsedTutor, tx), deleteSubjects(id, tx), addSubjects(id, flattened, tx)];
-			return queries.filter(Boolean);
-		});
+		const client = await pool.connect();
+		const tx = sql(client);
+		try {
+			await client.query("BEGIN");
+			const id = await find(data.gov_first_name, data.gov_last_name, tx);
+			if (!id) throw new Error("Tutor not found");
+			const result = await update(id, parsedTutor, tx);
+			await deleteSubjects(id, tx);
+			await addSubjects(id, flattened, tx);
+			await client.query("COMMIT");
+			return result.rows;
+		} catch (e) {
+			await client.query("ROLLBACK");
+			throw e;
+		} finally {
+			client.release();
+		}
 	};
 
 	return {
 		find,
 		insert,
+		insertWithSubjects,
 		remove: {
 			byId: removeById,
 			byName: removeByName,
