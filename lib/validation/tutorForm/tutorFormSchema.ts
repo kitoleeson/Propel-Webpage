@@ -4,8 +4,8 @@ import { z } from "zod";
 
 const testing: boolean = false; // Set to true to enable default values for testing
 
-console.log(`[ENV CHECK] APP_ENV is: "${process.env.APP_ENV}"`);
-console.log(`[ENV CHECK] Testing mode is: ${process.env.APP_ENV != "prod"}`);
+// console.log(`[ENV CHECK] APP_ENV is: "${process.env.APP_ENV}"`);
+// console.log(`[ENV CHECK] Testing mode is: ${process.env.APP_ENV != "prod"}`);
 
 export const subjectSchema = z
 	.object({
@@ -89,7 +89,7 @@ export const tutorSchema = z
 		high_school_city: z.string().min(1, "High school city is required"),
 		fav_high_school_class: z.string().min(1, "Favorite high school class is required"),
 		ap_ib_credentials: z
-			.enum(["AP Scholar", "AP Scholar with Honours", "AP Scholar with Distinction", "IB Certificate", "IB Diploma"])
+			.enum(["AP Scholar", "AP Scholar with Honours", "AP Scholar with Distinction", "IB Certificate", "IB Diploma", "N/A"])
 			.optional()
 			.refine((val) => val !== undefined, { message: "Required" }),
 	})
