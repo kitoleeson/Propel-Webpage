@@ -23,8 +23,8 @@ const StudentSection = ({ placeholder }: Props) => {
 			<h1>Student Information</h1>
 
 			<FormInputCluster>
-				<FormTextInput label="First Name" register={register("student.gov_first_name")} placeholder={placeholder.gov_first_name} error={errors.student?.gov_first_name?.message} />
-				<FormTextInput label="Last Name" register={register("student.gov_last_name")} placeholder={placeholder.gov_last_name} error={errors.student?.gov_last_name?.message} />
+				<FormTextInput label="Government First Name" register={register("student.gov_first_name")} placeholder={placeholder.gov_first_name} error={errors.student?.gov_first_name?.message} />
+				<FormTextInput label="Government Last Name" register={register("student.gov_last_name")} placeholder={placeholder.gov_last_name} error={errors.student?.gov_last_name?.message} />
 				<FormTextInput label="Preferred Name (if applicable)" register={register("student.pref_name")} placeholder={placeholder.pref_name} error={errors.student?.pref_name?.message} />
 			</FormInputCluster>
 

@@ -31,8 +31,8 @@ const GuardianSection = ({ index, placeholder, optional }: Props) => {
 			</h1>
 
 			<FormInputCluster>
-				<FormTextInput label="First Name" register={register(`guardians.${index}.gov_first_name`)} placeholder={placeholder.gov_first_name} error={errors.guardians?.[index]?.gov_first_name?.message} />
-				<FormTextInput label="Last Name" register={register(`guardians.${index}.gov_last_name`)} placeholder={placeholder.gov_last_name} error={errors.guardians?.[index]?.gov_last_name?.message} />
+				<FormTextInput label="Government First Name" register={register(`guardians.${index}.gov_first_name`)} placeholder={placeholder.gov_first_name} error={errors.guardians?.[index]?.gov_first_name?.message} />
+				<FormTextInput label="Government Last Name" register={register(`guardians.${index}.gov_last_name`)} placeholder={placeholder.gov_last_name} error={errors.guardians?.[index]?.gov_last_name?.message} />
 				<FormTextInput label="Preferred Name (if applicable)" register={register(`guardians.${index}.pref_name`)} placeholder={placeholder.pref_name} error={errors.guardians?.[index]?.pref_name?.message} />
 			</FormInputCluster>
 

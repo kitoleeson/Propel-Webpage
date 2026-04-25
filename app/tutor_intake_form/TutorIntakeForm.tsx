@@ -70,8 +70,8 @@ const TutorIntakeForm = () => {
 					</FormInputCluster> */}
 
 					<FormInputCluster className="mt-3!">
-						<FormTextInput label="First Name" register={register("gov_first_name")} placeholder={tutorPlaceholder.gov_first_name} error={errors.gov_first_name?.message} />
-						<FormTextInput label="Last Name" register={register("gov_last_name")} placeholder={tutorPlaceholder.gov_last_name} error={errors.gov_last_name?.message} />
+						<FormTextInput label="Government First Name" register={register("gov_first_name")} placeholder={tutorPlaceholder.gov_first_name} error={errors.gov_first_name?.message} />
+						<FormTextInput label="Government Last Name" register={register("gov_last_name")} placeholder={tutorPlaceholder.gov_last_name} error={errors.gov_last_name?.message} />
 						<FormTextInput label="Preferred Name (if applicable)" register={register("pref_name")} placeholder={tutorPlaceholder.pref_name} error={errors.pref_name?.message} />
 					</FormInputCluster>
 
@@ -128,7 +128,11 @@ const TutorIntakeForm = () => {
 					</FormInputCluster>
 
 					<FormHeader text="Availability Information" />
-					<p>Please enter your general availability & location for this current semester (until June 2026). These values can always be changed via a form which I will soon build or by texting me.</p>
+					<p>
+						Please enter your general availability & location for this current semester (until June 2026). These values can always be changed via a form which I will soon build or by texting me. Please input a city and primary
+						location (neighborhood, library, campus, et cetera) which new clients can use to inform their choice of tutor. If you choose online only, please input a location anyways (where you would tutor if you did in-person
+						lessons) and it will not be shown to the public.
+					</p>
 
 					<FormInputCluster className="mt-3!">
 						<FormTextInput label="Availability" register={register("availability")} placeholder={tutorPlaceholder.availability} error={errors.availability?.message} />
