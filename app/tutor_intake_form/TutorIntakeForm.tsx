@@ -12,6 +12,7 @@ import { submitTutorForApproval } from "@/lib/db/actions";
 import { useEffect } from "react";
 import FormSubmitInput from "@/components/ui/form/inputs/FormSubmitInput";
 import FormTextAreaInput from "@/components/ui/form/inputs/FormTextAreaInput";
+import FormHeader from "@/components/ui/form/layout/FormHeader";
 
 const TutorIntakeForm = () => {
 	const methods = useForm<FormValues>({
@@ -57,7 +58,8 @@ const TutorIntakeForm = () => {
 		<div className="my-10">
 			<FormProvider {...methods}>
 				<form onSubmit={handleSubmit(onSubmit)}>
-					<h1 className="landscape:mt-8 portrait:mt-14">Personal Information</h1>
+					<FormHeader text="Personal Information" />
+					<p>This is how clients and other tutors will call and contact you. Please enter your government first and last name, and the email and phone number that you wish to be contacted on.</p>
 
 					{/* <FormInputCluster className="mt-3!">
 						<FormDropdownInput
@@ -68,8 +70,8 @@ const TutorIntakeForm = () => {
 					</FormInputCluster> */}
 
 					<FormInputCluster className="mt-3!">
-						<FormTextInput label="First Name" register={register("gov_first_name")} placeholder={tutorPlaceholder.gov_first_name} error={errors.gov_first_name?.message} />
-						<FormTextInput label="Last Name" register={register("gov_last_name")} placeholder={tutorPlaceholder.gov_last_name} error={errors.gov_last_name?.message} />
+						<FormTextInput label="Government First Name" register={register("gov_first_name")} placeholder={tutorPlaceholder.gov_first_name} error={errors.gov_first_name?.message} />
+						<FormTextInput label="Government Last Name" register={register("gov_last_name")} placeholder={tutorPlaceholder.gov_last_name} error={errors.gov_last_name?.message} />
 						<FormTextInput label="Preferred Name (if applicable)" register={register("pref_name")} placeholder={tutorPlaceholder.pref_name} error={errors.pref_name?.message} />
 					</FormInputCluster>
 
@@ -78,7 +80,8 @@ const TutorIntakeForm = () => {
 						<FormPhoneInput label="Phone" register={register("phone")} placeholder={tutorPlaceholder.phone} error={errors.phone?.message} />
 					</FormInputCluster>
 
-					<h1 className="landscape:mt-8 portrait:mt-14">Emergency Contact Information</h1>
+					<FormHeader text="Emergency Contact Information" />
+					<p>Your emergency contact information will not be shared with the public.</p>
 
 					<FormInputCluster className="mt-3!">
 						<FormTextInput label="Emergency Contact Full Name" register={register("emerg_contact_name")} placeholder={tutorPlaceholder.emerg_contact_name} error={errors.emerg_contact_name?.message} />
@@ -91,7 +94,7 @@ const TutorIntakeForm = () => {
 						/>
 					</FormInputCluster>
 
-					<h1 className="landscape:mt-8 portrait:mt-14">Tutoring Information</h1>
+					<FormHeader text="Tutoring Information" />
 
 					<FormInputCluster className="mt-3!">
 						<FormDateInput label="Date Hired" register={register("date_hired", { valueAsDate: true })} error={errors.date_hired?.message} />
@@ -124,7 +127,12 @@ const TutorIntakeForm = () => {
 						/>
 					</FormInputCluster>
 
-					<h1 className="landscape:mt-8 portrait:mt-14">Availability Information</h1>
+					<FormHeader text="Availability Information" />
+					<p>
+						Please enter your general availability & location for this current semester (until June 2026). These values can always be changed via a form which I will soon build or by texting me. Please input a city and primary
+						location (neighborhood, library, campus, et cetera) which new clients can use to inform their choice of tutor. If you choose online only, please input a location anyways (where you would tutor if you did in-person
+						lessons) and it will not be shown to the public.
+					</p>
 
 					<FormInputCluster className="mt-3!">
 						<FormTextInput label="Availability" register={register("availability")} placeholder={tutorPlaceholder.availability} error={errors.availability?.message} />
@@ -132,14 +140,15 @@ const TutorIntakeForm = () => {
 
 					<FormInputCluster className="mt-3!">
 						<FormDropdownInput label="In Person" register={register("in_person")} options={["In-Person Only", "Online Only", "Hybrid"]} error={errors.in_person?.message} />
-						<FormDropdownInput label="City" register={register("city")} options={["Edmonton", "Greater Edmonton"]} error={errors.city?.message} />
+						<FormDropdownInput label="City" register={register("city")} options={["Edmonton", "Greater Edmonton", "Vancouver"]} error={errors.city?.message} />
 					</FormInputCluster>
 
 					<FormInputCluster className="mt-3!">
 						<FormTextInput label="Location" register={register("location")} placeholder={tutorPlaceholder.location} error={errors.location?.message} />
 					</FormInputCluster>
 
-					<h1 className="landscape:mt-8 portrait:mt-14">Teaching Information</h1>
+					<FormHeader text="Teaching Information" />
+					<p>Please check all subjects which you feel comfortable tutoring and want to tutor. This can also always be changed.</p>
 					{errors.subjects?.message && <p className="text-red-500">{errors.subjects?.message}</p>}
 
 					<FormInputCluster className="mt-3!">
@@ -197,7 +206,8 @@ const TutorIntakeForm = () => {
 						<FormCheckboxInput label="What languages do you teach?" register={register("subjects.languages")} options={["French 10-30", "Spanish 10-30", "German 10-30"]} error={errors.subjects?.english?.message} />
 					</FormInputCluster>
 
-					<h1 className="landscape:mt-8 portrait:mt-14">Post-Secondary Information</h1>
+					<FormHeader text="Academic Information" />
+					<h2>Post-Secondary</h2>
 
 					<FormInputCluster className="mt-3!">
 						<FormNumberInput
@@ -208,10 +218,10 @@ const TutorIntakeForm = () => {
 							min={-1}
 							error={errors.year_of_study?.message}
 						/>
+						<FormTextInput label={`${uniIdentifier} University`} placeholder={tutorPlaceholder.current_uni} register={register("current_uni")} error={errors.current_uni?.message} />
 					</FormInputCluster>
 
 					<FormInputCluster className="mt-3!">
-						<FormTextInput label={`${uniIdentifier} University`} placeholder={tutorPlaceholder.current_uni} register={register("current_uni")} error={errors.current_uni?.message} />
 						<FormDropdownInput
 							label={`${uniIdentifier} Degree`}
 							register={register("current_degree")}
@@ -221,25 +231,9 @@ const TutorIntakeForm = () => {
 						<FormTextInput label={`${uniIdentifier} Field of Study`} register={register("field_of_study")} placeholder={tutorPlaceholder.field_of_study} error={errors.field_of_study?.message} />
 					</FormInputCluster>
 
+					<h2 className="landscape:mt-4 portrait:mt-7">High School</h2>
 					<FormInputCluster className="mt-3!">
-						<FormTextInput label="Current Favourite Class" register={register("current_fav_class")} placeholder={tutorPlaceholder.current_fav_class} error={errors.current_fav_class?.message} />
-						<FormTextInput label="Academic Interests" register={register("academic_interests")} placeholder={tutorPlaceholder.academic_interests} error={errors.academic_interests?.message} />
-					</FormInputCluster>
-
-					<h1 className="landscape:mt-8 portrait:mt-14">Personal Information</h1>
-
-					<FormInputCluster className="mt-3!">
-						<FormTextAreaInput label="Bio" register={register("bio")} placeholder={tutorPlaceholder.bio} error={errors.bio?.message} rows={4} />
-					</FormInputCluster>
-
-					<FormInputCluster className="mt-3!">
-						<FormTextInput label="Hobbies" register={register("hobbies")} placeholder={tutorPlaceholder.hobbies} error={errors.hobbies?.message} />
-					</FormInputCluster>
-
-					<h1 className="landscape:mt-8 portrait:mt-14">High School Information</h1>
-
-					<FormInputCluster className="mt-3!">
-						<FormTextInput label="High School Attended" register={register("high_school")} placeholder={tutorPlaceholder.high_school} error={errors.high_school?.message} />
+						<FormTextInput label={`High School Attend${isHighSchool ? "ing" : "ed"}`} register={register("high_school")} placeholder={tutorPlaceholder.high_school} error={errors.high_school?.message} />
 						<FormTextInput label="High School City" register={register("high_school_city")} placeholder={tutorPlaceholder.high_school_city} error={errors.high_school_city?.message} />
 					</FormInputCluster>
 
@@ -248,9 +242,26 @@ const TutorIntakeForm = () => {
 						<FormDropdownInput
 							label="AP/IB Credentials"
 							register={register("ap_ib_credentials")}
-							options={["AP Scholar", "AP Scholar with Honours", "AP Scholar with Distinction", "IB Certificate", "IB Diploma"]}
+							options={["AP Scholar", "AP Scholar with Honours", "AP Scholar with Distinction", "IB Certificate", "IB Diploma", "N/A"]}
 							error={errors.ap_ib_credentials?.message}
 						/>
+					</FormInputCluster>
+
+					<h2 className="landscape:mt-4 portrait:mt-7">General</h2>
+					<FormInputCluster className="mt-3!">
+						<FormTextInput label="Favourite Class This Semester" register={register("current_fav_class")} placeholder={tutorPlaceholder.current_fav_class} error={errors.current_fav_class?.message} />
+						<FormTextInput label="Academic Interests" register={register("academic_interests")} placeholder={tutorPlaceholder.academic_interests} error={errors.academic_interests?.message} />
+					</FormInputCluster>
+
+					<FormHeader text="Personal Information" />
+					<p>Show off your personality!</p>
+
+					<FormInputCluster className="mt-3!">
+						<FormTextAreaInput label="Bio" register={register("bio")} placeholder={tutorPlaceholder.bio} error={errors.bio?.message} rows={4} />
+					</FormInputCluster>
+
+					<FormInputCluster className="mt-3!">
+						<FormTextInput label="Hobbies" register={register("hobbies")} placeholder={tutorPlaceholder.hobbies} error={errors.hobbies?.message} />
 					</FormInputCluster>
 
 					<FormSubmitInput pending={isSubmitting} format="self-stretch text-primary font-bold text-primary mt-10 text-xl" />

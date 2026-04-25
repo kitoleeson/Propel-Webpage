@@ -9,7 +9,8 @@ const TutorFormPage = () => {
 	return (
 		<BasePage title={"Welcome to\nPropel!"}>
 			<p>
-				this page is where tutors will go to submit information about themselves. on submission, the form will send me an email confirm adding the information to the database. there will be no links to this page on the website
+				Hi tutors! Welcome to Propel, I am excited to have you here. Please fill out this form with your information. Your information will be put up on our website, so that incoming clients can make an informed decision about who
+				they would like to be their tutor.
 			</p>
 			{open && <TutorIntakeForm />}
 		</BasePage>
