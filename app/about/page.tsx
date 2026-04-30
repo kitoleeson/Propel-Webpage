@@ -15,12 +15,12 @@ const AboutPage = async () => {
 				will have their own card with a picture and information about them, as well as whether or not they are currently taking clients. all information will be pulled from the database, and the page will be built dynamically
 				based off its entries.
 			</p>
-			<p>
+			{/* <p className="mt-5">
 				<span className={"text-green-500"}>●</span> = Accepting Students &emsp; <span className={"text-red-500"}>●</span> = Full Capacity
-			</p>
-			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-18 justify-items-center mt-10">
-				{tutors.map((tutor: any) => (
-					<TutorCard key={tutor.tutor_id} tutor={tutor} />
+			</p> */}
+			<div className="w-4/5 m-auto grid grid-cols-1 gap-18 justify-items-center mt-10">
+				{tutors.map((tutor: any, index: number) => (
+					<TutorCard key={tutor.tutor_id} tutor={tutor} switchLayout={index % 2 == 0} />
 				))}
 			</div>
 		</BasePage>
