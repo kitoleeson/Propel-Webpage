@@ -152,7 +152,7 @@ const TutorIntakeForm = () => {
 					{errors.subjects?.message && <p className="text-red-500">{errors.subjects?.message}</p>}
 
 					<FormInputCluster className="mt-3!">
-						<FormCheckboxInput label="What mathematics do you teach?" register={register("subjects.math")} options={["Math 10", "Math 20 (AP)", "Math 30 (AP)"]} error={errors.subjects?.math?.message} />
+						<FormCheckboxInput label="What mathematics do you teach?" register={register("subjects.math")} options={["Math 10 (AP)", "Math 20 (AP)", "Math 30 (AP)"]} error={errors.subjects?.math?.message} />
 					</FormInputCluster>
 
 					<FormInputCluster className="mt-3!">
