@@ -10,7 +10,7 @@ const AboutPage = async () => {
 
 	return (
 		<BasePage title="About Propel">
-			<h2>Propel tutors are not just students. We are active members of the academic and scientific communities who put the fundamentals that we teach into use on a daily basis.</h2>
+			<h2>Propel tutors are not just students. We are active members of the academic and scientific communities who put the fundamentals that we teach into use every single day.</h2>
 			<p>
 				Each tutor at Propel has their own hourly rate, determined by experience, education, and tutoring background. Rates may vary between tutors. All tutor rates are presented when a student is choosing their tutor, and will be
 				confirmed with you by email once chosen. Once a student begins working with a tutor, that particular tutor's hourly rate for that specific student will never increase, even if it increases for new clients in the future.

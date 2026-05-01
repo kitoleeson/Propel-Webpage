@@ -76,34 +76,32 @@ const ClientSignUpForm = () => {
 	};
 
 	return (
-		<div className="mt-10">
-			<FormProvider {...methods}>
-				<form onSubmit={handleSubmit(onSubmit)}>
-					<StudentSection placeholder={shuffledPlaceholders[0]} />
-					{fields.map((field, index) => (
-						<div key={field.id} className="landscape:mt-10 portrait:mt-14">
-							<GuardianSection index={index} placeholder={shuffledPlaceholders[(index + 1) % shuffledPlaceholders.length]} optional={studentBilling || index > 0} />
-							{(fields.length > 1 || studentBilling) && (
-								<FormInputCluster className="portrait:gap-0! portrait:mt-8! landscape:mt-3!">
-									{!studentBilling && (
-										<div className="mt-6 flex flex-col gap-1 flex-1">
-											<label key={index} className="flex flex-1 items-center gap-2 border border-gray-300 rounded-md px-3 py-1 text-center">
-												<input type="radio" value={index} checked={watch("primary_biller_index") === index} onChange={() => setValue("primary_biller_index", index)} />
-												{"Is Primary Biller"}
-											</label>
-											{errors.primary_biller_index?.message && <p className="text-red-500">{errors.primary_biller_index?.message}</p>}
-										</div>
-									)}
-									<FormButtonInput label="Remove Guardian" onClick={() => removeGuardian(index)} format="self-stretch text-red-500 flex-1" />
-								</FormInputCluster>
-							)}
-						</div>
-					))}
-					<FormButtonInput label="Add New Guardian" onClick={addGuardian} divFormat="mt-14" format="w-full" />
-					<FormButtonInput label="Sign Up" onClick={handleSubmit(onSubmit)} format="self-stretch text-primary font-bold text-primary" />
-				</form>
-			</FormProvider>
-		</div>
+		<FormProvider {...methods}>
+			<form onSubmit={handleSubmit(onSubmit)}>
+				<StudentSection placeholder={shuffledPlaceholders[0]} />
+				{fields.map((field, index) => (
+					<div key={field.id} className="landscape:mt-10 portrait:mt-14">
+						<GuardianSection index={index} placeholder={shuffledPlaceholders[(index + 1) % shuffledPlaceholders.length]} optional={studentBilling || index > 0} />
+						{(fields.length > 1 || studentBilling) && (
+							<FormInputCluster className="portrait:gap-0! portrait:mt-8! landscape:mt-3!">
+								{!studentBilling && (
+									<div className="mt-6 flex flex-col gap-1 flex-1">
+										<label key={index} className="flex flex-1 items-center gap-2 border border-gray-300 rounded-md px-3 py-1 text-center">
+											<input type="radio" value={index} checked={watch("primary_biller_index") === index} onChange={() => setValue("primary_biller_index", index)} />
+											{"Is Primary Biller"}
+										</label>
+										{errors.primary_biller_index?.message && <p className="text-red-500">{errors.primary_biller_index?.message}</p>}
+									</div>
+								)}
+								<FormButtonInput label="Remove Guardian" onClick={() => removeGuardian(index)} format="self-stretch text-red-500 flex-1" />
+							</FormInputCluster>
+						)}
+					</div>
+				))}
+				<FormButtonInput label="Add New Guardian" onClick={addGuardian} divFormat="mt-14" format="w-full" />
+				<FormButtonInput label="Sign Up" onClick={handleSubmit(onSubmit)} format="self-stretch text-primary font-bold text-primary" />
+			</form>
+		</FormProvider>
 	);
 };
 

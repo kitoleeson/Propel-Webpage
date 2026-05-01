@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useState } from "react";
 import InfoCard from "./info_card/InfoCard";
 import InfoCardTitleField from "./info_card/InfoCardTitleField";
+import InfoCardCluster from "./info_card/InfoCardCluster";
 
 const getImageName = (first: string, last: string) => {
 	return first.replace(" ", "-") + "_" + last.replace(" ", "-");
@@ -19,7 +20,9 @@ const getYearString = (year: number) => {
 	return year + "th year";
 };
 
-const buildFront = (imgSrc: string, setImgSrc: any, displayName: string) => <Image src={imgSrc} onError={() => setImgSrc("/images/logos/teal.png")} alt={displayName} fill className="object-cover" />;
+const buildFront = (imgSrc: string, setImgSrc: any, displayName: string) => (
+	<Image src={imgSrc} onError={() => setImgSrc("/images/logos/teal.png")} alt={displayName} fill className="object-cover" sizes="(max-width: 768px) 80vw, 480px" />
+);
 
 const buildBack = (tutor: any) => {
 	const locationDisplay = tutor.in_person === "Online Only" ? "Online Only" : tutor.location;
@@ -29,7 +32,7 @@ const buildBack = (tutor: any) => {
 			<h3 className="font-bold text-primary border-b pb-2">Academic Profile</h3>
 
 			{/* UNIVERSITY INFORMATION */}
-			<div className="py-4 space-y-2">
+			<InfoCardCluster>
 				<div>
 					<p className="text-primary font-semibold">{tutor.current_uni}</p>
 					<p className="text-[12px]">{tutor.current_degree}</p>
@@ -44,30 +47,30 @@ const buildBack = (tutor: any) => {
 				</div>
 
 				<InfoCardTitleField title="Interests" field={tutor.academic_interests} fieldClass="text-sm" />
-			</div>
+			</InfoCardCluster>
 
 			{/* TUTOR INFORMATION */}
-			<div className="flex flex-col space-y-2 border-y py-4">
+			<InfoCardCluster className="flex flex-col border-y">
 				<div className="grid grid-cols-2 gap-3 text-xs">
 					<InfoCardTitleField title="Current Rate" field={`$${tutor.current_rate}/hr`} />
 					<InfoCardTitleField title="Experience" field={tutor.prior_experience + 1 + (tutor.prior_experience > 0 ? " Years" : " Year")} />
 				</div>
 				<InfoCardTitleField title="Availablity" field={tutor.availability} fieldClass="text-sm" />
 				<InfoCardTitleField title="Location" field={tutor.location} fieldClass="text-sm" />
-			</div>
+			</InfoCardCluster>
 
 			{/* HIGH SCHOOL INFORMATION */}
-			<div className="py-4 space-y-2">
+			<InfoCardCluster>
 				<p className="text-primary font-semibold">{tutor.high_school}</p>
 
 				<div className="grid grid-cols-2 gap-3 text-xs">
 					<InfoCardTitleField title="Favourite Class" field={tutor.fav_high_school_class} />
 					<InfoCardTitleField title="AP/IB Credentials" field={tutor.ap_ib_credentials} />
 				</div>
-			</div>
+			</InfoCardCluster>
 
 			{/* HOBBIES */}
-			<div className="mt-4 bg-slate-50 p-2 rounded text-[11px]">
+			<div className="mt-4 bg-slate-100 p-2 rounded text-[11px]">
 				<p className="text-slate-500 uppercase font-bold mb-1">Hobbies</p>
 				<p className="leading-tight text-sm">{tutor.hobbies}</p>
 			</div>
@@ -81,7 +84,7 @@ const TutorCard = ({ tutor, switchLayout }: { tutor: any; switchLayout: boolean 
 
 	return (
 		<div className="w-full min-w-70 flex portrait:flex-col landscape:flex-row landscape:items-start portrait:items-center gap-12">
-			<div className={`w-full max-w-120 shrink-0 landscape:basis-1/3 ${switchLayout ? "landscape:order-1" : ""}`}>
+			<div className={`w-full landscape:basis-1/3 flex justify-center shrink-0 ${switchLayout ? "landscape:order-1" : ""}`}>
 				<InfoCard front={buildFront(imgSrc, setImgSrc, displayName)} back={buildBack(tutor)} />
 			</div>
 			<div className="w-full flex flex-col grow justify-between landscape:basis-2/3">

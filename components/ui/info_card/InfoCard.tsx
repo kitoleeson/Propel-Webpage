@@ -13,7 +13,7 @@ const InfoCard = ({ front, back, className }: Props) => {
 
 	return (
 		<div
-			className={`relative aspect-4/5 w-[min(100%, 30rem)] perspective-[1000px] cursor-pointer ${className}`}
+			className={`relative aspect-4/5 w-full w-max-120 perspective-[1000px] cursor-pointer ${className}`}
 			onMouseEnter={() => setIsFlipped(true)}
 			onMouseLeave={() => setIsFlipped(false)}
 			onClick={() => setIsFlipped(!isFlipped)}
