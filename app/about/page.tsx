@@ -10,15 +10,12 @@ const AboutPage = async () => {
 
 	return (
 		<BasePage title="About Propel">
+			<h2>Propel tutors are not just students. We are active members of the academic and scientific communities who put the fundamentals that we teach into use on a daily basis.</h2>
 			<p>
-				this page will hold a little information about who we are as collective tutors, as well as more personalized information for each tutor so that students may choose a tutor who they feel will help them the best. each tutor
-				will have their own card with a picture and information about them, as well as whether or not they are currently taking clients. all information will be pulled from the database, and the page will be built dynamically
-				based off its entries.
+				Each tutor at Propel has their own hourly rate, determined by experience, education, and tutoring background. Rates may vary between tutors. All tutor rates are presented when a student is choosing their tutor, and will be
+				confirmed with you by email once chosen. Once a student begins working with a tutor, that particular tutor's hourly rate for that specific student will never increase, even if it increases for new clients in the future.
 			</p>
-			{/* <p className="mt-5">
-				<span className={"text-green-500"}>●</span> = Accepting Students &emsp; <span className={"text-red-500"}>●</span> = Full Capacity
-			</p> */}
-			<div className="w-4/5 m-auto grid grid-cols-1 gap-18 justify-items-center mt-10">
+			<div className="w-5/6 min-w-80 m-auto grid grid-cols-1 gap-18 justify-items-center mt-10">
 				{tutors.map((tutor: any, index: number) => (
 					<TutorCard key={tutor.tutor_id} tutor={tutor} switchLayout={index % 2 == 0} />
 				))}

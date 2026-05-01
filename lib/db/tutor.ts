@@ -83,7 +83,7 @@ export const createTutorRepo = (sql: any, pool: any) => {
 	};
 
 	const getAll = async (db: any = sql) => {
-		return db`SELECT * FROM tutors ORDER BY gov_last_name ASC;`;
+		return db`SELECT * FROM tutors WHERE availability IS NOT NULL ORDER BY accepting_students DESC, gov_last_name ASC, gov_first_name ASC;`;
 	};
 
 	const find = async (gov_first_name: string, gov_last_name: string, db: any = sql) => {

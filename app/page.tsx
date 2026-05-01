@@ -253,7 +253,7 @@ export default function Home() {
 				<P5VizWrapper title="" key={`propel-canvas-${canvasWidth}`} setup={setup} draw={draw} />
 				<Body>
 					<h1 className="text-6xl font-bold">Handing the keys back to students.</h1>
-					<h2 className="pt-3 text-2xl">
+					<h2 className="pt-3">
 						Propel Tutoring offers personalized, student-led tutoring that adapts to how you learn best. We seek to support students in taking ownership of their education, and build confidence in their learning.
 					</h2>
 					<p className="font-bold mt-15">Every student learns differently.</p>
