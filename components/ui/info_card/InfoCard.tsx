@@ -1,6 +1,5 @@
 /** @format */
-
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 
 type Props = {
 	front: any;
@@ -8,61 +7,37 @@ type Props = {
 	className?: string;
 };
 
-const DRAG_THRESHOLD = 8;
-
 const InfoCard = ({ front, back, className }: Props) => {
 	const [isFlipped, setIsFlipped] = useState(false);
-	const [supportsHover, setSupportsHover] = useState(false);
-	const pointerStart = useRef<{ x: number; y: number } | null>(null);
-	const isTouchDrag = useRef(false);
+	const touchStart = useRef(0);
 
-	useEffect(() => {
-		if (typeof window === "undefined") return;
-		setSupportsHover(window.matchMedia("(hover: hover)").matches);
-	}, []);
-
-	const handlePointerDown = (event: React.PointerEvent<HTMLDivElement>) => {
-		if (event.pointerType === "touch" || event.pointerType === "pen") {
-			pointerStart.current = { x: event.clientX, y: event.clientY };
-			isTouchDrag.current = false;
-		}
+	const handleStart = (e: React.PointerEvent) => {
+		touchStart.current = e.clientY;
 	};
 
-	const handlePointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
-		if (!pointerStart.current) return;
-		const dx = Math.abs(event.clientX - pointerStart.current.x);
-		const dy = Math.abs(event.clientY - pointerStart.current.y);
-		if (dx > DRAG_THRESHOLD || dy > DRAG_THRESHOLD) {
-			isTouchDrag.current = true;
-		}
-	};
-
-	const handlePointerUp = (event: React.PointerEvent<HTMLDivElement>) => {
-		if ((event.pointerType === "touch" || event.pointerType === "pen") && !isTouchDrag.current) {
-			setIsFlipped((prev) => !prev);
-		}
-		pointerStart.current = null;
-		isTouchDrag.current = false;
+	const handleEnd = (e: React.PointerEvent) => {
+		const touchEnd = e.clientY;
+		if (Math.abs(touchEnd - touchStart.current) < 10) setIsFlipped(false);
 	};
 
 	return (
-		<div
-			className={`relative aspect-4/5 w-full max-w-120 perspective-[1000px] cursor-pointer ${className}`}
-			onMouseEnter={supportsHover ? () => setIsFlipped(true) : undefined}
-			onMouseLeave={supportsHover ? () => setIsFlipped(false) : undefined}
-			onPointerDown={handlePointerDown}
-			onPointerMove={handlePointerMove}
-			onPointerUp={handlePointerUp}
-			style={{ touchAction: "pan-y" }}
-		>
-			<div className="absolute -top-8 left-1/2 -translate-x-1/2 flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-widest">
+		<div className={`relative aspect-4/5 w-full max-w-120 perspective-[1000px] ${className}`} onMouseEnter={() => setIsFlipped(true)} onMouseLeave={() => setIsFlipped(false)} style={{ touchAction: "pan-y" }}>
+			<div className="absolute -top-8 left-1/2 -translate-x-1/2 flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-widest pointer-events-none">
 				<span className="hidden [@media(hover:hover)]:inline">{isFlipped ? "← Back" : "Hover to Flip →"}</span>
-				<span className="inline [@media(hover:hover)]:hidden">{isFlipped ? "← Back" : "Tap to Flip →"}</span>
+				<span className="inline [@media(hover:hover)]:hidden">{isFlipped ? "← Back" : "Click to Flip →"}</span>
 			</div>
+
 			<div className={`relative w-full h-full duration-500 transform-3d will-change-transform ${isFlipped ? "rotate-y-180" : ""}`}>
-				<div className="absolute inset-0 h-full w-full backface-hidden rounded-xl overflow-hidden border z-10">{front}</div>
-				<div className="absolute inset-0 h-full w-full backface-hidden rounded-xl overflow-y-auto border rotate-y-180 p-4 bg-white custom-scrollbar" style={{ touchAction: "pan-y" }}>
-					{back}
+				{/* FRONT */}
+				<div className={`absolute inset-0 h-full w-full backface-hidden rounded-xl overflow-hidden border cursor-pointer ${isFlipped ? "z-0" : "z-20"}`} onClick={() => setIsFlipped(true)}>
+					{front}
+				</div>
+
+				{/* BACK */}
+				<div className={`absolute inset-0 h-full w-full backface-hidden rounded-xl overflow-y-auto border rotate-y-180 bg-white custom-scrollbar ${isFlipped ? "z-20" : "z-0"}`} onClick={(e) => e.stopPropagation()}>
+					<div className="min-h-full p-4" onPointerDown={handleStart} onPointerUp={handleEnd}>
+						{back}
+					</div>
 				</div>
 			</div>
 		</div>
