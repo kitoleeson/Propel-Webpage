@@ -16,7 +16,7 @@ const InfoCard = ({ front, back, className }: Props) => {
 			className={`relative aspect-4/5 w-full max-w-120 perspective-[1000px] cursor-pointer ${className}`}
 			onMouseEnter={() => setIsFlipped(true)}
 			onMouseLeave={() => setIsFlipped(false)}
-			onPointerDown={() => setIsFlipped(!isFlipped)}
+			onClick={() => setIsFlipped(!isFlipped)}
 			style={{ touchAction: "manipulation" }}
 		>
 			<div className="absolute -top-8 left-1/2 -translate-x-1/2 flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-widest">
