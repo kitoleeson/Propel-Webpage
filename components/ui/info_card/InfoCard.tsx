@@ -34,8 +34,10 @@ const InfoCard = ({ front, back, className }: Props) => {
 				<div className="absolute inset-0 h-full w-full backface-hidden rounded-xl overflow-hidden border z-10" onClick={() => setIsFlipped(true)}>
 					{front}
 				</div>
-				<div className="absolute inset-0 h-full w-full backface-hidden rounded-xl overflow-y-auto border rotate-y-180 p-4 bg-white custom-scrollbar" onPointerDown={handleStart} onPointerUp={handleEnd}>
-					{back}
+				<div className="absolute inset-0 h-full w-full backface-hidden rounded-xl overflow-y-auto border rotate-y-180 p-4 bg-white custom-scrollbar">
+					<div className="min-h-full" onPointerDown={handleStart} onPointerUp={handleEnd} style={{ touchAction: "pan-y" }}>
+						{back}
+					</div>
 				</div>
 			</div>
 		</div>
