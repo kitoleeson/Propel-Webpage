@@ -19,6 +19,7 @@ Pages and features:
 * **Client Intake Form**: information gathering for new students and guardians to sign up for tutoring
 
 ### **Automated Invoicing System**
+NOTE: The invoicing system has been moved to [this GitHub repository](https://github.com/kitoleeson/Propel-Invoice-Automation)
 
 A Python-based backend automation that:
 * Pulls session and client data from our Google Sheets input spreadsheet
