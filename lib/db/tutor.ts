@@ -78,6 +78,14 @@ export const parseSubjects = (subjects: z.infer<typeof subjectSchema>) => {
 };
 
 export const createTutorRepo = (sql: any, pool: any) => {
+	const get = async (id: number, db: any = sql) => {
+		return db`SELECT * FROM tutors WHERE tutor_id = ${id};`;
+	};
+
+	const getAll = async (db: any = sql) => {
+		return db`SELECT * FROM tutors WHERE availability IS NOT NULL ORDER BY accepting_students DESC, gov_last_name ASC, gov_first_name ASC;`;
+	};
+
 	const find = async (gov_first_name: string, gov_last_name: string, db: any = sql) => {
 		const result = await db`
          SELECT tutor_id
@@ -245,6 +253,8 @@ export const createTutorRepo = (sql: any, pool: any) => {
 	};
 
 	return {
+		get,
+		getAll,
 		find,
 		insert,
 		insertWithSubjects,

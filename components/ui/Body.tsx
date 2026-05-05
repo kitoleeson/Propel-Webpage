@@ -3,7 +3,7 @@
 import React from "react";
 
 const Body = ({ children }: { children: React.ReactNode }) => {
-	return <div className="m-10">{children}</div>;
+	return <div className="m-10 space-y-5">{children}</div>;
 };
 
 export default Body;
