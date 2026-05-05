@@ -30,9 +30,28 @@ const InfoCard = ({ front, back, className }: Props) => {
 			// onClick={() => setIsFlipped(!isFlipped)}
 			style={{ touchAction: "pan-y" }}
 		>
-			<div className="absolute -top-8 left-1/2 -translate-x-1/2 flex items-center gap-2 text-primary font-bold text-xs uppercase tracking-widest">
-				<span className="hidden [@media(hover:hover)]:inline">{isFlipped ? "← Back" : "Hover to Flip →"}</span>
-				<span className="inline [@media(hover:hover)]:hidden">{isFlipped ? "← Back" : "Click to Flip →"}</span>
+			{/* <div className="absolute -top-6 left-1/2 -translate-x-1/2 w-full flex items-center gap-2 pointer-events-none">
+				<div className="relative w-full h-full flex justify-center items-center text-primary font-bold text-xs uppercase tracking-widest">
+					<span className={`hidden [@media(hover:hover)]:inline absolute transition-all duration-500 whitespace-nowrap ${isFlipped ? "opacity-0 translate-y-6" : "opacity-100"}`}>Hover to Flip &rarr;</span>
+					<span className={`inline [@media(hover:hover)]:hidden absolute transition-all duration-500 whitespace-nowrap ${isFlipped ? "opacity-0 translate-y-6" : "opacity-100"}`}>Click to Flip &rarr;</span>
+					<span className={`hidden [@media(hover:hover)]:inline absolute transition-all duration-500 whitespace-nowrap ${isFlipped ? "opacity-100" : "opacity-0 translate-y-6"}`}>&larr; Back</span>
+					<span className="hidden [@media(hover:hover)]:inline">{isFlipped ? "← Back" : "Hover to Flip →"}</span>
+					<span className="inline [@media(hover:hover)]:hidden">{isFlipped ? "← Back" : "Click to Flip →"}</span>
+				</div>
+			</div> */}
+
+			<div className="absolute -top-8 left-0 w-full flex justify-center pointer-events-none">
+				<div className="relative h-6 w-full overflow-hidden">
+					<div className="relative w-full h-full flex justify-center items-center text-primary font-bold text-xs uppercase tracking-widest">
+						<span className={`absolute transition-all duration-500 ease-in-out whitespace-nowrap ${isFlipped ? "translate-x-120" : "translate-x-0"}`}>
+							<span className="hidden [@media(hover:hover)]:inline">Hover to Flip &rarr;</span>
+							<span className="inline [@media(hover:hover)]:hidden">Click to Flip &rarr;</span>
+						</span>
+						<span className={`absolute transition-all duration-500 ease-in-out whitespace-nowrap ${isFlipped ? "translate-x-0" : "-translate-x-120"}`}>
+							<span className="hidden [@media(hover:hover)]:inline">&larr; Back</span>
+						</span>
+					</div>
+				</div>
 			</div>
 
 			<div className={`relative w-full h-full duration-500 transform-3d transition-transform will-change-transform`} style={{ transformStyle: "preserve-3d", transform: isFlipped ? "rotateY(0deg)" : "rotateY(-180deg)" }}>
