@@ -20,8 +20,8 @@ const getYearString = (year: number) => {
 	return year + "th year";
 };
 
-const buildFront = (imgSrc: string, setImgSrc: any, displayName: string) => (
-	<Image src={imgSrc} onError={() => setImgSrc("/images/logos/teal.png")} alt={displayName} fill className="object-cover" sizes="(max-width: 768px) 80vw, 480px" />
+const buildFront = (imgSrc: string, setImgSrc: any, displayName: string, loading: "lazy" | "eager" = "lazy") => (
+	<Image src={imgSrc} onError={() => setImgSrc("/images/logos/teal.png")} alt={displayName} fill className="object-cover" sizes="(max-width: 768px) 80vw, 480px" loading={loading} />
 );
 
 const buildBack = (tutor: any) => {
@@ -78,14 +78,14 @@ const buildBack = (tutor: any) => {
 	);
 };
 
-const TutorCard = ({ tutor, switchLayout }: { tutor: any; switchLayout: boolean }) => {
+const TutorCard = ({ tutor, index }: { tutor: any; index: number }) => {
 	const [imgSrc, setImgSrc] = useState(`/images/tutors/${getImageName(tutor.gov_first_name, tutor.gov_last_name)}.png`);
 	const displayName = (tutor.pref_name || tutor.gov_first_name) + " " + tutor.gov_last_name;
 
 	return (
 		<div className="w-full min-w-70 flex portrait:flex-col landscape:flex-row landscape:items-start portrait:items-center gap-12">
-			<div className={`w-full landscape:basis-1/3 flex justify-center shrink-0 ${switchLayout ? "landscape:order-1" : ""}`}>
-				<InfoCard front={buildFront(imgSrc, setImgSrc, displayName)} back={buildBack(tutor)} />
+			<div className={`w-full landscape:basis-1/3 flex justify-center shrink-0 ${index % 2 == 0 ? "landscape:order-1" : ""}`}>
+				<InfoCard front={buildFront(imgSrc, setImgSrc, displayName, index == 0 ? "eager" : "lazy")} back={buildBack(tutor)} />
 			</div>
 			<div className="w-full flex flex-col grow justify-between landscape:basis-2/3">
 				<div className="flex items-center justify-between">

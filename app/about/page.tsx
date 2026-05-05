@@ -17,7 +17,7 @@ const AboutPage = async () => {
 			</p>
 			<div className="w-5/6 min-w-80 m-auto grid grid-cols-1 gap-18 justify-items-center mt-15">
 				{tutors.map((tutor: any, index: number) => (
-					<TutorCard key={tutor.tutor_id} tutor={tutor} switchLayout={index % 2 == 0} />
+					<TutorCard key={tutor.tutor_id} tutor={tutor} index={index} />
 				))}
 			</div>
 		</BasePage>

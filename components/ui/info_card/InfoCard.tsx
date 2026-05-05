@@ -32,9 +32,12 @@ const InfoCard = ({ front, back, className }: Props) => {
 		>
 			{/* <div className="absolute -top-6 left-1/2 -translate-x-1/2 w-full flex items-center gap-2 pointer-events-none">
 				<div className="relative w-full h-full flex justify-center items-center text-primary font-bold text-xs uppercase tracking-widest">
+					// fade downwards switch
 					<span className={`hidden [@media(hover:hover)]:inline absolute transition-all duration-500 whitespace-nowrap ${isFlipped ? "opacity-0 translate-y-6" : "opacity-100"}`}>Hover to Flip &rarr;</span>
 					<span className={`inline [@media(hover:hover)]:hidden absolute transition-all duration-500 whitespace-nowrap ${isFlipped ? "opacity-0 translate-y-6" : "opacity-100"}`}>Click to Flip &rarr;</span>
 					<span className={`hidden [@media(hover:hover)]:inline absolute transition-all duration-500 whitespace-nowrap ${isFlipped ? "opacity-100" : "opacity-0 translate-y-6"}`}>&larr; Back</span>
+
+					// instant switch
 					<span className="hidden [@media(hover:hover)]:inline">{isFlipped ? "← Back" : "Hover to Flip →"}</span>
 					<span className="inline [@media(hover:hover)]:hidden">{isFlipped ? "← Back" : "Click to Flip →"}</span>
 				</div>
@@ -47,9 +50,7 @@ const InfoCard = ({ front, back, className }: Props) => {
 							<span className="hidden [@media(hover:hover)]:inline">Hover to Flip &rarr;</span>
 							<span className="inline [@media(hover:hover)]:hidden">Click to Flip &rarr;</span>
 						</span>
-						<span className={`absolute transition-all duration-500 ease-in-out whitespace-nowrap ${isFlipped ? "translate-x-0" : "-translate-x-120"}`}>
-							<span className="hidden [@media(hover:hover)]:inline">&larr; Back</span>
-						</span>
+						<span className={`absolute transition-all duration-500 ease-in-out whitespace-nowrap ${isFlipped ? "translate-x-0" : "-translate-x-120"}`}>&larr; Back</span>
 					</div>
 				</div>
 			</div>
