@@ -56,7 +56,7 @@ const buildBack = (tutor: any) => {
 					<InfoCardTitleField title="Experience" field={tutor.prior_experience + 1 + (tutor.prior_experience > 0 ? " Years" : " Year")} />
 				</div>
 				<InfoCardTitleField title="Availablity" field={tutor.availability} fieldClass="text-sm" />
-				<InfoCardTitleField title="Location" field={tutor.location} fieldClass="text-sm" />
+				<InfoCardTitleField title="Location" field={tutor.in_person === "Online Only" ? "Online only" : tutor.location + (tutor.in_person === "Hybrid" ? " or online" : "")} fieldClass="text-sm" />
 			</InfoCardCluster>
 
 			{/* HIGH SCHOOL INFORMATION */}
