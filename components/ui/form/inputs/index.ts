@@ -14,8 +14,6 @@ export { default as FormSubmitInput } from "./FormSubmitInput";
 export { default as FormTextAreaInput } from "./FormTextAreaInput";
 
 type FormBaseInputProps = {
-	label: string;
-
 	error?: string;
 	placeholder?: string;
 	disabled?: boolean;
@@ -26,6 +24,7 @@ type FormBaseInputProps = {
 };
 
 type FormRegisterableProps = FormBaseInputProps & {
+	label: string;
 	register: UseFormRegisterReturn;
 };
 
@@ -34,6 +33,7 @@ type FormOptionProps = FormRegisterableProps & {
 };
 
 type FormButtonInputProps = FormBaseInputProps & {
+	label: string;
 	register?: never;
 	onClick: () => void;
 	type?: never;
