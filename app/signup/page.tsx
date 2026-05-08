@@ -7,11 +7,6 @@ const SignupPage = () => {
 	return (
 		<BasePage title={"Start Tutoring\nToday!"}>
 			<p>
-				this page will host the signup form for incoming clients to the company. it will take in all the information we need from them, add their profiles to the database, and allow them to choose a tutor. on submission, it will
-				email me a summary of their answers so that i can ensure everything is correct and correctly assign them their tutor. it will also automatically send them an email at their provided email holding the client agreement
-				contract.
-			</p>
-			<p>
 				<i>NOTE: This form is not yet operational. To sign up, please email propeltutoringyeg@gmail.com.</i>
 			</p>
 			<ClientSignUpForm />
@@ -25,3 +20,13 @@ const SignupPage = () => {
 };
 
 export default SignupPage;
+
+// DATA FLOW:
+// 1. Client fills out the form and submits it, including personal information, billing information, and tutor preferences (top 2 choices).
+// 2. The form data is sent to the server, where it is processed and stored in the database under the "students", "guardians", "student_guardian", "billing_accounts", and "student_billing" tables.
+// 3. An email is sent to the admin with a summary of the client's information for review.
+// 4. An email is sent to the client with the client agreement contract attached.
+// 5. An email is sent to the tutor who the client chooses, notifying them of the new student, providing the student's information for review, and providing a link to the API where they can accept or reject the tutoring request.
+// 	The tutor will reach out the student to decide whether the relationship will work, then either accept or reject the request.
+// 	If they accept, the "student_tutor" table is updated to reflect the match.
+// 	If they reject, the student's second choice tutor is notified. If they also reject, the admin is notified to manually assign a tutor.

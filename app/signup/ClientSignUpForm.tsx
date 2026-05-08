@@ -35,7 +35,6 @@ const ClientSignUpForm = () => {
 	});
 
 	const {
-		register,
 		formState: { errors },
 		handleSubmit,
 		watch,

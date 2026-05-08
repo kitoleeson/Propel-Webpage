@@ -198,6 +198,9 @@ CREATE TABLE IF NOT EXISTS student_tutor (
     usual_duration NUMERIC(4, 2) NOT NULL,
     hourly_rate NUMERIC(6, 2) NOT NULL,
     subjects TEXT NOT NULL,
+    markup NUMERIC(6, 2) NOT NULL DEFAULT 5,
+    travel_fee NUMERIC(6, 2) NOT NULL DEFAULT 0,
+    had_session BOOLEAN DEFAULT FALSE,
     UNIQUE (student_id, tutor_id)
 );
 -- inputed: through interface when a tutor is assigned to a student

@@ -1,21 +1,13 @@
 /** @format */
 
-import { UseFormRegisterReturn } from "react-hook-form";
+import { FormTextInputProps } from ".";
 
-type Props = {
-	label: string;
-	register: UseFormRegisterReturn;
-	type?: string;
-	error?: string;
-	placeholder?: string;
-};
-
-const FormTextInput = ({ label, register, type, error, placeholder }: Props) => {
+const FormTextInput = (props: FormTextInputProps) => {
 	return (
-		<div className="flex flex-col gap-1 flex-1">
-			<label>{label}</label>
-			<input className="border border-gray-300 rounded-md p-1" {...register} type={type} placeholder={placeholder} />
-			{error && <p className="text-red-500">{error}</p>}
+		<div className={`flex flex-col gap-1 flex-1 ${props.divFormat}`}>
+			<label>{props.label}</label>
+			<input className={`border border-gray-300 rounded-md p-1 ${props.format}`} {...props.register} type={props.type} placeholder={props.placeholder} disabled={props.disabled} />
+			{props.error && <p className="text-red-500">{props.error}</p>}
 		</div>
 	);
 };

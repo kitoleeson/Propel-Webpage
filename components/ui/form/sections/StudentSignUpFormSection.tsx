@@ -46,7 +46,7 @@ const StudentSection = ({ placeholder }: Props) => {
 					options={["Teacher", "Family Member", "Word of Mouth", "Advertisement", "Web Search", "Other"]}
 					error={errors.student?.how_found_us?.message}
 				/>
-				<FormRadioInput label="Who Will Be Paying For Tutoring Sessions?" register={register("student.biller")} options={["Student", "Guardian"]} error={errors.student?.biller?.message} />
+				<FormRadioInput label="Who will be paying for tutoring sessions?" register={register("student.biller")} options={["Student", "Guardian"]} error={errors.student?.biller?.message} />
 			</FormInputCluster>
 		</>
 	);

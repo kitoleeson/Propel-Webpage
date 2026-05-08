@@ -1,30 +1,22 @@
 /** @format */
 
-import { UseFormRegisterReturn } from "react-hook-form";
+import { FormDropdownInputProps } from ".";
 
-type Props = {
-	label: string;
-	register: UseFormRegisterReturn;
-	options: string[];
-	error?: string;
-	placeholder?: string;
-};
-
-const FormDropdownInput = ({ label, register, options, error, placeholder }: Props) => {
+const FormDropdownInput = (props: FormDropdownInputProps) => {
 	return (
-		<div className="flex flex-col gap-1 flex-1">
-			<label>{label}</label>
-			<select className="border border-gray-300 rounded-md p-1" {...register} defaultValue="">
+		<div className={`flex flex-col gap-1 flex-1 ${props.divFormat}`}>
+			<label>{props.label}</label>
+			<select className={`border border-gray-300 rounded-md p-1 ${props.format}`} {...props.register} defaultValue="" disabled={props.disabled}>
 				<option value="" disabled>
-					{placeholder || "Select an option"}
+					{props.placeholder || "Select an option"}
 				</option>
-				{options.map((option) => (
+				{props.options.map((option) => (
 					<option key={option} value={option}>
 						{option}
 					</option>
 				))}
 			</select>
-			{error && <p className="text-red-500">{error}</p>}
+			{props.error && <p className="text-red-500">{props.error}</p>}
 		</div>
 	);
 };
