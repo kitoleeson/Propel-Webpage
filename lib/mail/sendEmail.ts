@@ -1,6 +1,6 @@
 /** @format */
 import nodemailer from "nodemailer";
-import { parseSubjects } from "@/lib/db/tutor";
+import parseSubjects from "../db/subjects";
 
 export async function sendAdminApprovalPendingTutorEmail(pending_tutor_id: number, data: any) {
 	const test = process.env.APP_ENV != "prod";

@@ -8,6 +8,7 @@ import type { ClientFormValues } from "@/lib/validation/clientForm/clientFormSch
 import type { PersonPlaceholder } from "@/lib/validation/clientForm/clientFormPersonPlaceholders";
 import { FormInputCluster } from "../layout";
 import { email } from "zod";
+import { checkGuardianStatus } from "@/lib/db/actions";
 
 type Props = {
 	index: number;

@@ -6,6 +6,7 @@ import SQL from "sql-template-strings";
 
 import { createTutorRepo } from "./tutor";
 import { createPendingTutorRepo } from "./pending_tutor";
+import { createGuardianRepo } from "./guardian";
 
 if (typeof window === "undefined") neonConfig.webSocketConstructor = ws;
 
@@ -33,5 +34,5 @@ export const db = {
 	tutor: createTutorRepo(sql, pool),
 	pending_tutor: createPendingTutorRepo(sql, pool),
 	// student: student,
-	// guardian: guardian
+	guardian: createGuardianRepo(sql, pool),
 };
