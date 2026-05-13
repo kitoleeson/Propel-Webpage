@@ -16,6 +16,7 @@
 		"@neondatabase/serverless": "^1.1.0",
 		"@react-hook/resize-observer": "^2.0.2",
 		"@svgr/webpack": "^8.1.0",
+		"@swc/helpers": "0.5.21",
 		"bufferutil": "^4.1.0",
 		"next": "^16.2.6",
 		"nodemailer": "^8.0.5",
