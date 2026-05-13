@@ -1,5 +1,7 @@
 /** @format */
 
+// Based on https://neon.com/blog/neon-testing-a-vitest-library-for-your-integration-tests
+
 import { makeNeonTesting } from "neon-testing";
 import * as dotenv from "dotenv";
 import path from "path";

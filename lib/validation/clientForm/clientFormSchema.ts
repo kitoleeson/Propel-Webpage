@@ -39,13 +39,13 @@ const guardianSchema = personBase.extend({
 		.optional()
 		.refine((val) => val !== undefined, { message: "Required" }),
 	is_primary_biller: z.boolean(),
-	already_exists: z.boolean(),
+	already_exists: z.boolean().optional(),
 	id: z
 		.number()
 		.int()
 		.optional()
 		.refine((val) => val !== undefined, { message: "Required" }),
-	email_password: z.string().email("Invalid email address"),
+	email_password: z.string().email("Invalid email address").optional(),
 });
 
 // export const defaultStudent: ClientFormValues["student"] = {
