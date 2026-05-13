@@ -6,6 +6,7 @@ import P5VizWrapper from "@/components/canvas/P5VizWrapper";
 import NavBar from "@/components/ui/NavBar";
 import { useAppStore } from "@/store/app";
 import Body from "@/components/ui/Body";
+import { draw, setup } from "@/components/canvas/logo_sketch";
 
 export default function Home() {
 	const canvasWidth = useAppStore((s) => s.canvasSize.width);
