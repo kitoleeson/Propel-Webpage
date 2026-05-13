@@ -6,10 +6,12 @@ import SQL from "sql-template-strings";
 
 import { createTutorRepo } from "./tutor";
 import { createPendingTutorRepo } from "./pending_tutor";
+import { createGuardianRepo } from "./guardian";
+import { createStudentRepo } from "./student";
 
 if (typeof window === "undefined") neonConfig.webSocketConstructor = ws;
 
-const url: string | undefined = process.env.APP_ENV === "prod" ? process.env.DATABASE_URL_PROD : process.env.DATABASE_URL_DEV;
+const url: string | undefined = process.env.DATABASE_URL || (process.env.APP_ENV === "prod" ? process.env.DATABASE_URL_PROD : process.env.DATABASE_URL_DEV);
 if (!url) throw new Error("Database URL is not defined");
 
 const pool = new Pool({ connectionString: url });
@@ -32,6 +34,6 @@ export const db = {
 	pool: pool,
 	tutor: createTutorRepo(sql, pool),
 	pending_tutor: createPendingTutorRepo(sql, pool),
-	// student: student,
-	// guardian: guardian
+	student: createStudentRepo(sql, pool),
+	guardian: createGuardianRepo(sql, pool),
 };

@@ -1,22 +1,13 @@
 /** @format */
 
-import { UseFormRegisterReturn } from "react-hook-form";
+import { FormDateInputProps } from ".";
 
-type Props = {
-	label: string;
-	register: UseFormRegisterReturn;
-	min?: string;
-	max?: string;
-	error?: string;
-	placeholder?: string;
-};
-
-const FormDateInput = ({ label, register, min, max, error, placeholder }: Props) => {
+const FormDateInput = (props: FormDateInputProps) => {
 	return (
-		<div className="flex flex-col gap-1 flex-1">
-			<label>{label}</label>
-			<input className="border border-gray-300 rounded-md p-1" {...register} type="date" min={min} max={max} placeholder={placeholder} />
-			{error && <p className="text-red-500">{error}</p>}
+		<div className={`flex flex-col gap-1 flex-1 ${props.divFormat}`}>
+			<label>{props.label}</label>
+			<input className={`border border-gray-300 rounded-md p-1 ${props.format}`} {...props.register} type="date" min={props.min} max={props.max} placeholder={props.placeholder} disabled={props.disabled} />
+			{props.error && <p className="text-red-500">{props.error}</p>}
 		</div>
 	);
 };

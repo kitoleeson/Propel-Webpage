@@ -1,12 +1,14 @@
 /** @format */
 
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { useFormContext } from "react-hook-form";
-import { FormTextInput, FormPhoneInput, FormDropdownInput, FormRadioInput } from "@/components/ui/form/inputs";
+import { FormTextInput, FormPhoneInput, FormDropdownInput, FormRadioInput, FormCheckboxInput, FormNumberInput } from "@/components/ui/form/inputs";
 import type { ClientFormValues } from "@/lib/validation/clientForm/clientFormSchema";
 import type { PersonPlaceholder } from "@/lib/validation/clientForm/clientFormPersonPlaceholders";
 import { FormInputCluster } from "../layout";
+import { email } from "zod";
+import { checkGuardianStatus } from "@/lib/db/actions";
 
 type Props = {
 	index: number;
@@ -14,14 +16,36 @@ type Props = {
 	optional?: boolean;
 };
 
-// make it so that if student is billed by guardian, at least one guardian section is shown and cannot be removed, but if student is not billed by guardian, guardian sections can be added or removed at will (including having zero guardians)
-// also needs radio buttons per guardian for primary biller (probably do in ClientSignUpForm)
-
 const GuardianSection = ({ index, placeholder, optional }: Props) => {
 	const {
 		register,
+		watch,
+		setValue,
 		formState: { errors },
 	} = useFormContext<ClientFormValues>();
+
+	const existingGuardian = watch(`guardians.${index}.already_exists`);
+	const guardianId = watch(`guardians.${index}.id`);
+	const emailPassword = watch(`guardians.${index}.email_password`);
+
+	useEffect(() => {
+		if (existingGuardian && guardianId && emailPassword) {
+			const verifyGuardian = async () => {
+				const response = await checkGuardianStatus(guardianId, emailPassword);
+				if (response.success) {
+					const data = response.data;
+					setValue(`guardians.${index}.gov_first_name`, data.gov_first_name);
+					setValue(`guardians.${index}.gov_last_name`, data.gov_last_name);
+					setValue(`guardians.${index}.pref_name`, data.pref_name);
+					setValue(`guardians.${index}.email`, data.email);
+					setValue(`guardians.${index}.phone`, data.phone);
+					setValue(`guardians.${index}.pref_communication`, data.pref_communication);
+					setValue(`guardians.${index}.relationship`, data.relationship);
+				}
+			};
+			verifyGuardian();
+		}
+	}, [existingGuardian, guardianId, emailPassword, index, setValue]);
 
 	return (
 		<>
@@ -30,12 +54,34 @@ const GuardianSection = ({ index, placeholder, optional }: Props) => {
 				{optional && " (Optional)"}
 			</h1>
 
+			{index == 0 && (
+				<p>
+					At least one guardian is required if the student is billed by a guardian. If the student is billing for themselves, guardians are optional. The primary biller is the guardian who we will send our invoices to and
+					primarily be in contact with for any reason other than billing.
+				</p>
+			)}
+
+			<FormInputCluster>
+				<FormCheckboxInput label="Is this guardian already linked to a registered student?" register={register(`guardians.${index}.already_exists`)} options={["Yes"]} />
+				{existingGuardian && (
+					<>
+						<FormNumberInput label="Guardian ID (found in registration confirmation email)" disabled={!existingGuardian} register={register(`guardians.${index}.id`)} />
+						<FormTextInput
+							label="Email (same one used for previous registration)"
+							type="email"
+							disabled={!existingGuardian}
+							register={register(`guardians.${index}.email_password`)}
+							error={errors.guardians?.[index]?.email?.message}
+						/>
+					</>
+				)}
+			</FormInputCluster>
+
 			<FormInputCluster>
 				<FormTextInput label="Government First Name" register={register(`guardians.${index}.gov_first_name`)} placeholder={placeholder.gov_first_name} error={errors.guardians?.[index]?.gov_first_name?.message} />
 				<FormTextInput label="Government Last Name" register={register(`guardians.${index}.gov_last_name`)} placeholder={placeholder.gov_last_name} error={errors.guardians?.[index]?.gov_last_name?.message} />
 				<FormTextInput label="Preferred Name (if applicable)" register={register(`guardians.${index}.pref_name`)} placeholder={placeholder.pref_name} error={errors.guardians?.[index]?.pref_name?.message} />
 			</FormInputCluster>
-
 			<FormInputCluster>
 				<FormDropdownInput
 					label="Relationship to Student"
@@ -44,7 +90,6 @@ const GuardianSection = ({ index, placeholder, optional }: Props) => {
 					error={errors.guardians?.[index]?.relationship?.message}
 				/>
 			</FormInputCluster>
-
 			<FormInputCluster>
 				<FormTextInput label="Email" type="email" register={register(`guardians.${index}.email`)} placeholder={placeholder.email} error={errors.guardians?.[index]?.email?.message} />
 				<FormPhoneInput label="Phone" register={register(`guardians.${index}.phone`)} placeholder={placeholder.phone} error={errors.guardians?.[index]?.phone?.message} />

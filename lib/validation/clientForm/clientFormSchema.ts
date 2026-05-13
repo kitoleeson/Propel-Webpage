@@ -39,6 +39,13 @@ const guardianSchema = personBase.extend({
 		.optional()
 		.refine((val) => val !== undefined, { message: "Required" }),
 	is_primary_biller: z.boolean(),
+	already_exists: z.boolean(),
+	id: z
+		.number()
+		.int()
+		.optional()
+		.refine((val) => val !== undefined, { message: "Required" }),
+	email_password: z.string().email("Invalid email address"),
 });
 
 // export const defaultStudent: ClientFormValues["student"] = {
@@ -87,6 +94,9 @@ export const defaultGuardian: ClientFormValues["guardians"][0] = {
 	pref_communication: undefined,
 	relationship: undefined,
 	is_primary_biller: false,
+	already_exists: false,
+	id: undefined,
+	email_password: "",
 };
 
 export const formSchema = z
@@ -116,3 +126,5 @@ export const formSchema = z
 	});
 
 export type ClientFormValues = z.infer<typeof formSchema>;
+export type StudentFormValues = z.infer<typeof studentSchema>;
+export type GuardianFormValues = z.infer<typeof guardianSchema>;

@@ -49,3 +49,13 @@ export const mapDbToFormValues = async (data: any): Promise<FormValues> => ({
 	date_hired: new Date(data.date_hired),
 	subjects: data.subjects_json,
 });
+
+export async function checkGuardianStatus(id: number, email: string) {
+	const response = await db.guardian.get.getByIdAndEmail(id, email);
+	const success = response.rows?.length === 1;
+	return {
+		success: success,
+		data: success ? response.rows[0] : null,
+		error: success ? null : "Guardian not found with provided ID and email",
+	};
+}

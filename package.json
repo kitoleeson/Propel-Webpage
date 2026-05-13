@@ -2,24 +2,29 @@
 	"name": "propel_webpage",
 	"version": "0.1.0",
 	"private": true,
+	"type": "module",
 	"scripts": {
 		"dev": "next dev --webpack",
 		"build": "next build --webpack",
 		"start": "next start",
-		"lint": "eslint"
+		"lint": "eslint",
+		"ci_test": "NODE_OPTIONS='--experimental-websocket' vitest run",
+		"test": "vitest --watch"
 	},
 	"dependencies": {
 		"@hookform/resolvers": "^5.2.2",
-		"@neondatabase/serverless": "^1.0.2",
+		"@neondatabase/serverless": "^1.1.0",
 		"@react-hook/resize-observer": "^2.0.2",
 		"@svgr/webpack": "^8.1.0",
+		"@swc/helpers": "0.5.21",
 		"bufferutil": "^4.1.0",
-		"next": "^16.1.6",
+		"next": "^16.2.6",
 		"nodemailer": "^8.0.5",
 		"p5": "^2.1.2",
 		"pg": "^8.16.3",
-		"react": "19.2.3",
-		"react-dom": "19.2.3",
+		"postcss": "^8.5.14",
+		"react": "^19.2.6",
+		"react-dom": "^19.2.6",
 		"react-hook-form": "^7.71.2",
 		"sql-template-strings": "^2.2.2",
 		"utf-8-validate": "^6.0.6",
@@ -36,9 +41,17 @@
 		"@types/react": "^19",
 		"@types/react-dom": "^19",
 		"@types/ws": "^8.18.1",
+		"@vitejs/plugin-react-swc": "^4.3.0",
+		"dotenv": "^17.4.2",
 		"eslint": "^9",
 		"eslint-config-next": "16.1.1",
+		"neon-testing": "^2.7.0",
 		"tailwindcss": "^4",
-		"typescript": "^5"
+		"typescript": "^5",
+		"vite-tsconfig-paths": "^6.1.1",
+		"vitest": "^4.1.6"
+	},
+	"overrides": {
+		"postcss": "^8.5.14"
 	}
 }
