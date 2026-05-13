@@ -6,9 +6,6 @@ import path from "path";
 
 dotenv.config({ path: path.resolve(__dirname, "../.env") });
 
-console.log("API Key exists:", !!process.env.NEON_API_KEY);
-console.log("Project ID exists:", !!process.env.NEON_PROJECT_ID);
-
 export const withNeonTestBranch = makeNeonTesting({
 	apiKey: process.env.NEON_API_KEY!,
 	projectId: process.env.NEON_PROJECT_ID!,

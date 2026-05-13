@@ -8,6 +8,7 @@
 		"build": "next build --webpack",
 		"start": "next start",
 		"lint": "eslint",
+		"ci_test": "NODE_OPTIONS='--experimental-websocket' vitest run",
 		"test": "vitest --watch"
 	},
 	"dependencies": {
