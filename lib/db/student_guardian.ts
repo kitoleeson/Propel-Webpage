@@ -7,13 +7,13 @@ type StudentGuardianType = {
 	is_primary_biller: boolean;
 };
 
-export const createGuardianRepo = (sql: any, pool: any) => {
+export const createStudentGuardianRepo = (sql: any, pool: any) => {
 	const get = async (student_id: number, guardian_id: number, db: any = sql) => {
 		return db`SELECT * FROM student_guardian WHERE student_id = ${student_id} AND guardian_id = ${guardian_id};`;
 	};
 
 	const getAll = async (db: any = sql) => {
-		return db`SELECT * FROM student_guardian ORDER BY student_id`;
+		return db`SELECT * FROM student_guardian ORDER BY student_id ASC, guardian_id ASC;`;
 	};
 
 	const getStudents = async (guardian_id: number, db: any = sql) => {
@@ -25,6 +25,15 @@ export const createGuardianRepo = (sql: any, pool: any) => {
       `;
 	};
 
+	const getGuardians = async (student_id: number, db: any = sql) => {
+		return db`
+         SELECT g.*
+         FROM guardians g
+         JOIN student_guardian sg ON g.guardian_id = sg.guardian_id
+         WHERE sg.student_id = ${student_id};
+      `;
+	};
+
 	const insert = (data: StudentGuardianType, db: any = sql) => {
 		return db`
          INSERT INTO student_guardian (student_id, guardian_id, relationship_type, is_primary_biller)
@@ -33,56 +42,79 @@ export const createGuardianRepo = (sql: any, pool: any) => {
       `;
 	};
 
+	const remove = (student_id: number, guardian_id: number, db: any = sql) => {
+		return db`
+			DELETE FROM student_guardian
+			WHERE student_id = ${student_id} AND guardian_id = ${guardian_id};
+		`;
+	};
+
 	const removeByStudentId = (student_id: number, db: any = sql) => {
 		return db`
-         DELETE FROM student_guardian WHERE student_id = ${student_id};
+		DELETE FROM student_guardian WHERE student_id = ${student_id};
       `;
 	};
 
 	const removeByGuardianId = (guardian_id: number, db: any = sql) => {
 		return db`
-         DELETE FROM student_guardian WHERE guardian_id = ${guardian_id};
+		DELETE FROM student_guardian WHERE guardian_id = ${guardian_id};
       `;
 	};
 
+	// IMPLEMENT LATER: maybe do remove by emails rather than names, since multiple people can have the same name but not the same email
 	const removeByStudentName = (gov_first_name: string, gov_last_name: string, db: any = sql) => {
 		return db`
          DELETE FROM student_guardian sg
-         JOIN students s ON sg.student_id = s.student_id
-         WHERE s.gov_first_name = ${gov_first_name} AND s.gov_last_name = ${gov_last_name};
+         USING students s WHERE sg.student_id = s.student_id
+         AND s.gov_first_name = ${gov_first_name} AND s.gov_last_name = ${gov_last_name};
       `;
 	};
 
 	const removeByGuardianName = (gov_first_name: string, gov_last_name: string, db: any = sql) => {
 		return db`
          DELETE FROM student_guardian sg
-         JOIN guardians g ON sg.guardian_id = g.guardian_id
-         WHERE g.gov_first_name = ${gov_first_name} AND g.gov_last_name = ${gov_last_name};
+         USING guardians g WHERE sg.guardian_id = g.guardian_id
+         AND g.gov_first_name = ${gov_first_name} AND g.gov_last_name = ${gov_last_name};
       `;
 	};
 
-	const update = (student_id: number, guardian_id: number, data: StudentGuardianType, db: any = sql) => {
+	const update = (data: StudentGuardianType, db: any = sql) => {
 		return db`
          UPDATE student_guardian
          SET
-            student_id = ${data.student_id},
-            guardian_id = ${data.guardian_id},
             relationship_type = ${data.relationship_type},
             is_primary_biller = ${data.is_primary_biller}
-         WHERE student_id = ${student_id} AND guardian_id = ${guardian_id}
+         WHERE student_id = ${data.student_id} AND guardian_id = ${data.guardian_id}
          RETURNING *;
       `;
 	};
 
-	const setPrimaryBiller = (student_id: number, guardian_id: number, db: any = sql) => {
-		return db`
-         UPDATE student_guardian
-         SET is_primary_biller = (guardian_id = ${guardian_id})
-         WHERE student_id = ${student_id}
-         AND EXISTS (
-            SELECT 1 FROM student_guardian WHERE student_id = ${student_id} AND guardian_id = ${guardian_id}
-         );
-      `;
+	const setPrimaryBiller = async (student_id: number, guardian_id: number, db: any = sql) => {
+		const client = await pool.connect();
+		const tx = sql(client);
+		try {
+			await client.query("BEGIN");
+			const exists = await get(student_id, guardian_id, tx);
+			if (exists.length === 0) throw new Error("Student-Guardian relationship does not exist");
+
+			await tx`
+				UPDATE student_guardian
+				SET is_primary_biller = false
+				WHERE student_id = ${student_id};
+			`;
+
+			return tx`
+				UPDATE student_guardian
+				SET is_primary_biller = true
+				WHERE student_id = ${student_id} AND guardian_id = ${guardian_id}
+				RETURNING *;
+			`;
+		} catch (e) {
+			await client.query("ROLLBACK");
+			throw e;
+		} finally {
+			client.release();
+		}
 	};
 
 	return {
@@ -90,9 +122,11 @@ export const createGuardianRepo = (sql: any, pool: any) => {
 			get,
 			getAll,
 			getStudents,
+			getGuardians,
 		},
 		insert,
 		remove: {
+			remove: remove,
 			byStudentId: removeByStudentId,
 			byGuardianId: removeByGuardianId,
 			byStudentName: removeByStudentName,

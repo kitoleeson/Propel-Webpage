@@ -1,6 +1,5 @@
 /** @format */
 
-import { toLowerCase } from "zod";
 import { StudentFormValues } from "../validation/clientForm/clientFormSchema";
 
 export const createStudentRepo = (sql: any, pool: any) => {
@@ -16,7 +15,7 @@ export const createStudentRepo = (sql: any, pool: any) => {
 		const result = await db`
          SELECT student_id
          FROM students
-         WHERE gov_first_name = ${gov_first_name} AND gov_last_name = ${gov_last_name};
+         WHERE gov_first_name ILIKE ${gov_first_name} AND gov_last_name ILIKE ${gov_last_name};
       `;
 		return result.rows[0]?.student_id ?? null;
 	};
