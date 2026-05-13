@@ -1,5 +1,6 @@
 /** @format */
 
+import { toLowerCase } from "zod";
 import { StudentFormValues } from "../validation/clientForm/clientFormSchema";
 
 export const createStudentRepo = (sql: any, pool: any) => {
@@ -23,7 +24,7 @@ export const createStudentRepo = (sql: any, pool: any) => {
 	const insert = (data: StudentFormValues, db: any = sql) => {
 		return db`
          INSERT INTO students (gov_first_name, gov_last_name, pref_name, grade, city, email, phone, pref_communication, how_found_us)
-         VALUES (${data.gov_first_name}, ${data.gov_last_name}, ${data.pref_name || null}, ${data.grade || null}, ${data.city || null}, ${data.email}, ${data.phone}, ${data.pref_communication}, ${data.how_found_us || null})
+         VALUES (${data.gov_first_name}, ${data.gov_last_name}, ${data.pref_name || null}, ${data.grade}, ${data.city}, ${data.email}, ${data.phone}, ${data.pref_communication?.toLowerCase()}, ${data.how_found_us?.toLowerCase()})
          RETURNING *;
       `;
 	};
@@ -48,12 +49,12 @@ export const createStudentRepo = (sql: any, pool: any) => {
             gov_first_name = ${data.gov_first_name},
             gov_last_name = ${data.gov_last_name},
             pref_name = ${data.pref_name || null},
-            grade = ${data.grade || null},
-            city = ${data.city || null},
+            grade = ${data.grade},
+            city = ${data.city},
             email = ${data.email},
             phone = ${data.phone},
-            pref_communication = ${data.pref_communication},
-            how_found_us = ${data.how_found_us || null}
+            pref_communication = ${data.pref_communication?.toLowerCase()},
+            how_found_us = ${data.how_found_us?.toLowerCase()}
          WHERE student_id = ${id}
          RETURNING *;
       `;
