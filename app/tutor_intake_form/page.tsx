@@ -1,7 +1,7 @@
 /** @format */
 
 import TutorIntakeForm from "./TutorIntakeForm";
-import BasePage from "@/components/ui/BasePage";
+import BasePage from "@/components/ui/base_page/BasePage";
 
 const open: boolean = true;
 
