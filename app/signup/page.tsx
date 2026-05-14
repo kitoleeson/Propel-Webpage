@@ -1,7 +1,7 @@
 /** @format */
 
 import ClientSignUpForm from "./ClientSignUpForm";
-import BasePage from "@/components/ui/BasePage";
+import BasePage from "@/components/ui/base_page/BasePage";
 
 const SignupPage = () => {
 	return (

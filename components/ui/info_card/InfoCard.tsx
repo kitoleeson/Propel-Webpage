@@ -23,26 +23,7 @@ const InfoCard = ({ front, back, className }: Props) => {
 	};
 
 	return (
-		<div
-			className={`relative aspect-4/5 w-full max-w-120 perspective-[1000px] cursor-pointer ${className}`}
-			onMouseEnter={() => setIsFlipped(true)}
-			onMouseLeave={() => setIsFlipped(false)}
-			// onClick={() => setIsFlipped(!isFlipped)}
-			style={{ touchAction: "pan-y" }}
-		>
-			{/* <div className="absolute -top-6 left-1/2 -translate-x-1/2 w-full flex items-center gap-2 pointer-events-none">
-				<div className="relative w-full h-full flex justify-center items-center text-primary font-bold text-xs uppercase tracking-widest">
-					// fade downwards switch
-					<span className={`hidden [@media(hover:hover)]:inline absolute transition-all duration-500 whitespace-nowrap ${isFlipped ? "opacity-0 translate-y-6" : "opacity-100"}`}>Hover to Flip &rarr;</span>
-					<span className={`inline [@media(hover:hover)]:hidden absolute transition-all duration-500 whitespace-nowrap ${isFlipped ? "opacity-0 translate-y-6" : "opacity-100"}`}>Click to Flip &rarr;</span>
-					<span className={`hidden [@media(hover:hover)]:inline absolute transition-all duration-500 whitespace-nowrap ${isFlipped ? "opacity-100" : "opacity-0 translate-y-6"}`}>&larr; Back</span>
-
-					// instant switch
-					<span className="hidden [@media(hover:hover)]:inline">{isFlipped ? "← Back" : "Hover to Flip →"}</span>
-					<span className="inline [@media(hover:hover)]:hidden">{isFlipped ? "← Back" : "Click to Flip →"}</span>
-				</div>
-			</div> */}
-
+		<div className={`relative aspect-4/5 w-full max-w-120 perspective-[1000px] cursor-pointer ${className}`} onMouseEnter={() => setIsFlipped(true)} onMouseLeave={() => setIsFlipped(false)} style={{ touchAction: "pan-y" }}>
 			<div className="absolute -top-8 left-0 w-full flex justify-center pointer-events-none">
 				<div className="relative h-6 w-full overflow-hidden">
 					<div className="relative w-full h-full flex justify-center items-center text-primary font-bold text-xs uppercase tracking-widest">

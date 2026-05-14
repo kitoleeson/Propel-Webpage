@@ -2,7 +2,7 @@
 "use client";
 
 import Link from "next/link";
-import IconLink from "./IconLink";
+import NavBarIconLink from "./NavBarIconLink";
 import { usePathname } from "next/navigation";
 
 const navLinks = [
@@ -16,10 +16,10 @@ const NavBar = () => {
 	const pathname = usePathname();
 
 	return (
-		<div className="flex items-center justify-between w-full p-2">
+		<div className="flex items-center justify-between w-full p-3">
 			<div className="flex items-center">
-				{/* <IconLink iconName="instagram" href="https://www.instagram.com" label="Instagram" className="nav-icon" /> */}
-				<IconLink iconName="email" href="mailto:propeltutoringyeg@gmail.com" label="Email" className="nav-icon" />
+				<NavBarIconLink iconName="email" href="mailto:propeltutoringyeg@gmail.com" label="Email" className="nav-icon" />
+				<NavBarIconLink iconName="instagram" href="https://www.instagram.com" label="Instagram" className="nav-icon" />
 			</div>
 			<div className="flex items-center landscape:gap-3 portrait:gap-0">
 				{navLinks.map((link) => {

@@ -1,6 +1,6 @@
 /** @format */
 
-import BasePage from "@/components/ui/BasePage";
+import BasePage from "@/components/ui/base_page/BasePage";
 import TutorCard from "@/components/ui/TutorCard";
 import { db } from "@/lib/db";
 
@@ -16,7 +16,7 @@ const AboutPage = async () => {
 				confirmed with you by email once chosen. Once a student begins working with a tutor, that particular tutor's hourly rate for that specific student will never increase, even if it increases for new clients in the future.
 				Tutor rates can be found on the back of each tutor's info card on this page, and will be presented again when you are choosing your tutor.
 			</p>
-			<div className="w-5/6 min-w-80 m-auto grid grid-cols-1 gap-18 justify-items-center mt-15">
+			<div className="w-full sm:w-5/6 m-auto grid grid-cols-1 gap-18 justify-items-center mt-15">
 				{tutors.map((tutor: any, index: number) => (
 					<TutorCard key={tutor.tutor_id} tutor={tutor} index={index} />
 				))}

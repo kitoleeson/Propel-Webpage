@@ -25,7 +25,6 @@ const buildFront = (imgSrc: string, setImgSrc: any, displayName: string, loading
 );
 
 const buildBack = (tutor: any) => {
-	const locationDisplay = tutor.in_person === "Online Only" ? "Online Only" : tutor.location;
 	return (
 		<>
 			{/* HEADER */}
@@ -52,7 +51,7 @@ const buildBack = (tutor: any) => {
 			{/* TUTOR INFORMATION */}
 			<InfoCardCluster className="flex flex-col border-y">
 				<div className="grid grid-cols-2 gap-3 text-xs">
-					<InfoCardTitleField title="Current Rate" field={`$${tutor.current_rate}/hr`} />
+					<InfoCardTitleField title="Current Rate" field={`$${parseFloat(tutor.current_rate) + 5}/hr`} />
 					<InfoCardTitleField title="Experience" field={tutor.prior_experience + 1 + (tutor.prior_experience > 0 ? " Years" : " Year")} />
 				</div>
 				<InfoCardTitleField title="Availablity" field={tutor.availability} fieldClass="text-sm" />
@@ -83,16 +82,16 @@ const TutorCard = ({ tutor, index }: { tutor: any; index: number }) => {
 	const displayName = (tutor.pref_name || tutor.gov_first_name) + " " + tutor.gov_last_name;
 
 	return (
-		<div className="w-full min-w-70 flex portrait:flex-col landscape:flex-row landscape:items-start portrait:items-center gap-12">
+		<div className="w-full max-w-[calc(100vw-80px)] flex portrait:flex-col landscape:flex-row landscape:items-start portrait:items-center gap-12">
 			<div className={`w-full landscape:basis-1/3 flex justify-center shrink-0 ${index % 2 == 0 ? "landscape:order-1" : ""}`}>
 				<InfoCard front={buildFront(imgSrc, setImgSrc, displayName, index == 0 ? "eager" : "lazy")} back={buildBack(tutor)} />
 			</div>
 			<div className="w-full flex flex-col grow justify-between landscape:basis-2/3">
-				<div className="flex items-center justify-between">
+				<div className="flex flex-col sm:flex-row items-center justify-between">
 					<h3 className="text-2xl font-bold text-slate-800">{displayName}</h3>
-					<div className={`font-bold text-right ${tutor.accepting_students > 0 ? "text-green-600" : "text-red-600"}`}>{tutor.accepting_students > 0 ? "Accepting Students" : "Full Capacity"}</div>
+					<div className={`font-bold sm:text-right ${tutor.accepting_students > 0 ? "text-green-600" : "text-red-600"}`}>{tutor.accepting_students > 0 ? "Accepting Students" : "Full Capacity"}</div>
 				</div>
-				<p className="font-bold text-primary mt-1 leading-tight">{tutor.subjects}</p>
+				<p className="font-bold text-primary mt-4 sm:mt-1 leading-tight">{tutor.subjects}</p>
 				<p className="mt-4">{tutor.bio}</p>
 			</div>
 		</div>
