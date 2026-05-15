@@ -28,7 +28,7 @@ const buildBack = (tutor: any) => {
 	return (
 		<>
 			{/* HEADER */}
-			<h3 className="font-bold text-primary border-b pb-2">Academic Profile</h3>
+			<h3 className="text-base font-bold text-primary border-b pb-2">Academic Profile</h3>
 
 			{/* UNIVERSITY INFORMATION */}
 			<InfoCardCluster>

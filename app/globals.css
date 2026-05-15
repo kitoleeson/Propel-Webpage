@@ -36,6 +36,7 @@
 
   h1 { font-size: var(--text-h1); }
   h2 { font-size: var(--text-2xl); line-height: var(--text-2xl--line-height); }
+  h3 { font-size: var(--text-xl); }
   p  { font-size: var(--text-body); }
 }
 
