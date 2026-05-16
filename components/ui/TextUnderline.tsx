@@ -17,7 +17,7 @@ const TextUnderline = ({ textColour, lineColour = "bg-black", children }: { text
 					observer.disconnect();
 				}
 			},
-			{ rootMargin: "0px 0px -20% 0px", threshold: 1 },
+			{ rootMargin: "0px 0px -25% 0px", threshold: 1 },
 		);
 
 		observer.observe(currentElement);

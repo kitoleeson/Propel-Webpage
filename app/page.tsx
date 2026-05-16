@@ -43,22 +43,22 @@ export default function Home() {
 						we give you the space and time to explore how you think and learn so that you can gain a deeper understanding of your own processes. We take our cues from you. Through our conversations and learning sessions you will
 						show us how you like to learn and how we can best support you.
 					</h3>
-					<div className="space-y-5">
-						<h2>Our Promises</h2>
-						<HighlightCardFluidGrid>
-							<HighlightCard textClass="text-primary!" bulge>
+					<div className="space-y-5 bg-primary-hover py-7 -mx-10 px-10 inset-shadow-sm">
+						<h2 className="text-white font-bold text-3xl">Our Promises</h2>
+						<HighlightCardFluidGrid cardClass="bg-white">
+							<HighlightCard textClass="text-black!" bulge>
 								We promise to meet you where you are at and guide you with intention and thoughtfulness, increasing your knowledge and setting you up for future learning.
 							</HighlightCard>
-							<HighlightCard textClass="text-primary!" bulge>
+							<HighlightCard textClass="text-black!" bulge>
 								We promise to adapt our teaching style to suit what works best for you.
 							</HighlightCard>
-							<HighlightCard textClass="text-primary!" bulge>
+							<HighlightCard textClass="text-black!" bulge>
 								We promise to encourage you to build an intuitive understanding of subjects, using applications which are meaningful to you.
 							</HighlightCard>
-							<HighlightCard textClass="text-primary!" bulge>
+							<HighlightCard textClass="text-black!" bulge>
 								We promise to listen to what you need and want to learn, and tailor our sessions to achieve that.
 							</HighlightCard>
-							<HighlightCard textClass="text-primary!" bulge>
+							<HighlightCard textClass="text-black!" bulge>
 								We promise to make our sessions together enjoyable, and share our interest and excitement in the subjects you are learning.
 							</HighlightCard>
 						</HighlightCardFluidGrid>
@@ -69,7 +69,7 @@ export default function Home() {
 						check out our crew here and let's get started. (the "here" would be a link to the team--you want to end this section with a call to action)
 					</p>
 				</Body>
-				<div className="@container-size h-120 flex flex-col justify-center bg-primary overflow-hidden relative">
+				<div className="@container-size h-60 flex flex-col justify-center bg-primary overflow-hidden relative">
 					<div className="absolute -translate-x-1/2 -translate-y-1/2 top-5/6 @landscape:left-auto @landscape:right-[-120cqh] @portrait:left-1/2 w-[175cqh] h-[175cqh] opacity-15 pointer-events-none z-0">
 						<Image src="/images/logos/full-white.svg" alt="Propel Tutoring Logo Background" fill sizes="(max-width: 768px) 100vw, 1200px" priority className="object-contain" />
 					</div>
