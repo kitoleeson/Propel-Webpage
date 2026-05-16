@@ -6,7 +6,10 @@ import NavBar from "@/components/ui/base_page/nav_bar/NavBar";
 import Body from "@/components/ui/base_page/Body";
 import HomePageLogoSketch from "@/components/canvas/HomePageLogoSketch";
 import HighlightCard from "@/components/ui/highlight_card/HighlightCard";
-import HighlightCardGrid from "@/components/ui/highlight_card/HighlightCardGrid";
+import HighlightCardStrictGrid from "@/components/ui/highlight_card/HighlightCardStrictGrid";
+import HighlightCardFluidGrid from "@/components/ui/highlight_card/HighlightCardFluidGrid";
+import TextUnderline from "@/components/ui/TextUnderline";
+import Image from "next/image";
 
 export default function Home() {
 	return (
@@ -18,7 +21,7 @@ export default function Home() {
 					<h1 className="text-6xl font-bold">Unlocking your key to learning.</h1>
 					<div className="space-y-5">
 						<h2>Propel Tutoring offers personalized, student-led tutoring. We believe in:</h2>
-						<HighlightCardGrid>
+						<HighlightCardStrictGrid>
 							<HighlightCard title="Ownership" iconName="key">
 								We learn more effectively when we take ownership of, and invest in, our learning.
 							</HighlightCard>
@@ -31,21 +34,34 @@ export default function Home() {
 							<HighlightCard title="Foundation" iconName="roots">
 								We deepen our knowledge when we understand core principles and learn how to apply them in a way that is intuitive to us.
 							</HighlightCard>
-						</HighlightCardGrid>
+						</HighlightCardStrictGrid>
 					</div>
 					<h3>
-						Propel Tutoring is a catalyst: we give you the space and time to explore how you think and learn so that you can gain a deeper understanding of your own processes. We take our cues from you. Through our conversations
-						and learning sessions you will show us how you like to learn and how we can best support you.
+						<TextUnderline textColour="text-primary" lineColour="bg-primary">
+							Propel Tutoring is a catalyst:
+						</TextUnderline>{" "}
+						we give you the space and time to explore how you think and learn so that you can gain a deeper understanding of your own processes. We take our cues from you. Through our conversations and learning sessions you will
+						show us how you like to learn and how we can best support you.
 					</h3>
 					<div className="space-y-5">
 						<h2>Our Promises</h2>
-						<HighlightCardGrid>
-							<HighlightCard>We promise to meet you where you are at and guide you with intention and thoughtfulness, increasing both your knowledge of specific topics and setting you up for future learning.</HighlightCard>
-							<HighlightCard>We promise to adapt our teaching style to suit what works best for you.</HighlightCard>
-							<HighlightCard>We promise to encourage you to build an intuitive understanding of subjects rather than simply memorize.</HighlightCard>
-							<HighlightCard>We promise to listen to what you need and want to learn and tailor our sessions to achieve that.</HighlightCard>
-							<HighlightCard>We promise to make our sessions together enjoyable, using different approaches and techniques.</HighlightCard>
-						</HighlightCardGrid>
+						<HighlightCardFluidGrid>
+							<HighlightCard textClass="text-primary!" bulge>
+								We promise to meet you where you are at and guide you with intention and thoughtfulness, increasing your knowledge and setting you up for future learning.
+							</HighlightCard>
+							<HighlightCard textClass="text-primary!" bulge>
+								We promise to adapt our teaching style to suit what works best for you.
+							</HighlightCard>
+							<HighlightCard textClass="text-primary!" bulge>
+								We promise to encourage you to build an intuitive understanding of subjects, using applications which are meaningful to you.
+							</HighlightCard>
+							<HighlightCard textClass="text-primary!" bulge>
+								We promise to listen to what you need and want to learn, and tailor our sessions to achieve that.
+							</HighlightCard>
+							<HighlightCard textClass="text-primary!" bulge>
+								We promise to make our sessions together enjoyable, and share our interest and excitement in the subjects you are learning.
+							</HighlightCard>
+						</HighlightCardFluidGrid>
 					</div>
 					<p>
 						Engaging in a tutoring relationship means we have to work together and communicate honestly and frequently to make sure our sessions are fun and productive. We will check in with you regularly to make sure that you are
@@ -53,6 +69,14 @@ export default function Home() {
 						check out our crew here and let's get started. (the "here" would be a link to the team--you want to end this section with a call to action)
 					</p>
 				</Body>
+				<div className="@container-size h-120 flex flex-col justify-center bg-primary overflow-hidden relative">
+					<div className="absolute -translate-x-1/2 -translate-y-1/2 top-5/6 @landscape:left-auto @landscape:right-[-120cqh] @portrait:left-1/2 w-[175cqh] h-[175cqh] opacity-15 pointer-events-none z-0">
+						<Image src="/images/logos/full-white.svg" alt="Propel Tutoring Logo Background" fill sizes="(max-width: 768px) 100vw, 1200px" priority className="object-contain" />
+					</div>
+					<h1 className="text-white whitespace-pre-line text-[min(20cqw,25cqh)] z-10 @landscape:ml-20 @portrait:mx-2 font-bold leading-[1.2] @landscape:text-left @portrait:text-center transition-all ease-in-out hover:scale-105">
+						Sign Up Now!
+					</h1>
+				</div>
 			</main>
 		</>
 	);

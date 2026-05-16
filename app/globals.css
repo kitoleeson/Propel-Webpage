@@ -93,3 +93,8 @@ h1-container {
     background-color: #94a3b8;
   }
 }
+
+@keyframes draw {
+  from { width: 0%; }
+  to { width: 100%; }
+}

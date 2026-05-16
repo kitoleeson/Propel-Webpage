@@ -3,7 +3,11 @@
 import React from "react";
 
 const Body = ({ space_y = 5, children }: { space_y?: number; children: React.ReactNode }) => {
-	return <div className={`m-10 space-y-${space_y}`}>{children}</div>;
+	const space_y_map: Record<number, string> = {
+		5: "space-y-5",
+		12: "space-y-12",
+	};
+	return <div className={`m-10 ${space_y_map[space_y]}`}>{children}</div>;
 };
 
 export default Body;
