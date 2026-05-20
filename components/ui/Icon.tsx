@@ -1,16 +1,13 @@
+/** @format */
+
 "use client";
 
-import Instagram from "@/icons/instagram.svg";
-import Email from "@/icons/email.svg";
+import * as Icons from "@/icons";
 
-const icons = {
-   instagram: Instagram,
-   email: Email,
-};
-
-type IconName = keyof typeof icons;
+export type IconName = keyof typeof Icons;
 
 export default function Icon({ name, className }: { name: IconName; className?: string }) {
-   const IconComponent = icons[name];
-   return <IconComponent className={`inline-block ${className}`} />;
+	if (!Icons[name]) return null;
+	const IconComponent = Icons[name];
+	return <IconComponent className={`inline-block ${className}`} />;
 }

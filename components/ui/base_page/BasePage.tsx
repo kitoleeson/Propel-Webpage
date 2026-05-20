@@ -1,7 +1,7 @@
 /** @format */
 
 import React from "react";
-import NavBar from "./NavBar";
+import NavBar from "./nav_bar/NavBar";
 import PageHeader from "./PageHeader";
 import Body from "./Body";
 
