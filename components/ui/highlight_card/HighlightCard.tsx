@@ -20,7 +20,7 @@ const HighlightCard = ({ title, iconName, className, iconClass, titleClass, text
 	const twoRows = title || iconName;
 	return (
 		<div
-			className={`group w-full h-78 p-5 ${twoRows && "pt-10"} border-3 rounded-md border-primary-hover font-semibold grid ${twoRows ? "grid-rows-2" : "grid-rows-1"} items-stretch justify-center text-center shadow-md ${className} ${bulge && bulgeCards}`}
+			className={`group w-full h-92 md:h-78 p-5 ${twoRows && "pt-10"} border-3 rounded-md border-primary-hover font-semibold grid ${twoRows ? "grid-rows-2" : "grid-rows-1"} items-stretch justify-center text-center shadow-md ${className} ${bulge && bulgeCards}`}
 		>
 			{twoRows && (
 				<div className="flex flex-col justify-center items-center">

@@ -7,9 +7,9 @@ import Body from "@/components/ui/base_page/Body";
 import HomePageLogoSketch from "@/components/canvas/HomePageLogoSketch";
 import HighlightCard from "@/components/ui/highlight_card/HighlightCard";
 import HighlightCardStrictGrid from "@/components/ui/highlight_card/HighlightCardStrictGrid";
-import HighlightCardFluidGrid from "@/components/ui/highlight_card/HighlightCardFluidGrid";
 import TextUnderline from "@/components/ui/TextUnderline";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Home() {
 	return (
@@ -20,63 +20,57 @@ export default function Home() {
 				<Body space_y={12}>
 					<h1 className="text-6xl font-bold">Unlocking your key to learning.</h1>
 					<div className="space-y-5">
-						<h2>Propel Tutoring offers personalized, student-led tutoring. We believe in:</h2>
+						<h2>
+							At Propel Tutoring, we take our cues from you. We are a catalyst for your learning: through our conversations and sessions, you will better understand your own learning processes. This will give us the insight we
+							need to make sure that your learning is moving forward. We believe in:
+						</h2>
 						<HighlightCardStrictGrid>
 							<HighlightCard title="Ownership" iconName="key">
-								We learn more effectively when we take ownership of, and invest in, our learning.
+								We ask you to invest in your own learning. Our job is to facilitate, teach, encourage, and share our passion.
 							</HighlightCard>
 							<HighlightCard title="Adaptability" iconName="chameleon">
-								We all learn differently. Our teaching styles must understand and adapt to each person.
+								We tailor how we teach to suit how you learn. We welcome all students and, together, will figure out how you best like to learn.
 							</HighlightCard>
 							<HighlightCard title="Curiousity" iconName="magnifying_glass">
-								We become more confident as we become more curious about a subject.
+								We will ask questions that deepen your curiousity and prompt you to ask even more questions. Curiousity is key to increasing confidence on a subject.
 							</HighlightCard>
 							<HighlightCard title="Foundation" iconName="roots">
-								We deepen our knowledge when we understand core principles and learn how to apply them in a way that is intuitive to us.
+								We base our learning on the core principles of a subject, then apply them in ways that are inspiring to you, setting you up for learning now and in the future.
 							</HighlightCard>
 						</HighlightCardStrictGrid>
 					</div>
-					<h3>
-						<TextUnderline textColour="text-primary" lineColour="bg-primary">
-							Propel Tutoring is a catalyst:
-						</TextUnderline>{" "}
-						we give you the space and time to explore how you think and learn so that you can gain a deeper understanding of your own processes. We take our cues from you. Through our conversations and learning sessions you will
-						show us how you like to learn and how we can best support you.
-					</h3>
-					<div className="space-y-5 bg-primary-hover py-7 -mx-10 px-10 inset-shadow-sm">
+					<div className="space-y-5 bg-primary-hover p-7 rounded-2xl inset-shadow-sm shadow-black">
 						<h2 className="text-white font-bold text-3xl">Our Promises</h2>
-						<HighlightCardFluidGrid cardClass="bg-white">
-							<HighlightCard textClass="text-black!" bulge>
-								We promise to meet you where you are at and guide you with intention and thoughtfulness, increasing your knowledge and setting you up for future learning.
-							</HighlightCard>
-							<HighlightCard textClass="text-black!" bulge>
-								We promise to adapt our teaching style to suit what works best for you.
-							</HighlightCard>
-							<HighlightCard textClass="text-black!" bulge>
-								We promise to encourage you to build an intuitive understanding of subjects, using applications which are meaningful to you.
-							</HighlightCard>
-							<HighlightCard textClass="text-black!" bulge>
-								We promise to listen to what you need and want to learn, and tailor our sessions to achieve that.
-							</HighlightCard>
-							<HighlightCard textClass="text-black!" bulge>
-								We promise to make our sessions together enjoyable, and share our interest and excitement in the subjects you are learning.
-							</HighlightCard>
-						</HighlightCardFluidGrid>
+						<ul className="space-y-3 text-white font-semibold list-disc pl-10">
+							<li>We promise to meet you where you are at and guide you to increase your knowledge of specific topics and to set you up for future learning.</li>
+							<li>We promise to promote an intuitive understanding of subjects rather than simply memorizing them.</li>
+							<li>We promise to listen and tailor our sessions to achieve what you want to learn.</li>
+							<li>We promise to make our sessions together enjoyable and will use various learning approaches and techniques.</li>
+						</ul>
 					</div>
-					<p>
-						Engaging in a tutoring relationship means we have to work together and communicate honestly and frequently to make sure our sessions are fun and productive. We will check in with you regularly to make sure that you are
-						accomplishing what you hope. We take our lead from you and use our experience and instinct to guide you towards fulfilling experiences. This starts from the get-go when you select the tutor you want to work with --
-						check out our crew here and let's get started. (the "here" would be a link to the team--you want to end this section with a call to action)
-					</p>
+					<div className="space-y-5">
+						<h2 className="font-bold text-3xl">Meet Our Crew</h2>
+						<p>
+							In tutoring, we have responsibilities to each other. Frequent communication will ensure our sessions are fun and productive. Be proactive in letting us know what is working for you and where we need to make
+							adjustments. We will take our lead from you and use our experience to help you power up. This starts from the get-go when you select the tutor you want to work with. Check out our crew{" "}
+							{
+								<Link key={"/about"} href={"/about"} className="group relative hover:scale-110 text-primary hover:text-primary-hover py-0.5 transition-all duration-300 font-bold">
+									here
+									<span className="absolute bottom-0 left-0 h-0.5 bg-current transition-all duration-200 ease-out origin-center w-full scale-x-0 group-hover:scale-x-100" />
+								</Link>
+							}{" "}
+							and let's get started.
+						</p>
+					</div>
 				</Body>
-				<div className="@container-size h-60 flex flex-col justify-center bg-primary overflow-hidden relative">
+				<Link key={"/signup"} href={"/signup"} className="group @container-size h-60 flex flex-col justify-center bg-primary overflow-hidden relative">
 					<div className="absolute -translate-x-1/2 -translate-y-1/2 top-5/6 @landscape:left-auto @landscape:right-[-120cqh] @portrait:left-1/2 w-[175cqh] h-[175cqh] opacity-15 pointer-events-none z-0">
 						<Image src="/images/logos/full-white.svg" alt="Propel Tutoring Logo Background" fill sizes="(max-width: 768px) 100vw, 1200px" priority className="object-contain" />
 					</div>
-					<h1 className="text-white whitespace-pre-line text-[min(20cqw,25cqh)] z-10 @landscape:ml-20 @portrait:mx-2 font-bold leading-[1.2] @landscape:text-left @portrait:text-center transition-all ease-in-out hover:scale-105">
+					<h1 className="text-white whitespace-pre-line text-[min(20cqw,25cqh)] z-10 @landscape:ml-20 @portrait:mx-2 font-bold leading-[1.2] @landscape:text-left @portrait:text-center transition-all ease-in-out group-hover:tracking-wide">
 						Sign Up Now!
 					</h1>
-				</div>
+				</Link>
 			</main>
 		</>
 	);
