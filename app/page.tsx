@@ -7,7 +7,6 @@ import Body from "@/components/ui/base_page/Body";
 import HomePageLogoSketch from "@/components/canvas/HomePageLogoSketch";
 import HighlightCard from "@/components/ui/highlight_card/HighlightCard";
 import HighlightCardStrictGrid from "@/components/ui/highlight_card/HighlightCardStrictGrid";
-import TextUnderline from "@/components/ui/TextUnderline";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -18,7 +17,7 @@ export default function Home() {
 			<main>
 				<HomePageLogoSketch />
 				<Body space_y={12}>
-					<h1 className="text-6xl font-bold">Unlocking your key to learning.</h1>
+					<h1 className="text-6xl font-bold">Accelerating your path to understanding.</h1>
 					<div className="space-y-5">
 						<h2>
 							At Propel Tutoring, we take our cues from you. We are a catalyst for your learning: through our conversations and sessions, you will better understand your own learning processes. This will give us the insight we
@@ -48,15 +47,18 @@ export default function Home() {
 							<li>We promise to make our sessions together enjoyable and will use various learning approaches and techniques.</li>
 						</ul>
 					</div>
-					<div className="space-y-5">
-						<h2 className="font-bold text-3xl">Meet Our Crew</h2>
+					<div className="space-y-3">
+						<h2 className="font-bold text-3xl">Working Together</h2>
 						<p>
 							In tutoring, we have responsibilities to each other. Frequent communication will ensure our sessions are fun and productive. Be proactive in letting us know what is working for you and where we need to make
-							adjustments. We will take our lead from you and use our experience to help you power up. This starts from the get-go when you select the tutor you want to work with. Check out our crew{" "}
+							adjustments. We will take our lead from you and use our experience to help you power up. This starts from the get-go when you select the tutor you want to work with.{" "}
 							{
-								<Link key={"/about"} href={"/about"} className="group relative hover:scale-110 text-primary hover:text-primary-hover py-0.5 transition-all duration-300 font-bold">
-									here
-									<span className="absolute bottom-0 left-0 h-0.5 bg-current transition-all duration-200 ease-out origin-center w-full scale-x-0 group-hover:scale-x-100" />
+								<Link
+									key={"/about"}
+									href={"/about"}
+									className="inline font-bold duration-300 text-primary hover:text-primary-hover bg-linear-to-r from-current to-current  bg-size-[0%_2px] bg-no-repeat bg-bottom hover:bg-size-[98%_2px] transition-[background-size] ease-out"
+								>
+									Check out our crew here
 								</Link>
 							}{" "}
 							and let's get started.
