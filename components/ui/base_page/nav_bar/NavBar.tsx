@@ -1,15 +1,16 @@
 /** @format */
 "use client";
 
-import Link from "next/link";
 import NavBarIconLink from "./NavBarIconLink";
 import { usePathname } from "next/navigation";
+import { NavLink } from "@/lib/validation/components";
+import LinkUnderline from "@/components/ui/LinkUnderline";
 
-const navLinks = [
-	{ name: "home", href: "/" },
-	{ name: "about", href: "/about" },
-	{ name: "sign up", href: "/signup" },
-	{ name: "support", href: "/support" },
+const navLinks: NavLink[] = [
+	{ name: "home", href: "/", anchor: "HOME" },
+	{ name: "about", href: "/about", anchor: "ABOUT" },
+	{ name: "sign up", href: "/signup", anchor: "SIGN UP" },
+	{ name: "support", href: "/support", anchor: "SUPPORT" },
 ];
 
 const NavBar = () => {
@@ -19,18 +20,12 @@ const NavBar = () => {
 		<div className="flex items-center justify-between w-full p-3">
 			<div className="flex items-center">
 				<NavBarIconLink iconName="email" href="mailto:propeltutoringyeg@gmail.com" label="Email" className="nav-icon" />
-				<NavBarIconLink iconName="instagram" href="https://www.instagram.com" label="Instagram" className="nav-icon" />
+				{/* <NavBarIconLink iconName="instagram" href="https://www.instagram.com" label="Instagram" className="nav-icon" /> */}
 			</div>
 			<div className="flex items-center landscape:gap-3 portrait:gap-0">
-				{navLinks.map((link) => {
-					const isActive = pathname === link.href;
-					return (
-						<Link key={link.href} href={link.href} className={`nav-link group relative py-0.5 transition-all duration-300 ${isActive ? "font-bold" : "font-normal"}`}>
-							{link.name.toUpperCase()}
-							<span className={`absolute bottom-0 left-0 h-0.5 bg-current transition-all duration-200 ease-out origin-center ${isActive ? "w-full scale-x-75" : "w-full scale-x-0 group-hover:scale-x-75"}`} />
-						</Link>
-					);
-				})}
+				{navLinks.map((link) => (
+					<LinkUnderline key={link.href} link={link} showActive={pathname === link.href} />
+				))}
 			</div>
 		</div>
 	);
