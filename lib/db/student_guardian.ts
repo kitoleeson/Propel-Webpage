@@ -3,7 +3,7 @@
 type StudentGuardianType = {
 	student_id: number;
 	guardian_id: number;
-	relationship_type: string;
+	relationship_type: string | undefined;
 	is_primary_biller: boolean;
 };
 
@@ -89,13 +89,30 @@ export const createStudentGuardianRepo = (sql: any, pool: any) => {
       `;
 	};
 
-	const setPrimaryBiller = async (student_id: number, guardian_id: number, db: any = sql) => {
+	// UPDATE URGENTISH: check if new primary biller has billing_account, create one if not, then update student_billing to link billing_account
+	const setPrimaryBillerGuardian = async (student_id: number, guardian_id: number, db: any = sql) => {
 		const client = await pool.connect();
 		const tx = sql(client);
 		try {
 			await client.query("BEGIN");
 			const exists = await get(student_id, guardian_id, tx);
 			if (exists.length === 0) throw new Error("Student-Guardian relationship does not exist");
+
+			// const has_billing_account_response = await tx`
+			// 	SELECT *
+			// 	FROM billing_accounts
+			// 	WHERE type = 'guardian' AND owner_id = ${guardian_id};
+			// `;
+			// const has_billing_account = has_billing_account_response.length === 0;
+
+			// // get information from owner account
+			// if (!has_billing_account) await tx`
+			// 	INSERT INTO billing_accounts (type, owner_id, display_name, email, first_invoice)
+			// 	VALUES (${data.type}, ${data.owner_id}, ${data.display_name}, ${data.email}, ${data.first_invoice})
+			// 	RETURNING *;
+			// `;
+
+			// // continue logic
 
 			await tx`
 				UPDATE student_guardian
@@ -133,6 +150,9 @@ export const createStudentGuardianRepo = (sql: any, pool: any) => {
 			byGuardianName: removeByGuardianName,
 		},
 		update,
-		setPrimaryBiller,
+		setPrimaryBiller: {
+			guardian: setPrimaryBillerGuardian,
+			// student: setPrimaryBillerStudent, // ADD SOON
+		},
 	};
 };

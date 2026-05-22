@@ -40,11 +40,7 @@ const guardianSchema = personBase.extend({
 		.refine((val) => val !== undefined, { message: "Required" }),
 	is_primary_biller: z.boolean(),
 	already_exists: z.boolean().optional(),
-	id: z
-		.number()
-		.int()
-		.optional()
-		.refine((val) => val !== undefined, { message: "Required" }),
+	id: z.number().int().optional(),
 	email_password: z.string().email("Invalid email address").optional(),
 });
 
@@ -54,11 +50,11 @@ const guardianSchema = personBase.extend({
 // 	pref_name: "tessy",
 // 	email: "tessy@test.ca",
 // 	phone: "1234567890",
-// 	pref_communication: "email",
+// 	pref_communication: "Email",
 // 	grade: 12,
 // 	city: "edmonton",
-// 	how_found_us: "word of mouth",
-// 	biller: "guardian",
+// 	how_found_us: "Word of Mouth",
+// 	biller: "Guardian",
 // };
 
 // export const defaultGuardian: ClientFormValues["guardians"][0] = {
@@ -67,8 +63,8 @@ const guardianSchema = personBase.extend({
 // 	pref_name: "tessa",
 // 	email: "tessa@test.ca",
 // 	phone: "1234567890",
-// 	pref_communication: "text message",
-// 	relationship: "mother",
+// 	pref_communication: "Text Message",
+// 	relationship: "Mother",
 // 	is_primary_biller: false,
 // };
 
