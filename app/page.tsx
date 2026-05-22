@@ -17,7 +17,7 @@ export default function Home() {
 			<main>
 				<HomePageLogoSketch />
 				<Body space_y={12}>
-					<h1 className="text-6xl font-bold">Accelerating your path to understanding.</h1>
+					<h1 className="text-6xl font-bold">Accelerating your learning.</h1>
 					<div className="space-y-5">
 						<h2>
 							At Propel Tutoring, we take our cues from you. We are a catalyst for your learning: through our conversations and sessions, you will better understand your own learning processes. This will give us the insight we
