@@ -218,7 +218,7 @@ describe("Student Guardian Repository Integration Tests", () => {
 			expect(result1.rows[0].is_primary_biller).toEqual(true);
 			expect(result2.rows[0].is_primary_biller).toEqual(false);
 
-			await db.student_guardian.setPrimaryBiller(student.student_id, guardian2.rows[0].guardian_id);
+			await db.student_guardian.setPrimaryBiller.guardian(student.student_id, guardian2.rows[0].guardian_id);
 			result1 = await db.student_guardian.get.get(student.student_id, guardian.guardian_id);
 			result2 = await db.student_guardian.get.get(student.student_id, guardian2.rows[0].guardian_id);
 			expect(result1.rows[0].is_primary_biller).toEqual(false);
@@ -240,7 +240,7 @@ describe("Student Guardian Repository Integration Tests", () => {
 			expect(result2.rows[0].is_primary_biller).toEqual(false);
 			expect(result3.rows[0].is_primary_biller).toEqual(false);
 
-			await db.student_guardian.setPrimaryBiller(student.student_id, guardian2.rows[0].guardian_id);
+			await db.student_guardian.setPrimaryBiller.guardian(student.student_id, guardian2.rows[0].guardian_id);
 			result1 = await db.student_guardian.get.get(student.student_id, guardian.guardian_id);
 			result2 = await db.student_guardian.get.get(student.student_id, guardian2.rows[0].guardian_id);
 			result3 = await db.student_guardian.get.get(student.student_id, guardian3.rows[0].guardian_id);
@@ -248,7 +248,7 @@ describe("Student Guardian Repository Integration Tests", () => {
 			expect(result2.rows[0].is_primary_biller).toEqual(true);
 			expect(result3.rows[0].is_primary_biller).toEqual(false);
 
-			await db.student_guardian.setPrimaryBiller(student.student_id, guardian3.rows[0].guardian_id);
+			await db.student_guardian.setPrimaryBiller.guardian(student.student_id, guardian3.rows[0].guardian_id);
 			result1 = await db.student_guardian.get.get(student.student_id, guardian.guardian_id);
 			result2 = await db.student_guardian.get.get(student.student_id, guardian2.rows[0].guardian_id);
 			result3 = await db.student_guardian.get.get(student.student_id, guardian3.rows[0].guardian_id);
@@ -256,7 +256,7 @@ describe("Student Guardian Repository Integration Tests", () => {
 			expect(result2.rows[0].is_primary_biller).toEqual(false);
 			expect(result3.rows[0].is_primary_biller).toEqual(true);
 
-			await db.student_guardian.setPrimaryBiller(student.student_id, guardian2.rows[0].guardian_id);
+			await db.student_guardian.setPrimaryBiller.guardian(student.student_id, guardian2.rows[0].guardian_id);
 			result1 = await db.student_guardian.get.get(student.student_id, guardian.guardian_id);
 			result2 = await db.student_guardian.get.get(student.student_id, guardian2.rows[0].guardian_id);
 			result3 = await db.student_guardian.get.get(student.student_id, guardian3.rows[0].guardian_id);

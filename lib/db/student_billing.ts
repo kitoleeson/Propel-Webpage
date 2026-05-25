@@ -1,6 +1,6 @@
 /** @format */
 
-export type BillingAccountType = {
+export type StudentBillingType = {
 	student_id: number;
 	billing_id: number;
 };
@@ -14,7 +14,7 @@ export const createStudentBillingRepo = (sql: any, pool: any) => {
 		return db`SELECT * FROM student_billing ORDER BY student_id`;
 	};
 
-	const insert = (data: BillingAccountType, db: any = sql) => {
+	const insert = (data: StudentBillingType, db: any = sql) => {
 		return db`
 	      INSERT INTO student_billing (student_id, billing_id)
 	      VALUES (${data.student_id}, ${data.billing_id})

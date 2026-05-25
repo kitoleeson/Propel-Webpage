@@ -228,13 +228,13 @@ ON sessions (assignment_id, session_date);
 -- =========================
 
 CREATE TABLE IF NOT EXISTS billing_accounts (
-    billing_id SERIAL PRIMARY KEY,
-    type TEXT NOT NULL
-        CHECK (type IN ('guardian','student')),
     owner_id INTEGER NOT NULL,
     display_name TEXT NOT NULL,
     email TEXT UNIQUE NOT NULL,
-    first_invoice BOOLEAN DEFAULT TRUE
+    first_invoice BOOLEAN DEFAULT TRUE,
+    student_id INTEGER UNIQUE REFERENCES students(student_id),
+    guardian_id INTEGER UNIQUE REFERENCES guardians(guardian_id),
+    CHECK (((student_id IS NOT NULL) AND (guardian_id IS NULL)) OR ((student_id IS NULL) AND (guardian_id IS NOT NULL)))
 );
 -- inputed: through website when a student chooses a billing account during sign up
 -- updated: through interface when billing account details change

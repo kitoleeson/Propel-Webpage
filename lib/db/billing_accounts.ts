@@ -1,11 +1,11 @@
 /** @format */
 
 export type BillingAccountType = {
-	type: "student" | "guardian";
-	owner_id: number;
 	display_name: string;
 	email: string;
 	first_invoice: boolean;
+	student_id?: number;
+	guardian_id?: number;
 };
 
 export const createBillingAccountsRepo = (sql: any, pool: any) => {
@@ -14,7 +14,11 @@ export const createBillingAccountsRepo = (sql: any, pool: any) => {
 	};
 
 	const getByOwner = async (type: "student" | "guardian", owner_id: number, db: any = sql) => {
-		return db`SELECT * FROM billing_accounts WHERE owner_id = ${owner_id} AND type = ${type};`;
+		return db`
+         SELECT * FROM billing_accounts 
+         WHERE (student_id = ${owner_id} AND ${type} = 'student')
+            OR (guardian_id = ${owner_id} AND ${type} = 'guardian');
+      `;
 	};
 
 	const getAll = async (db: any = sql) => {
@@ -22,56 +26,52 @@ export const createBillingAccountsRepo = (sql: any, pool: any) => {
 	};
 
 	const getOwner = async (billing_id: number, db: any = sql) => {
-		const client = await pool.connect();
-		const tx = sql(client);
-		try {
-			await client.query("BEGIN");
-			const response = await get(billing_id, tx);
-			if (response.length === 0) throw new Error("Student-Guardian relationship does not exist");
-			const billing_account = response.rows[0];
-
-			return tx`
-				SELECT *
-            FROM ${billing_account.type + "s"}
-            WHERE ${billing_account.type + "_id"} = ${billing_id};
-			`;
-		} catch (e) {
-			await client.query("ROLLBACK");
-			throw e;
-		} finally {
-			client.release();
-		}
+		return db`
+      SELECT 
+         ba.billing_id,
+         ba.display_name,
+         ba.first_invoice,
+         COALESCE(s.gov_first_name, g.gov_first_name) AS gov_first_name,
+         COALESCE(s.gov_last_name, g.gov_last_name) AS gov_last_name,
+         COALESCE(s.email, g.email) AS email,
+         COALESCE(s.pref_communication, g.pref_communication) AS pref_communication,
+         CASE 
+            WHEN ba.student_id IS NOT NULL THEN 'student'
+            ELSE 'guardian'
+         END AS owner_type
+      FROM billing_accounts ba
+      LEFT JOIN students s ON ba.student_id = s.student_id
+      LEFT JOIN guardians g ON ba.guardian_id = g.guardian_id
+      WHERE ba.billing_id = ${billing_id}
+   `;
 	};
 
 	const insert = (data: BillingAccountType, db: any = sql) => {
 		return db`
-	      INSERT INTO billing_accounts (type, owner_id, display_name, email, first_invoice)
-	      VALUES (${data.type}, ${data.owner_id}, ${data.display_name}, ${data.email}, ${data.first_invoice})
+	      INSERT INTO billing_accounts (display_name, email, first_invoice, student_id, guardian_id)
+	      VALUES (${data.display_name}, ${data.email}, ${data.first_invoice}, ${data.student_id}, ${data.guardian_id})
 	      RETURNING *;
 	   `;
 	};
 
 	const removeById = (billing_id: number, db: any = sql) => {
 		return db`
-	      DELETE FROM billing_accounts WHERE billing_id = ${billing_id};
+	      DELETE FROM billing_accounts WHERE billing_id = ${billing_id} RETURNING *;
 	   `;
 	};
 
-	const update = (billing_id: number, data: BillingAccountType, db: any = sql) => {
+	const update = (billing_id: number, data: { display_name: string; email: string }, db: any = sql) => {
 		return db`
 	      UPDATE billing_accounts
 	      SET
-	         type = ${data.type},
-	         owner_id = ${data.owner_id},
 	         display_name = ${data.display_name || null},
-	         email = ${data.email},
-	         first_invoice = ${data.first_invoice},
+	         email = ${data.email}
 	      WHERE billing_id = ${billing_id}
 	      RETURNING *;
 	   `;
 	};
 
-	const setFirstInvoice = (billing_id: number, set_to: boolean = true, db: any = sql) => {
+	const setFirstInvoice = (billing_id: number, set_to: boolean = false, db: any = sql) => {
 		return db`
          UPDATE billing_accounts
          SET first_invoice = ${set_to}
