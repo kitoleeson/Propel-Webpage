@@ -24,15 +24,14 @@ export const createStudentBillingRepo = (sql: any, pool: any) => {
 
 	const removeByStudent = (student_id: number, db: any = sql) => {
 		return db`
-	      DELETE FROM student_billing WHERE student_id = ${student_id};
+	      DELETE FROM student_billing WHERE student_id = ${student_id} RETURNING *;
 	   `;
 	};
 
 	const update = (student_id: number, billing_id: number, db: any = sql) => {
 		return db`
 	      UPDATE student_billing
-	      SET
-	         billing_id = ${billing_id},
+	      SET billing_id = ${billing_id}
 	      WHERE student_id = ${student_id}
 	      RETURNING *;
 	   `;
