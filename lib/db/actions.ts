@@ -4,6 +4,7 @@
 
 import { db } from ".";
 import { sendAdminApprovalPendingTutorEmail } from "../mail/sendEmail";
+import { ClientFormValues } from "../validation/clientForm/clientFormSchema";
 import { FormValues } from "../validation/tutorForm/tutorFormSchema";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
@@ -26,6 +27,19 @@ export async function submitTutorForApproval(data: FormValues) {
 
 	revalidatePath("/");
 	redirect("/");
+}
+
+export async function submitStudentForAcceptance(data: ClientFormValues) {
+	const student_result = await db.student.insert(data.student);
+	const db_student = student_result.rows[0];
+	for (let guardian of data.guardians) {
+		let guardian_id;
+		if (!guardian.already_exists) {
+			const guardian_result = await db.guardian.insert(guardian);
+			guardian_id = guardian_result.rows[0].id;
+		} else guardian_id = guardian.id;
+		db.student_guardian.insert({ student_id: db_student.id, guardian_id: guardian_id, relationship_type: guardian.relationship, is_primary_biller: guardian.is_primary_biller });
+	}
 }
 
 export async function approvePendingTutor(pending_tutor_id: number) {

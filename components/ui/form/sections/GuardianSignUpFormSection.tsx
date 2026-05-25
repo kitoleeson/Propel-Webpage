@@ -1,13 +1,12 @@
 /** @format */
 
 "use client";
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useFormContext } from "react-hook-form";
 import { FormTextInput, FormPhoneInput, FormDropdownInput, FormRadioInput, FormCheckboxInput, FormNumberInput } from "@/components/ui/form/inputs";
 import type { ClientFormValues } from "@/lib/validation/clientForm/clientFormSchema";
 import type { PersonPlaceholder } from "@/lib/validation/clientForm/clientFormPersonPlaceholders";
 import { FormInputCluster } from "../layout";
-import { email } from "zod";
 import { checkGuardianStatus } from "@/lib/db/actions";
 
 type Props = {
@@ -62,16 +61,16 @@ const GuardianSection = ({ index, placeholder, optional }: Props) => {
 			)}
 
 			<FormInputCluster>
-				<FormCheckboxInput label="Is this guardian already linked to a registered student?" register={register(`guardians.${index}.already_exists`)} options={["Yes"]} />
+				<FormCheckboxInput label="Is this guardian already linked to a registered student?" register={register(`guardians.${index}.already_exists`)} options={["Yes"]} error={errors.guardians?.[index]?.already_exists?.message} />
 				{existingGuardian && (
 					<>
-						<FormNumberInput label="Guardian ID (found in registration confirmation email)" disabled={!existingGuardian} register={register(`guardians.${index}.id`)} />
+						<FormNumberInput label="Guardian ID (found in registration confirmation email)" disabled={!existingGuardian} register={register(`guardians.${index}.id`)} error={errors.guardians?.[index]?.id?.message} />
 						<FormTextInput
 							label="Email (same one used for previous registration)"
 							type="email"
 							disabled={!existingGuardian}
 							register={register(`guardians.${index}.email_password`)}
-							error={errors.guardians?.[index]?.email?.message}
+							error={errors.guardians?.[index]?.email_password?.message}
 						/>
 					</>
 				)}
