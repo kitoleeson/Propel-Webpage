@@ -1,9 +1,9 @@
 /** @format */
 
-import { FormValues } from "../validation/tutorForm/tutorFormSchema";
+import { TutorFormValues } from "../validation/tutorForm/tutorFormSchema";
 import parseSubjects from "./subjects";
 
-type tutorType = Omit<FormValues, "subjects"> & {
+export type TutorType = Omit<TutorFormValues, "subjects"> & {
 	subjects: string;
 };
 
@@ -20,12 +20,12 @@ export const createTutorRepo = (sql: any, pool: any) => {
 		const result = await db`
          SELECT tutor_id
          FROM tutors
-         WHERE gov_first_name = ${gov_first_name} AND gov_last_name = ${gov_last_name};
+         WHERE gov_first_name ILIKE ${gov_first_name} AND gov_last_name ILIKE ${gov_last_name};
       `;
 		return result.rows[0]?.tutor_id ?? null;
 	};
 
-	const insert = (data: tutorType, db: any = sql) => {
+	const insert = (data: TutorType, db: any = sql) => {
 		return db`
          INSERT INTO tutors (
             gov_first_name, gov_last_name, pref_name, email, phone,
@@ -51,9 +51,9 @@ export const createTutorRepo = (sql: any, pool: any) => {
       `;
 	};
 
-	const insertWithSubjects = async (data: FormValues, db: any = sql) => {
+	const insertWithSubjects = async (data: TutorFormValues, db: any = sql) => {
 		const flattened = Object.values(data.subjects).flat();
-		const parsedTutor: tutorType = {
+		const parsedTutor: TutorType = {
 			...data,
 			subjects: parseSubjects(data.subjects),
 		};
@@ -86,7 +86,7 @@ export const createTutorRepo = (sql: any, pool: any) => {
       `;
 	};
 
-	const update = (id: number, data: tutorType, db: any = sql) => {
+	const update = (id: number, data: TutorType, db: any = sql) => {
 		return db`
          UPDATE tutors
          SET
@@ -157,9 +157,9 @@ export const createTutorRepo = (sql: any, pool: any) => {
       `;
 	};
 
-	const updateWithSubjects = async (data: FormValues, db: any = sql) => {
+	const updateWithSubjects = async (data: TutorFormValues, db: any = sql) => {
 		const flattened = Object.values(data.subjects).flat();
-		const parsedTutor: tutorType = {
+		const parsedTutor: TutorType = {
 			...data,
 			subjects: parseSubjects(data.subjects),
 		};
@@ -183,18 +183,26 @@ export const createTutorRepo = (sql: any, pool: any) => {
 	};
 
 	return {
-		get,
-		getAll,
+		get: {
+			get,
+			getAll,
+		},
 		find,
-		insert,
-		insertWithSubjects,
+		insert: {
+			insert,
+			insertWithSubjects,
+		},
 		remove: {
 			byId: removeById,
 			byName: removeByName,
 		},
-		update,
-		updateWithSubjects,
-		addSubject,
-		addSubjects,
+		update: {
+			update,
+			updateWithSubjects,
+		},
+		add: {
+			addSubject,
+			addSubjects,
+		},
 	};
 };

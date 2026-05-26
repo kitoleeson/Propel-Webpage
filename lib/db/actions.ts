@@ -5,13 +5,13 @@
 import { db } from ".";
 import { sendAdminApprovalPendingTutorEmail } from "../mail/sendEmail";
 import { ClientFormValues } from "../validation/clientForm/clientFormSchema";
-import { FormValues } from "../validation/tutorForm/tutorFormSchema";
+import { TutorFormValues } from "../validation/tutorForm/tutorFormSchema";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
-export async function updateTutorWithSubjectsAndGoHome(data: FormValues) {
+export async function updateTutorWithSubjectsAndGoHome(data: TutorFormValues) {
 	try {
-		await db.tutor.updateWithSubjects(data);
+		await db.tutor.update.updateWithSubjects(data);
 		revalidatePath("/");
 	} catch (err: any) {
 		if (err.message === "Tutor not found") throw new Error("TUTOR_NOT_FOUND");
@@ -20,7 +20,7 @@ export async function updateTutorWithSubjectsAndGoHome(data: FormValues) {
 	redirect("/");
 }
 
-export async function submitTutorForApproval(data: FormValues) {
+export async function submitTutorForApproval(data: TutorFormValues) {
 	const existing_id = await db.tutor.find(data.gov_first_name, data.gov_last_name);
 	const result = await db.pending_tutor.insert(existing_id ?? -1, data);
 	await sendAdminApprovalPendingTutorEmail(result.rows[0].pending_tutor_id, { ...data, tutor_id: existing_id ?? -1 });
@@ -50,15 +50,15 @@ export async function approvePendingTutor(pending_tutor_id: number) {
 
 	const formData = await mapDbToFormValues(pending_tutor);
 
-	if (pending_tutor.tutor_id === -1) await db.tutor.insertWithSubjects(formData);
-	else await db.tutor.updateWithSubjects(formData);
+	if (pending_tutor.tutor_id === -1) await db.tutor.insert.insertWithSubjects(formData);
+	else await db.tutor.update.updateWithSubjects(formData);
 
 	await db.pending_tutor.removeById(pending_tutor_id);
 
 	return { gov_first: pending_tutor.gov_first_name, gov_last: pending_tutor.gov_last_name, insertion: pending_tutor.tutor_id === -1 };
 }
 
-export const mapDbToFormValues = async (data: any): Promise<FormValues> => ({
+export const mapDbToFormValues = async (data: any): Promise<TutorFormValues> => ({
 	...data,
 	date_hired: new Date(data.date_hired),
 	subjects: data.subjects_json,

@@ -5,7 +5,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
-import { defaultTutor, FormValues, tutorSchema, tutorPlaceholder } from "@/lib/validation/tutorForm/tutorFormSchema";
+import { defaultTutor, TutorFormValues, tutorSchema, tutorPlaceholder } from "@/lib/validation/tutorForm/tutorFormSchema";
 import { FormInputCluster, FormPhoneInput, FormDropdownInput, FormTextInput, FormNumberInput, FormDateInput } from "@/components/ui/form";
 import FormCheckboxInput from "@/components/ui/form/inputs/FormCheckboxInput";
 import { submitTutorForApproval } from "@/lib/db/actions";
@@ -15,7 +15,7 @@ import FormTextAreaInput from "@/components/ui/form/inputs/FormTextAreaInput";
 import FormHeader from "@/components/ui/form/layout/FormHeader";
 
 const TutorIntakeForm = () => {
-	const methods = useForm<FormValues>({
+	const methods = useForm<TutorFormValues>({
 		resolver: zodResolver(tutorSchema),
 		defaultValues: defaultTutor,
 	});

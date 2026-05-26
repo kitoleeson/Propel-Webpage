@@ -15,6 +15,9 @@ const SignupPage = () => {
 				supporting them. This model allows the student to find a tutor who will work best for themselves, empowering them to take an active role in their education and increasing engagement, motivation, and investment in their
 				sessions.
 			</p> */}
+			{/* <p>
+				We would love to help you find your perfect tutor match, email us for any questions.
+			</p> */}
 		</BasePage>
 	);
 };
@@ -30,3 +33,4 @@ export default SignupPage;
 // 	The tutor will reach out the student to decide whether the relationship will work, then either accept or reject the request.
 // 	If they accept, the "student_tutor" table is updated to reflect the match.
 // 	If they reject, the student's second choice tutor is notified. If they also reject, the admin is notified to manually assign a tutor.
+// 6. Once a tutor accepts the student, an email confirmation is sent to the client with the tutor's rate and client contract?
