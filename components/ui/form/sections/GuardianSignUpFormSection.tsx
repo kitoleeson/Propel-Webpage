@@ -64,6 +64,7 @@ const GuardianSection = ({ index, placeholder, optional }: Props) => {
 				<FormCheckboxInput label="Is this guardian already linked to a registered student?" register={register(`guardians.${index}.already_exists`)} options={["Yes"]} error={errors.guardians?.[index]?.already_exists?.message} />
 				{existingGuardian && (
 					<>
+						{/* maybe take out guardian id for this */}
 						<FormNumberInput label="Guardian ID (found in registration confirmation email)" disabled={!existingGuardian} register={register(`guardians.${index}.id`)} error={errors.guardians?.[index]?.id?.message} />
 						<FormTextInput
 							label="Email (same one used for previous registration)"

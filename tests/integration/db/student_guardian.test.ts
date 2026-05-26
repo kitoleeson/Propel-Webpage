@@ -54,6 +54,11 @@ describe("Student Guardian Repository Integration Tests", () => {
 		return { student: student.rows[0], guardian: guardian.rows[0], student_guardian: student_guardian.rows[0] };
 	};
 
+	const mockPairAttributes = {
+		relationship_type: "Parent",
+		is_primary_biller: true,
+	};
+
 	describe("Insert & Find", () => {
 		it("should insert a new student_guardian pair", async () => {
 			const { student, guardian, student_guardian } = await createMockPair();
@@ -64,16 +69,12 @@ describe("Student Guardian Repository Integration Tests", () => {
 
 		it("should error insert on invalid student_id", async () => {
 			const guardian = await db.guardian.insert(createMockGuardian());
-			await expect(db.student_guardian.insert({ student_id: 999, guardian_id: guardian.rows[0].guardian_id, relationship_type: "Parent", is_primary_biller: true })).rejects.toThrow(
-				/violates foreign key constraint.*student_guardian_student_id_fkey/,
-			);
+			await expect(db.student_guardian.insert({ student_id: 999, guardian_id: guardian.rows[0].guardian_id, ...mockPairAttributes })).rejects.toThrow(/violates foreign key constraint.*student_guardian_student_id_fkey/);
 		});
 
 		it("should error insert on invalid guardian_id", async () => {
 			const student = await db.student.insert(createMockStudent());
-			await expect(db.student_guardian.insert({ student_id: student.rows[0].student_id, guardian_id: 999, relationship_type: "Parent", is_primary_biller: true })).rejects.toThrow(
-				/violates foreign key constraint.*student_guardian_guardian_id_fkey/,
-			);
+			await expect(db.student_guardian.insert({ student_id: student.rows[0].student_id, guardian_id: 999, ...mockPairAttributes })).rejects.toThrow(/violates foreign key constraint.*student_guardian_guardian_id_fkey/);
 		});
 
 		it("should error insert on invalid relationship type", async () => {
@@ -86,15 +87,13 @@ describe("Student Guardian Repository Integration Tests", () => {
 
 		it("should error insert on duplicate pair", async () => {
 			const { student, guardian } = await createMockPair();
-			await expect(db.student_guardian.insert({ student_id: student.student_id, guardian_id: guardian.guardian_id, relationship_type: "Parent", is_primary_biller: true })).rejects.toThrow(
-				/duplicate key value violates unique constraint.*student_guardian_pkey/,
-			);
+			await expect(db.student_guardian.insert({ student_id: student.student_id, guardian_id: guardian.guardian_id, ...mockPairAttributes })).rejects.toThrow(/duplicate key value violates unique constraint.*student_guardian_pkey/);
 		});
 
 		it("should error insert on multiple primary billers", async () => {
 			const { student } = await createMockPair();
 			const guardian2 = await db.guardian.insert(createMockGuardian({ email: "new@example.ca", phone: "(222) 456-7890" }));
-			await expect(db.student_guardian.insert({ student_id: student.student_id, guardian_id: guardian2.rows[0].guardian_id, relationship_type: "Parent", is_primary_biller: true })).rejects.toThrow(
+			await expect(db.student_guardian.insert({ student_id: student.student_id, guardian_id: guardian2.rows[0].guardian_id, ...mockPairAttributes })).rejects.toThrow(
 				/duplicate key value violates unique constraint.*primary_biller/,
 			);
 		});
@@ -163,7 +162,7 @@ describe("Student Guardian Repository Integration Tests", () => {
 			const students = [];
 			for (let i = 0; i < 3; i++) students.push(await db.student.insert(createMockStudent({ email: `student${i + 1}@example.ca`, phone: `(${i}${i}${i}) 456-7890` })));
 			const guardian = await db.guardian.insert(createMockGuardian());
-			for (let i = 0; i < 3; i++) await db.student_guardian.insert({ student_id: students[i].rows[0].student_id, guardian_id: guardian.rows[0].guardian_id, relationship_type: "Parent", is_primary_biller: true });
+			for (let i = 0; i < 3; i++) await db.student_guardian.insert({ student_id: students[i].rows[0].student_id, guardian_id: guardian.rows[0].guardian_id, ...mockPairAttributes });
 			const result = await db.student_guardian.get.getStudents(guardian.rows[0].guardian_id);
 			expect(result.rows.length).toEqual(3);
 			for (let i = 0; i < 3; i++) expect(result.rows[i].student_id).toEqual(students[i].rows[0].student_id);
@@ -200,7 +199,7 @@ describe("Student Guardian Repository Integration Tests", () => {
 			const guardian2 = await db.guardian.insert(createMockGuardian({ email: "guardian2@example.ca", phone: "(222) 456-7890" }));
 			expect(student_guardian.is_primary_biller).toEqual(true);
 			await db.student_guardian.insert({ student_id: student.student_id, guardian_id: guardian2.rows[0].guardian_id, relationship_type: "Parent", is_primary_biller: false });
-			await expect(db.student_guardian.update({ student_id: student.student_id, guardian_id: guardian2.rows[0].guardian_id, relationship_type: "Parent", is_primary_biller: true })).rejects.toThrow();
+			await expect(db.student_guardian.update({ student_id: student.student_id, guardian_id: guardian2.rows[0].guardian_id, ...mockPairAttributes })).rejects.toThrow();
 		});
 
 		it("should not update if student_guardian pair does not exist", async () => {
@@ -300,7 +299,7 @@ describe("Student Guardian Repository Integration Tests", () => {
 		it("should remove all student_guardian pairs for a given guardian ID", async () => {
 			const { student, guardian } = await createMockPair();
 			const student2 = await db.student.insert(createMockStudent({ email: "student2@example.ca", phone: "(222) 456-7890" }));
-			await db.student_guardian.insert({ student_id: student2.rows[0].student_id, guardian_id: guardian.guardian_id, relationship_type: "Parent", is_primary_biller: true });
+			await db.student_guardian.insert({ student_id: student2.rows[0].student_id, guardian_id: guardian.guardian_id, ...mockPairAttributes });
 
 			const result = await db.student_guardian.remove.byGuardianId(guardian.guardian_id);
 			expect(result.rowCount).toEqual(2);
@@ -332,7 +331,7 @@ describe("Student Guardian Repository Integration Tests", () => {
 		it("should remove all student_guardian pairs for a given guardian name", async () => {
 			const { student, guardian } = await createMockPair();
 			const student2 = await db.student.insert(createMockStudent({ email: "student2@example.ca", phone: "(222) 456-7890" }));
-			await db.student_guardian.insert({ student_id: student2.rows[0].student_id, guardian_id: guardian.guardian_id, relationship_type: "Parent", is_primary_biller: true });
+			await db.student_guardian.insert({ student_id: student2.rows[0].student_id, guardian_id: guardian.guardian_id, ...mockPairAttributes });
 
 			const result = await db.student_guardian.remove.byGuardianName(guardian.gov_first_name, guardian.gov_last_name);
 			expect(result.rowCount).toEqual(2);

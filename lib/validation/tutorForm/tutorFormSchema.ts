@@ -103,7 +103,7 @@ export const tutorSchema = z
 		}
 	});
 
-export const defaultTutor: FormValues = testing
+export const defaultTutor: TutorFormValues = testing
 	? {
 			gov_first_name: "Test",
 			gov_last_name: "Tutor",
@@ -203,7 +203,7 @@ export const defaultTutor: FormValues = testing
 			ap_ib_credentials: undefined,
 		};
 
-export const tutorPlaceholder: FormValues = {
+export const tutorPlaceholder: TutorFormValues = {
 	gov_first_name: "Jane Catherine",
 	gov_last_name: "Ngila",
 	pref_name: "Janie",
@@ -253,4 +253,4 @@ export const tutorPlaceholder: FormValues = {
 	ap_ib_credentials: undefined,
 };
 
-export type FormValues = z.infer<typeof tutorSchema>;
+export type TutorFormValues = z.infer<typeof tutorSchema>;

@@ -1,9 +1,9 @@
 /** @format */
 
-import { FormValues } from "../validation/tutorForm/tutorFormSchema";
+import { TutorFormValues } from "../validation/tutorForm/tutorFormSchema";
 
 export const createPendingTutorRepo = (sql: any, pool: any) => {
-	const insert = (tutor_id: number, data: FormValues, db: any = sql) => {
+	const insert = (tutor_id: number, data: TutorFormValues, db: any = sql) => {
 		return db`
          INSERT INTO pending_tutors (
             tutor_id,
