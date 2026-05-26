@@ -43,7 +43,7 @@ export async function submitStudentForAcceptance(data: ClientFormValues) {
 }
 
 export async function approvePendingTutor(pending_tutor_id: number) {
-	const pendingResults = await db.pending_tutor.getById(pending_tutor_id);
+	const pendingResults = await db.pending_tutor.get(pending_tutor_id);
 	if (!pendingResults.rows?.length) throw new Error("PENDING_NOT_FOUND");
 
 	const pending_tutor = pendingResults.rows[0];
@@ -53,7 +53,7 @@ export async function approvePendingTutor(pending_tutor_id: number) {
 	if (pending_tutor.tutor_id === -1) await db.tutor.insert.insertWithSubjects(formData);
 	else await db.tutor.update.updateWithSubjects(formData);
 
-	await db.pending_tutor.removeById(pending_tutor_id);
+	await db.pending_tutor.remove(pending_tutor_id);
 
 	return { gov_first: pending_tutor.gov_first_name, gov_last: pending_tutor.gov_last_name, insertion: pending_tutor.tutor_id === -1 };
 }
