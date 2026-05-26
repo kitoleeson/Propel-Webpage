@@ -5,7 +5,7 @@ import TutorCard from "@/components/ui/TutorCard";
 import { db } from "@/lib/db";
 
 const AboutPage = async () => {
-	const result = await db.tutor.getAll();
+	const result = await db.tutor.get.getAll();
 	const tutors = result.rows;
 
 	return (
