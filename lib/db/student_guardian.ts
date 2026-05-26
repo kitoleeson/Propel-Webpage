@@ -1,6 +1,6 @@
 /** @format */
 
-type StudentGuardianType = {
+export type StudentGuardianType = {
 	student_id: number;
 	guardian_id: number;
 	relationship_type: string | undefined;

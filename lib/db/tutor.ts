@@ -4,6 +4,7 @@ import { TutorFormValues } from "../validation/tutorForm/tutorFormSchema";
 import parseSubjects from "./subjects";
 
 export type TutorType = Omit<TutorFormValues, "subjects"> & {
+	tutor_id?: number;
 	subjects: string;
 };
 

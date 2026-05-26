@@ -253,4 +253,18 @@ export const tutorPlaceholder: TutorFormValues = {
 	ap_ib_credentials: undefined,
 };
 
+export const subjectPlaceholder: SubjectFormValues = {
+	math: ["Math 10 (AP)", "Math 20 (AP)", "Math 30 (AP)"],
+	advanced_math: ["Math 31 (AP)", "Math 35 (AP)", "Stats 35 (AP)"],
+	science: ["Science 10", "Science 20", "Science 30"],
+	physics: ["Physics 20 (AP)", "Physics 30 (AP)"],
+	chemistry: [],
+	biology: [],
+	computer_science: ["Comp Sci 10", "Comp Sci 20 (AP)", "Comp Sci 30 (AP)"],
+	social_studies: [],
+	english: [],
+	languages: [],
+};
+
 export type TutorFormValues = z.infer<typeof tutorSchema>;
+export type SubjectFormValues = z.infer<typeof subjectSchema>;

@@ -208,6 +208,20 @@ CREATE TABLE IF NOT EXISTS student_tutor (
 -- updated: through invoice system when count is incremented
 -- deleted: never deleted
 
+CREATE TABLE IF NOT EXISTS pending_student_tutor (
+    pending_student_tutor_it SERIAL PRIMARY KEY,
+    student_id INTEGER NOT NULL REFERENCES students(student_id),
+    tutor_id INTEGER NOT NULL REFERENCES tutors(tutor_id),
+    
+    usual_duration NUMERIC(4, 2) NOT NULL,
+    hourly_rate NUMERIC(6, 2) NOT NULL,
+    subjects TEXT NOT NULL,
+    markup NUMERIC(6, 2) NOT NULL DEFAULT 5,
+    travel_fee NUMERIC(6, 2) NOT NULL DEFAULT 0,
+    had_session BOOLEAN DEFAULT FALSE,
+    UNIQUE (student_id, tutor_id)
+);
+
 CREATE TABLE IF NOT EXISTS sessions (
     session_id SERIAL PRIMARY KEY,
     assignment_id INTEGER NOT NULL REFERENCES student_tutor(assignment_id),
