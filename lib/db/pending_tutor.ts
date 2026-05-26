@@ -26,17 +26,21 @@ export const createPendingTutorRepo = (sql: any, pool: any) => {
             ${data.current_uni}, ${data.current_degree}, ${data.field_of_study}, 
             ${data.year_of_study}, ${data.current_fav_class}, ${data.academic_interests}, ${data.bio}, ${data.hobbies},
             ${data.high_school}, ${data.high_school_city}, ${data.fav_high_school_class}, ${data.ap_ib_credentials}
-         ) RETURNING pending_tutor_id;
+         ) RETURNING *
       `;
 	};
 
-	const removeById = (id: number, db: any = sql) => {
-		return db`DELETE FROM pending_tutors WHERE pending_tutor_id = ${id}`;
+	const remove = (pending_tutor_id: number, db: any = sql) => {
+		return db`DELETE FROM pending_tutors WHERE pending_tutor_id = ${pending_tutor_id} RETURNING *`;
 	};
 
-	const getById = (id: number, db: any = sql) => {
-		return db`SELECT * FROM pending_tutors WHERE pending_tutor_id = ${id}`;
+	const get = (pending_tutor_id: number, db: any = sql) => {
+		return db`SELECT * FROM pending_tutors WHERE pending_tutor_id = ${pending_tutor_id}`;
 	};
 
-	return { insert, removeById, getById };
+	const getAll = (db: any = sql) => {
+		return db`SELECT * FROM pending_tutors ORDER BY pending_tutor_id`;
+	};
+
+	return { insert, remove, get, getAll };
 };

@@ -13,7 +13,7 @@ const SignupPage = () => {
 			{/* <p>
 				Propel Tutoring places a strong emphasis on allowing students to choose their own tutor. We believe that learning is most effective when students feel comfortable, respected, and genuinely connected to the person
 				supporting them. This model allows the student to find a tutor who will work best for themselves, empowering them to take an active role in their education and increasing engagement, motivation, and investment in their
-				sessions.
+				sessions. ALSO ADD FIELD FOR ANY OTHER COMMENTS/STUFF YOU WANT US TO KNOW
 			</p> */}
 			{/* <p>
 				We would love to help you find your perfect tutor match, email us for any questions.
