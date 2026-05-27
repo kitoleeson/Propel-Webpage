@@ -70,7 +70,6 @@ describe("Tutor Repository Integration Tests", () => {
 		});
 
 		// ADD test insertWithSubjects
-		// ADD test addSubject, addSubjects
 	});
 
 	describe("Get Operations", () => {

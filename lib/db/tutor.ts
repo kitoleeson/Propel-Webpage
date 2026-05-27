@@ -201,9 +201,5 @@ export const createTutorRepo = (sql: any, pool: any) => {
 			update,
 			updateWithSubjects,
 		},
-		add: {
-			addSubject,
-			addSubjects,
-		},
 	};
 };

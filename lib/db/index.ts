@@ -13,6 +13,7 @@ import { createBillingAccountsRepo } from "./billing_accounts";
 import { createStudentBillingRepo } from "./student_billing";
 import { createStudentTutorRepo } from "./student_tutor";
 import { createPendingStudentTutorRepo } from "./pending_student_tutor";
+import { createTutorSubjectsRepo } from "./tutor_subjects";
 
 if (typeof window === "undefined") neonConfig.webSocketConstructor = ws;
 
@@ -39,6 +40,7 @@ export const db = {
 	pool: pool,
 	tutor: createTutorRepo(sql, pool),
 	pending_tutor: createPendingTutorRepo(sql, pool),
+	tutor_subjects: createTutorSubjectsRepo(sql, pool),
 	student_tutor: createStudentTutorRepo(sql, pool),
 	pending_student_tutor: createPendingStudentTutorRepo(sql, pool),
 	student: createStudentRepo(sql, pool),

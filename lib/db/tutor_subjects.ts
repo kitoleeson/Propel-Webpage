@@ -7,11 +7,11 @@ export type TutorSubjectsType = {
 
 export const createTutorSubjectsRepo = (sql: any, pool: any) => {
 	const getSubjects = async (tutor_id: number, db: any = sql) => {
-		return db`SELECT subject FROM tutors_subjects WHERE tutor_id = ${tutor_id};`;
+		return db`SELECT subject FROM tutor_subjects WHERE tutor_id = ${tutor_id};`;
 	};
 
 	const getTutors = async (subject: string, db: any = sql) => {
-		return db`SELECT tutor_id FROM tutors_subjects WHERE subject = ${subject};`;
+		return db`SELECT tutor_id FROM tutor_subjects WHERE subject = ${subject};`;
 	};
 
 	const getAll = async (db: any = sql) => {
@@ -22,12 +22,21 @@ export const createTutorSubjectsRepo = (sql: any, pool: any) => {
 		return db`
          INSERT INTO tutor_subjects (tutor_id, subject)
          VALUES (${data.tutor_id}, ${data.subject})
+         ON CONFLICT (tutor_id, subject) DO NOTHING
          RETURNING *;
       `;
 	};
 
+	const find = (data: TutorSubjectsType, db: any = sql) => {
+		return db`
+         SELECT *
+			FROM tutor_subjects
+         WHERE tutor_id = ${data.tutor_id} AND subject = ${data.subject};
+      `;
+	};
+
 	const removeByTutor = (tutor_id: number, db: any = sql) => {
-		return db`DELETE FROM tutor_subjects WHERE tutor_id = ${tutor_id};`;
+		return db`DELETE FROM tutor_subjects WHERE tutor_id = ${tutor_id} RETURNING *;`;
 	};
 
 	const update = async (tutor_id: number, subjects: string[], db: any = sql) => {
@@ -47,17 +56,7 @@ export const createTutorSubjectsRepo = (sql: any, pool: any) => {
 		}
 	};
 
-	const addSubject = (tutor_id: number, subject: string, db: any = sql) => {
-		return db`
-         INSERT INTO tutor_subjects (tutor_id, subject)
-         VALUES (${tutor_id}, ${subject})
-         ON CONFLICT (tutor_id, subject) DO NOTHING
-         RETURNING *;
-      `;
-	};
-
 	const addSubjects = (tutor_id: number, subjects: string[], db: any = sql) => {
-		if (!subjects.length) return;
 		const tutor_ids = Array(subjects.length).fill(tutor_id);
 		return db`
          INSERT INTO tutor_subjects (tutor_id, subject)
@@ -73,12 +72,10 @@ export const createTutorSubjectsRepo = (sql: any, pool: any) => {
 			getTutors,
 			getAll,
 		},
+		find,
 		insert,
 		removeByTutor,
 		update,
-		add: {
-			addSubject,
-			addSubjects,
-		},
+		addSubjects,
 	};
 };
