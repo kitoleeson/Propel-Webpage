@@ -65,7 +65,7 @@ export const createTutorRepo = (sql: any, pool: any) => {
 			const result = await insert(parsedTutor, tx);
 			if (flattened.length > 0) await addSubjects(result.rows[0].tutor_id, flattened, tx);
 			await client.query("COMMIT");
-			return result.rows;
+			return result;
 		} catch (e) {
 			await client.query("ROLLBACK");
 			throw e;
@@ -74,9 +74,9 @@ export const createTutorRepo = (sql: any, pool: any) => {
 		}
 	};
 
-	const removeById = (id: number, db: any = sql) => {
+	const removeById = (tutor_id: number, db: any = sql) => {
 		return db`
-         DELETE FROM tutors WHERE tutor_id = ${id};
+         DELETE FROM tutors WHERE tutor_id = ${tutor_id};
       `;
 	};
 
@@ -87,7 +87,7 @@ export const createTutorRepo = (sql: any, pool: any) => {
       `;
 	};
 
-	const update = (id: number, data: TutorType, db: any = sql) => {
+	const update = (tutor_id: number, data: TutorType, db: any = sql) => {
 		return db`
          UPDATE tutors
          SET
@@ -127,23 +127,13 @@ export const createTutorRepo = (sql: any, pool: any) => {
             high_school_city = ${data.high_school_city || null},
             fav_high_school_class = ${data.fav_high_school_class || null},
             ap_ib_credentials = ${data.ap_ib_credentials || null}
-         WHERE tutor_id = ${id}
+         WHERE tutor_id = ${tutor_id}
          RETURNING *;
       `;
 	};
 
-	const addSubject = (id: number, subject: string, db: any = sql) => {
-		return db`
-         INSERT INTO tutor_subjects (tutor_id, subject)
-         VALUES (${id}, ${subject})
-         ON CONFLICT (tutor_id, subject) DO NOTHING
-         RETURNING *;
-      `;
-	};
-
-	const addSubjects = (id: number, subjects: string[], db: any = sql) => {
-		if (!subjects.length) return;
-		const ids = Array(subjects.length).fill(id);
+	const addSubjects = (tutor_id: number, subjects: string[], db: any = sql) => {
+		const ids = Array(subjects.length).fill(tutor_id);
 		return db`
          INSERT INTO tutor_subjects (tutor_id, subject)
          SELECT * FROM UNNEST(${ids}::int[], ${subjects}::text[])
@@ -174,7 +164,7 @@ export const createTutorRepo = (sql: any, pool: any) => {
 			await deleteSubjects(id, tx);
 			await addSubjects(id, flattened, tx);
 			await client.query("COMMIT");
-			return result.rows;
+			return result;
 		} catch (e) {
 			await client.query("ROLLBACK");
 			throw e;

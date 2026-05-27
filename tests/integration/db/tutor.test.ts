@@ -1,7 +1,7 @@
 /** @format */
 
 import { TutorType } from "@/lib/db/tutor";
-import { tutorPlaceholder } from "@/lib/validation/tutorForm/tutorFormSchema";
+import { SubjectFormValues, subjectPlaceholder, TutorFormValues, tutorPlaceholder } from "@/lib/validation/tutorForm/tutorFormSchema";
 import { withNeonTestBranch } from "@/tests/test-setup";
 
 withNeonTestBranch();
@@ -14,7 +14,7 @@ describe("Tutor Repository Integration Tests", () => {
 	});
 
 	beforeEach(async () => {
-		await db.pool.query("TRUNCATE TABLE tutors RESTART IDENTITY CASCADE");
+		await db.pool.query("TRUNCATE TABLE tutors, tutor_subjects RESTART IDENTITY CASCADE");
 	});
 
 	const createMockTutor = (overrides = {}): TutorType => ({
@@ -25,6 +25,41 @@ describe("Tutor Repository Integration Tests", () => {
 		ap_ib_credentials: "AP Scholar with Distinction",
 		...overrides,
 	});
+
+	const createMockTutorWithSubjects = (overrides = {}): TutorFormValues => ({
+		...tutorPlaceholder,
+		subjects: subjectPlaceholder,
+		in_person: "Hybrid",
+		current_degree: "Bachelor's Degree",
+		ap_ib_credentials: "AP Scholar with Distinction",
+		...overrides,
+	});
+
+	const emptySubjects: SubjectFormValues = {
+		math: [],
+		advanced_math: [],
+		science: [],
+		physics: [],
+		chemistry: [],
+		biology: [],
+		computer_science: [],
+		social_studies: [],
+		english: [],
+		languages: [],
+	};
+
+	const newSubjects: SubjectFormValues = {
+		math: ["Math 10 (AP)", "Math 20 (AP)", "Math 30 (AP)"],
+		advanced_math: ["Math 31 (AP)"],
+		science: [],
+		physics: ["Physics 20 (AP)", "Physics 30 (AP)"],
+		chemistry: [],
+		biology: [],
+		computer_science: ["Comp Sci 20 (AP)", "Comp Sci 30 (AP)"],
+		social_studies: [],
+		english: [],
+		languages: [],
+	};
 
 	describe("Insert & Find Operations", () => {
 		it("should insert a new tutor", async () => {
@@ -69,7 +104,25 @@ describe("Tutor Repository Integration Tests", () => {
 			await expect(db.tutor.insert.insert(createMockTutor({ email: "jane2@example.ca", phone: "(123) 456-7890" }))).rejects.toThrow(/duplicate key value violates unique constraint.*phone/);
 		});
 
-		// ADD test insertWithSubjects
+		it("should insert tutor with subjects into tutors and tutor_subjects", async () => {
+			const inserted = (await db.tutor.insert.insertWithSubjects(createMockTutorWithSubjects())).rows[0];
+			expect(inserted.gov_first_name).toEqual("Jane Catherine");
+			const tutor = (await db.tutor.get.get(inserted.tutor_id)).rows[0];
+			expect(tutor.gov_first_name).toEqual("Jane Catherine");
+			expect(parseFloat(tutor.current_rate)).toEqual(37.5);
+			const subjects = await db.tutor_subjects.get.getSubjects(inserted.tutor_id);
+			expect(subjects.rows.map((row: { subject: string }) => row.subject).sort()).toEqual(Object.values(subjectPlaceholder).flat().sort());
+		});
+
+		it("should insert tutor with no subjects", async () => {
+			const inserted = (await db.tutor.insert.insertWithSubjects(createMockTutorWithSubjects({ subjects: emptySubjects }))).rows[0];
+			expect(inserted.gov_first_name).toEqual("Jane Catherine");
+			const tutor = (await db.tutor.get.get(inserted.tutor_id)).rows[0];
+			expect(tutor.gov_first_name).toEqual("Jane Catherine");
+			expect(parseFloat(tutor.current_rate)).toEqual(37.5);
+			const subjects = await db.tutor_subjects.get.getSubjects(inserted.tutor_id);
+			expect(subjects.rows.map((row: { subject: string }) => row.subject).sort()).toEqual([]);
+		});
 	});
 
 	describe("Get Operations", () => {
@@ -152,7 +205,30 @@ describe("Tutor Repository Integration Tests", () => {
 			await expect(db.tutor.update.update(1, createMockTutor({ email: `jane1@example.ca`, phone: `(222) 456-7890` }))).rejects.toThrow(/duplicate key value violates unique constraint.*phone/);
 		});
 
-		// ADD test updateWithSubjects
+		it("should update tutor and their subjects", async () => {
+			const inserted = (await db.tutor.insert.insertWithSubjects(createMockTutorWithSubjects())).rows[0];
+			expect(inserted.gov_first_name).toEqual("Jane Catherine");
+			const tutor1 = (await db.tutor.get.get(inserted.tutor_id)).rows[0];
+			expect(tutor1.gov_first_name).toEqual("Jane Catherine");
+			expect(parseFloat(tutor1.current_rate)).toEqual(37.5);
+			const subjects1 = await db.tutor_subjects.get.getSubjects(inserted.tutor_id);
+			expect(subjects1.rows.map((row: { subject: string }) => row.subject).sort()).toEqual(Object.values(subjectPlaceholder).flat().sort());
+
+			const updated = (await db.tutor.update.updateWithSubjects(createMockTutorWithSubjects({ pref_name: "Jane", subjects: newSubjects }))).rows[0];
+			expect(updated.gov_first_name).toEqual("Jane Catherine");
+			expect(updated.pref_name).toEqual("Jane");
+			const tutor2 = (await db.tutor.get.get(inserted.tutor_id)).rows[0];
+			expect(tutor2.gov_first_name).toEqual("Jane Catherine");
+			expect(tutor2.pref_name).toEqual("Jane");
+			const subjects2 = await db.tutor_subjects.get.getSubjects(inserted.tutor_id);
+			expect(subjects2.rows.map((row: { subject: string }) => row.subject).sort()).toEqual(Object.values(newSubjects).flat().sort());
+		});
+
+		it("should error update tutor with subject on non-existent tutor name", async () => {
+			const inserted = (await db.tutor.insert.insertWithSubjects(createMockTutorWithSubjects())).rows[0];
+			expect(inserted.gov_first_name).toEqual("Jane Catherine");
+			await expect(db.tutor.update.updateWithSubjects(createMockTutorWithSubjects({ gov_first_name: "Jane", subjects: newSubjects }))).rejects.toThrow("Tutor not found");
+		});
 	});
 
 	describe("Delete Operations", () => {

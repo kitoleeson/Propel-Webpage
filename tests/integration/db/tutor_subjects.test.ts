@@ -126,12 +126,25 @@ describe("Tutor Subjects Repository Integration Tests", () => {
 			for (let i = 0; i < 3; i++) expect(result.rows[i].subject).toEqual(allSubjects[i]);
 		});
 
-		it("should get all tutors for a given student ID", async () => {
+		it("should get all tutors for a given subject", async () => {
 			for (let i = 1; i < 3; i++) await db.tutor.insert.insert(createMockTutor({ email: `tutor${i + 1}@example.ca`, phone: `(${i}${i}${i}) 456-7890` }));
 			for (let i = 1; i < 4; i++) await db.tutor_subjects.insert({ tutor_id: i, subject: allSubjects[0] });
 			const result = await db.tutor_subjects.get.getTutors(allSubjects[0]);
 			expect(result.rows.length).toEqual(3);
 			for (let i = 0; i < 3; i++) expect(result.rows[i].tutor_id).toEqual(i + 1);
+		});
+
+		it("should get all accepting tutors for a given subject", async () => {
+			for (let i = 1; i < 3; i++) await db.tutor.insert.insert(createMockTutor({ email: `tutor${i + 1}@example.ca`, phone: `(${i}${i}${i}) 456-7890`, accepting_students: i - 1 }));
+			for (let i = 1; i < 4; i++) await db.tutor_subjects.insert({ tutor_id: i, subject: allSubjects[0] });
+			const result = await db.tutor_subjects.get.getAcceptingTutors(allSubjects[0]);
+			expect(result.rows.length).toEqual(2);
+			expect(result.rows[0].tutor_id).toEqual(1);
+			expect(result.rows[1].tutor_id).toEqual(3);
+			expect(result.rows[0].accepting_students).toEqual(2);
+			expect(result.rows[1].accepting_students).toEqual(1);
+			expect(result.rows[0].in_person).toEqual("Hybrid");
+			expect(result.rows[1].in_person).toEqual("Hybrid");
 		});
 
 		it("should error while getting all subjects for a non-existent tutor ID", async () => {
@@ -141,6 +154,11 @@ describe("Tutor Subjects Repository Integration Tests", () => {
 
 		it("should error while getting all tutors for a non-existent subject", async () => {
 			const result = await db.tutor_subjects.get.getTutors(allSubjects[0]);
+			expect(result.rows.length).toEqual(0);
+		});
+
+		it("should error while getting all accepting tutors for a non-existent subject", async () => {
+			const result = await db.tutor_subjects.get.getAcceptingTutors(allSubjects[0]);
 			expect(result.rows.length).toEqual(0);
 		});
 	});
