@@ -1,7 +1,7 @@
 /** @format */
 
 import { z } from "zod";
-import { subjectSchema } from "../validation/tutorForm/tutorFormSchema";
+import { SubjectFormValues, subjectSchema } from "../validation/tutorForm/tutorFormSchema";
 
 const parse1030 = (subject: string, courses: string[]) => {
 	switch (courses.length) {
@@ -56,7 +56,7 @@ const parseAdvancedMath = (courses: string[]) => {
 	}
 };
 
-export default function parseSubjects(subjects: z.infer<typeof subjectSchema>) {
+export default function parseSubjects(subjects: SubjectFormValues) {
 	const subjectArray: string[] = [];
 
 	subjectArray.push(parse1030("Math", subjects.math));
