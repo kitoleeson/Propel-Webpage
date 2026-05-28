@@ -64,8 +64,8 @@ export const mapDbToFormValues = async (data: any): Promise<TutorFormValues> => 
 	subjects: data.subjects_json,
 });
 
-export async function checkGuardianStatus(id: number, email: string) {
-	const response = await db.guardian.get.getByIdAndEmail(id, email);
+export async function checkGuardianStatus(email: string) {
+	const response = await db.guardian.get.getByEmail(email);
 	const success = response.rows?.length === 1;
 	return {
 		success: success,

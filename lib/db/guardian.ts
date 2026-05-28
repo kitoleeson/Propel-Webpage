@@ -11,10 +11,10 @@ export const createGuardianRepo = (sql: any, pool: any) => {
 		return db`SELECT * FROM guardians ORDER BY guardian_id`;
 	};
 
-	const getByIdAndEmail = async (id: number, email: string, db: any = sql) => {
+	const getByEmail = async (email: string, db: any = sql) => {
 		return db`
          SELECT * FROM guardians
-         WHERE guardian_id = ${id} AND email = ${email};
+         WHERE email = ${email};
       `;
 	};
 
@@ -67,7 +67,7 @@ export const createGuardianRepo = (sql: any, pool: any) => {
 		get: {
 			get,
 			getAll,
-			getByIdAndEmail,
+			getByEmail,
 		},
 		find,
 		insert,

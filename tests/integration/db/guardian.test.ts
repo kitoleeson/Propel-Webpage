@@ -78,13 +78,17 @@ describe("Guardian Repository Integration Tests", () => {
 			expect(result.rows[0].gov_first_name).toBe("Julio");
 		});
 
-		it("should fetch a specific guardian by ID and Email", async () => {
-			const inserted = await db.guardian.insert(createMockGuardian({ gov_first_name: "Bobby", email: "bobby@toto.ca" }));
-			const id = inserted.rows[0].guardian_id;
-
-			const result = await db.guardian.get.getByIdAndEmail(id, "bobby@toto.ca");
+		it("should fetch a specific guardian by email", async () => {
+			await db.guardian.insert(createMockGuardian({ gov_first_name: "Bobby", email: "bobby@toto.ca" }));
+			const result = await db.guardian.get.getByEmail("bobby@toto.ca");
 			expect(result.rows.length).toBe(1);
 			expect(result.rows[0].gov_first_name).toBe("Bobby");
+		});
+
+		it("should error fetch a specific guardian by non-existent email", async () => {
+			await db.guardian.insert(createMockGuardian({ gov_first_name: "Bobby", email: "bobby@toto.ca" }));
+			const result = await db.guardian.get.getByEmail("bobby1@toto.ca");
+			expect(result.rows.length).toBe(0);
 		});
 
 		it("should return all guardians", async () => {

@@ -30,7 +30,7 @@ export default function FormPhoneInput(props: FormPhoneInputProps) {
 					props.register.onChange(e);
 				}}
 				className={`border border-gray-300 rounded-md p-1 ${props.format}`}
-				placeholder={props.placeholder || "(123) 456-7890"}
+				placeholder={props.placeholder}
 				disabled={props.disabled}
 			/>
 

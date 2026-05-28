@@ -18,7 +18,7 @@ const StudentSection = ({ placeholder }: Props) => {
 	} = useFormContext<ClientFormValues>();
 
 	return (
-		<>
+		<div>
 			<h1>Student Information</h1>
 
 			<FormInputCluster>
@@ -47,7 +47,7 @@ const StudentSection = ({ placeholder }: Props) => {
 				/>
 				<FormRadioInput label="Who will be paying for tutoring sessions?" register={register("student.biller")} options={["Student", "Guardian"]} error={errors.student?.biller?.message} />
 			</FormInputCluster>
-		</>
+		</div>
 	);
 };
 
