@@ -9,6 +9,7 @@ import { FormButtonInput, StudentSection, GuardianSection, FormInputCluster } fr
 import { defaultStudent, defaultGuardian, formSchema, ClientFormValues } from "@/lib/validation/clientForm/clientFormSchema";
 import { placeholders } from "@/lib/validation/clientForm/clientFormPersonPlaceholders";
 import PickTutorSignUpForm from "@/components/ui/form/sections/PickTutorSignUpForm";
+import { TutorType } from "@/lib/db/tutor";
 
 function shuffle(array: any[]) {
 	const newArray = [...array];
@@ -21,7 +22,7 @@ function shuffle(array: any[]) {
 
 const SESSION_STORAGE_KEY = "propel_signup_form_data";
 
-const ClientSignUpForm = () => {
+const ClientSignUpForm = ({ tutors, subjects }: { tutors: TutorType[]; subjects: string[] }) => {
 	const [shuffledPlaceholders, setShuffledPlaceholders] = useState(placeholders);
 	useEffect(() => setShuffledPlaceholders(shuffle(placeholders)), []);
 
@@ -118,7 +119,7 @@ const ClientSignUpForm = () => {
 					))}
 					<FormButtonInput label="Add New Guardian" onClick={addGuardian} divFormat="mt-14" format="w-full" />
 				</div>
-				{/* <PickTutorSignUpForm /> */}
+				<PickTutorSignUpForm tutors={tutors} subjects={subjects} />
 				<FormButtonInput label="Sign Up" onClick={handleSubmit(onSubmit)} format="self-stretch text-primary font-bold text-primary" />
 			</form>
 		</FormProvider>

@@ -110,7 +110,7 @@ describe("Tutor Repository Integration Tests", () => {
 			const tutor = (await db.tutor.get.get(inserted.tutor_id)).rows[0];
 			expect(tutor.gov_first_name).toEqual("Jane Catherine");
 			expect(parseFloat(tutor.current_rate)).toEqual(37.5);
-			const subjects = await db.tutor_subjects.get.getSubjects(inserted.tutor_id);
+			const subjects = await db.tutor_subjects.get.getSubjectsByTutor(inserted.tutor_id);
 			expect(subjects.rows.map((row: { subject: string }) => row.subject).sort()).toEqual(Object.values(subjectPlaceholder).flat().sort());
 		});
 
@@ -120,7 +120,7 @@ describe("Tutor Repository Integration Tests", () => {
 			const tutor = (await db.tutor.get.get(inserted.tutor_id)).rows[0];
 			expect(tutor.gov_first_name).toEqual("Jane Catherine");
 			expect(parseFloat(tutor.current_rate)).toEqual(37.5);
-			const subjects = await db.tutor_subjects.get.getSubjects(inserted.tutor_id);
+			const subjects = await db.tutor_subjects.get.getSubjectsByTutor(inserted.tutor_id);
 			expect(subjects.rows.map((row: { subject: string }) => row.subject).sort()).toEqual([]);
 		});
 	});
@@ -211,7 +211,7 @@ describe("Tutor Repository Integration Tests", () => {
 			const tutor1 = (await db.tutor.get.get(inserted.tutor_id)).rows[0];
 			expect(tutor1.gov_first_name).toEqual("Jane Catherine");
 			expect(parseFloat(tutor1.current_rate)).toEqual(37.5);
-			const subjects1 = await db.tutor_subjects.get.getSubjects(inserted.tutor_id);
+			const subjects1 = await db.tutor_subjects.get.getSubjectsByTutor(inserted.tutor_id);
 			expect(subjects1.rows.map((row: { subject: string }) => row.subject).sort()).toEqual(Object.values(subjectPlaceholder).flat().sort());
 
 			const updated = (await db.tutor.update.updateWithSubjects(createMockTutorWithSubjects({ pref_name: "Jane", subjects: newSubjects }))).rows[0];
@@ -220,7 +220,7 @@ describe("Tutor Repository Integration Tests", () => {
 			const tutor2 = (await db.tutor.get.get(inserted.tutor_id)).rows[0];
 			expect(tutor2.gov_first_name).toEqual("Jane Catherine");
 			expect(tutor2.pref_name).toEqual("Jane");
-			const subjects2 = await db.tutor_subjects.get.getSubjects(inserted.tutor_id);
+			const subjects2 = await db.tutor_subjects.get.getSubjectsByTutor(inserted.tutor_id);
 			expect(subjects2.rows.map((row: { subject: string }) => row.subject).sort()).toEqual(Object.values(newSubjects).flat().sort());
 		});
 

@@ -266,5 +266,18 @@ export const subjectPlaceholder: SubjectFormValues = {
 	languages: [],
 };
 
+const allSubjectPlaceholder: SubjectFormValues = {
+	math: ["Math 10 (AP)", "Math 20 (AP)", "Math 30 (AP)"],
+	advanced_math: ["Math 31 (AP)", "Math 35 (AP)", "Stats 35 (AP)"],
+	science: ["Science 10", "Science 20", "Science 30"],
+	physics: ["Physics 20 (AP)", "Physics 30 (AP)"],
+	chemistry: ["Chemistry 20 (AP)", "Chemistry 30 (AP)"],
+	biology: ["Biology 20 (AP)", "Biology 30 (AP)"],
+	computer_science: ["Comp Sci 10", "Comp Sci 20 (AP)", "Comp Sci 30 (AP)"],
+	social_studies: ["Social 10 (AP)", "Social 20 (AP)", "Social 30 (AP)"],
+	english: ["English 10 (AP)", "English 20 (AP)", "English 30 (AP)"],
+	languages: ["French 10-30", "Spanish 10-30", "German 10-30"],
+};
+
 export type TutorFormValues = z.infer<typeof tutorSchema>;
 export type SubjectFormValues = z.infer<typeof subjectSchema>;

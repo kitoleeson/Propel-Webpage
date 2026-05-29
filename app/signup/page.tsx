@@ -1,23 +1,19 @@
 /** @format */
 
+import { db } from "@/lib/db";
 import ClientSignUpForm from "./ClientSignUpForm";
 import BasePage from "@/components/ui/base_page/BasePage";
 
-const SignupPage = () => {
+const SignupPage = async () => {
+	const tutors = (await db.tutor.get.getAll()).rows;
+	const subjects = (await db.tutor_subjects.get.getAllSubjects()).rows.map((row: { subject: string }) => row.subject);
+
 	return (
 		<BasePage title={"Start Tutoring\nToday!"}>
 			<p>
 				<i>NOTE: This form is not yet operational. To sign up, please email propeltutoringyeg@gmail.com.</i>
 			</p>
-			<ClientSignUpForm />
-			{/* <p>
-				Propel Tutoring places a strong emphasis on allowing students to choose their own tutor. We believe that learning is most effective when students feel comfortable, respected, and genuinely connected to the person
-				supporting them. This model allows the student to find a tutor who will work best for themselves, empowering them to take an active role in their education and increasing engagement, motivation, and investment in their
-				sessions. ALSO ADD FIELD FOR ANY OTHER COMMENTS/STUFF YOU WANT US TO KNOW
-			</p> */}
-			{/* <p>
-				We would love to help you find your perfect tutor match, email us for any questions.
-			</p> */}
+			<ClientSignUpForm tutors={tutors} subjects={subjects} />
 		</BasePage>
 	);
 };

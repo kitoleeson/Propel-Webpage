@@ -71,6 +71,12 @@ type FormTextAreaInputProps = FormRegisterableProps & {
 	rows?: number;
 };
 
+type FormDataListInputProps = FormBaseInputProps & {
+	label: string;
+	options: string[];
+	onChange: (updated: string[]) => void;
+};
+
 export type {
 	FormButtonInputProps,
 	FormTextInputProps,
@@ -82,4 +88,5 @@ export type {
 	FormCheckboxInputProps,
 	FormSubmitInputProps,
 	FormTextAreaInputProps,
+	FormDataListInputProps,
 };

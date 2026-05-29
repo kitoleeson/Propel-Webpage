@@ -8,6 +8,7 @@ import { ClientFormValues } from "../validation/clientForm/clientFormSchema";
 import { TutorFormValues } from "../validation/tutorForm/tutorFormSchema";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { TutorType } from "./tutor";
 
 export async function updateTutorWithSubjectsAndGoHome(data: TutorFormValues) {
 	try {
@@ -72,4 +73,9 @@ export async function checkGuardianStatus(email: string) {
 		data: success ? response.rows[0] : null,
 		error: success ? null : "Guardian not found with provided ID and email",
 	};
+}
+
+export async function getTutorsBySubjects(subjects: string[]): Promise<TutorType[]> {
+	const tutors = !subjects || subjects.length === 0 ? await db.tutor.get.getAll() : await db.tutor_subjects.get.getAcceptingTutorsByAllOfSubjects(subjects);
+	return tutors.rows;
 }

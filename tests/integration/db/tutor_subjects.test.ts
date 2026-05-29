@@ -107,6 +107,51 @@ describe("Tutor Subjects Repository Integration Tests", () => {
 			}
 		});
 
+		it("should get all unique subjects ordered by ascending subject name (3 subjects)", async () => {
+			for (let i = 0; i < 3; i++) await db.tutor_subjects.insert({ tutor_id: 1, subject: allSubjects[i] });
+
+			const result = await db.tutor_subjects.get.getAllSubjects();
+			expect(result.rows.length).toEqual(3);
+			const sorted = allSubjects.slice(0, 3).sort();
+			for (let i = 0; i < 3; i++) expect(result.rows[i].subject).toEqual(sorted[i]);
+		});
+
+		it("should get all unique subjects ordered by ascending subject name (all subjects)", async () => {
+			const n = allSubjects.length;
+			for (let i = 0; i < n; i++) await db.tutor_subjects.insert({ tutor_id: 1, subject: allSubjects[i] });
+
+			const result = await db.tutor_subjects.get.getAllSubjects();
+			expect(result.rows.length).toEqual(n);
+			const sorted = allSubjects.sort();
+			for (let i = 0; i < n; i++) expect(result.rows[i].subject).toEqual(sorted[i]);
+		});
+
+		it("should get all unique subjects ordered by ascending subject name (no subjects)", async () => {
+			const result = await db.tutor_subjects.get.getAllSubjects();
+			expect(result.rows.length).toEqual(0);
+		});
+
+		it("should get all unique subjects ordered by ascending subject name (multiple tutors, 3 subjects each)", async () => {
+			for (let i = 1; i < 3; i++) await db.tutor.insert.insert(createMockTutor({ email: `tutor${i + 1}@example.ca`, phone: `(${i}${i}${i}) 456-7890` }));
+			for (let i = 1; i < 4; i++) for (let j = 0; j < 3; j++) await db.tutor_subjects.insert({ tutor_id: i, subject: allSubjects[j] });
+
+			const result = await db.tutor_subjects.get.getAllSubjects();
+			expect(result.rows.length).toEqual(3);
+			const sorted = allSubjects.slice(0, 3).sort();
+			for (let i = 0; i < 3; i++) expect(result.rows[i].subject).toEqual(sorted[i]);
+		});
+
+		it("should get all unique subjects ordered by ascending subject name (multiple tutors, all subjects each)", async () => {
+			const n = allSubjects.length;
+			for (let i = 1; i < 3; i++) await db.tutor.insert.insert(createMockTutor({ email: `tutor${i + 1}@example.ca`, phone: `(${i}${i}${i}) 456-7890` }));
+			for (let i = 1; i < 4; i++) for (let j = 0; j < n; j++) await db.tutor_subjects.insert({ tutor_id: i, subject: allSubjects[j] });
+
+			const result = await db.tutor_subjects.get.getAllSubjects();
+			expect(result.rows.length).toEqual(n);
+			const sorted = allSubjects.sort();
+			for (let i = 0; i < n; i++) expect(result.rows[i].subject).toEqual(sorted[i]);
+		});
+
 		it("should get all tutor_subject pairs ordered by ascending tutor ID and subject (multiple subjects per tutor)", async () => {
 			for (let i = 1; i < 3; i++) await db.tutor.insert.insert(createMockTutor({ email: `tutor${i + 1}@example.ca`, phone: `(${i}${i}${i}) 456-7890` }));
 			for (let i = 1; i < 4; i++) for (let j = 0; j < 3; j++) await db.tutor_subjects.insert({ tutor_id: i, subject: allSubjects[j] });
@@ -121,23 +166,33 @@ describe("Tutor Subjects Repository Integration Tests", () => {
 
 		it("should get all subjects for a given tutor ID", async () => {
 			for (let i = 0; i < 3; i++) await db.tutor_subjects.insert({ tutor_id: 1, subject: allSubjects[i] });
-			const result = await db.tutor_subjects.get.getSubjects(1);
+			const result = await db.tutor_subjects.get.getSubjectsByTutor(1);
 			expect(result.rows.length).toEqual(3);
 			for (let i = 0; i < 3; i++) expect(result.rows[i].subject).toEqual(allSubjects[i]);
+		});
+
+		it("should error while getting all subjects for a non-existent tutor ID", async () => {
+			const result = await db.tutor_subjects.get.getSubjectsByTutor(2);
+			expect(result.rows.length).toEqual(0);
 		});
 
 		it("should get all tutors for a given subject", async () => {
 			for (let i = 1; i < 3; i++) await db.tutor.insert.insert(createMockTutor({ email: `tutor${i + 1}@example.ca`, phone: `(${i}${i}${i}) 456-7890` }));
 			for (let i = 1; i < 4; i++) await db.tutor_subjects.insert({ tutor_id: i, subject: allSubjects[0] });
-			const result = await db.tutor_subjects.get.getTutors(allSubjects[0]);
+			const result = await db.tutor_subjects.get.getTutorsBySubject(allSubjects[0]);
 			expect(result.rows.length).toEqual(3);
 			for (let i = 0; i < 3; i++) expect(result.rows[i].tutor_id).toEqual(i + 1);
+		});
+
+		it("should error while getting all tutors for a non-existent subject", async () => {
+			const result = await db.tutor_subjects.get.getTutorsBySubject(allSubjects[0]);
+			expect(result.rows.length).toEqual(0);
 		});
 
 		it("should get all accepting tutors for a given subject", async () => {
 			for (let i = 1; i < 3; i++) await db.tutor.insert.insert(createMockTutor({ email: `tutor${i + 1}@example.ca`, phone: `(${i}${i}${i}) 456-7890`, accepting_students: i - 1 }));
 			for (let i = 1; i < 4; i++) await db.tutor_subjects.insert({ tutor_id: i, subject: allSubjects[0] });
-			const result = await db.tutor_subjects.get.getAcceptingTutors(allSubjects[0]);
+			const result = await db.tutor_subjects.get.getAcceptingTutorsBySubject(allSubjects[0]);
 			expect(result.rows.length).toEqual(2);
 			expect(result.rows[0].tutor_id).toEqual(1);
 			expect(result.rows[1].tutor_id).toEqual(3);
@@ -147,18 +202,176 @@ describe("Tutor Subjects Repository Integration Tests", () => {
 			expect(result.rows[1].in_person).toEqual("Hybrid");
 		});
 
-		it("should error while getting all subjects for a non-existent tutor ID", async () => {
-			const result = await db.tutor_subjects.get.getSubjects(2);
-			expect(result.rows.length).toEqual(0);
-		});
-
-		it("should error while getting all tutors for a non-existent subject", async () => {
-			const result = await db.tutor_subjects.get.getTutors(allSubjects[0]);
-			expect(result.rows.length).toEqual(0);
-		});
-
 		it("should error while getting all accepting tutors for a non-existent subject", async () => {
-			const result = await db.tutor_subjects.get.getAcceptingTutors(allSubjects[0]);
+			const result = await db.tutor_subjects.get.getAcceptingTutorsBySubject(allSubjects[0]);
+			expect(result.rows.length).toEqual(0);
+		});
+
+		it("should get all tutors who teach at least one subject in a given set of subjects (all valid)", async () => {
+			for (let i = 1; i < 3; i++) await db.tutor.insert.insert(createMockTutor({ email: `tutor${i + 1}@example.ca`, phone: `(${i}${i}${i}) 456-7890` }));
+			for (let i = 1; i < 4; i++) await db.tutor_subjects.addSubjects(i, allSubjects.slice(0, 3));
+
+			const result1 = await db.tutor_subjects.get.getTutorsByOneOfSubjects(allSubjects.slice(0, 3));
+			expect(result1.rows.length).toEqual(3);
+			for (let i = 0; i < 3; i++) expect(result1.rows[i].tutor_id).toEqual(i + 1);
+
+			const result2 = await db.tutor_subjects.get.getTutorsByOneOfSubjects(allSubjects.slice(2, 5));
+			expect(result2.rows.length).toEqual(3);
+			for (let i = 0; i < 3; i++) expect(result2.rows[i].tutor_id).toEqual(i + 1);
+		});
+
+		it("should get all tutors who teach at least one subject in a given set of subjects (some valid)", async () => {
+			for (let i = 1; i < 3; i++) await db.tutor.insert.insert(createMockTutor({ email: `tutor${i + 1}@example.ca`, phone: `(${i}${i}${i}) 456-7890` }));
+			for (let i = 0; i < 3; i++) await db.tutor_subjects.addSubjects(i + 1, allSubjects.slice(i, i + 3));
+
+			const result1 = await db.tutor_subjects.get.getTutorsByOneOfSubjects(allSubjects.slice(0, 3));
+			expect(result1.rows.length).toEqual(3);
+			for (let i = 0; i < 3; i++) expect(result1.rows[i].tutor_id).toEqual(i + 1);
+
+			const result2 = await db.tutor_subjects.get.getTutorsByOneOfSubjects(allSubjects.slice(3, 6));
+			expect(result2.rows.length).toEqual(2);
+			for (let i = 0; i < 2; i++) expect(result2.rows[i].tutor_id).toEqual(i + 2);
+		});
+
+		it("should get all tutors who teach at least one subject in a given set of subjects (none valid)", async () => {
+			for (let i = 1; i < 3; i++) await db.tutor.insert.insert(createMockTutor({ email: `tutor${i + 1}@example.ca`, phone: `(${i}${i}${i}) 456-7890` }));
+			for (let i = 0; i < 3; i++) await db.tutor_subjects.addSubjects(i + 1, allSubjects.slice(i, i + 3));
+
+			const result = await db.tutor_subjects.get.getTutorsByOneOfSubjects(allSubjects.slice(6, 9));
+			expect(result.rows.length).toEqual(0);
+		});
+
+		it("should get error when getting all tutors who teach at least one subject in a null set of subjects", async () => {
+			for (let i = 1; i < 3; i++) await db.tutor.insert.insert(createMockTutor({ email: `tutor${i + 1}@example.ca`, phone: `(${i}${i}${i}) 456-7890` }));
+			for (let i = 0; i < 3; i++) await db.tutor_subjects.addSubjects(i + 1, allSubjects.slice(i, i + 3));
+
+			const result = await db.tutor_subjects.get.getTutorsByOneOfSubjects([]);
+			expect(result.rows.length).toEqual(0);
+		});
+
+		it("should get all accepting tutors who teach at least one subject in a given set of subjects (all valid)", async () => {
+			for (let i = 1; i < 3; i++) await db.tutor.insert.insert(createMockTutor({ email: `tutor${i + 1}@example.ca`, phone: `(${i}${i}${i}) 456-7890`, accepting_students: i - 1 }));
+			for (let i = 1; i < 4; i++) await db.tutor_subjects.addSubjects(i, allSubjects.slice(0, 3));
+
+			const result1 = await db.tutor_subjects.get.getAcceptingTutorsByOneOfSubjects(allSubjects.slice(0, 3));
+			expect(result1.rows.length).toEqual(2);
+			expect(result1.rows[0].tutor_id).toEqual(1);
+			expect(result1.rows[1].tutor_id).toEqual(3);
+
+			const result2 = await db.tutor_subjects.get.getAcceptingTutorsByOneOfSubjects(allSubjects.slice(2, 5));
+			expect(result2.rows.length).toEqual(2);
+			expect(result2.rows[0].tutor_id).toEqual(1);
+			expect(result2.rows[1].tutor_id).toEqual(3);
+		});
+
+		it("should get all accepting tutors who teach at least one subject in a given set of subjects (some valid)", async () => {
+			for (let i = 1; i < 3; i++) await db.tutor.insert.insert(createMockTutor({ email: `tutor${i + 1}@example.ca`, phone: `(${i}${i}${i}) 456-7890`, accepting_students: i - 1 }));
+			for (let i = 0; i < 3; i++) await db.tutor_subjects.addSubjects(i + 1, allSubjects.slice(i, i + 3));
+
+			const result1 = await db.tutor_subjects.get.getAcceptingTutorsByOneOfSubjects(allSubjects.slice(0, 3));
+			expect(result1.rows.length).toEqual(2);
+			expect(result1.rows[0].tutor_id).toEqual(1);
+			expect(result1.rows[1].tutor_id).toEqual(3);
+
+			const result2 = await db.tutor_subjects.get.getAcceptingTutorsByOneOfSubjects(allSubjects.slice(3, 6));
+			expect(result2.rows.length).toEqual(1);
+			expect(result2.rows[0].tutor_id).toEqual(3);
+		});
+
+		it("should get all accepting tutors who teach at least one subject in a given set of subjects (none valid)", async () => {
+			for (let i = 1; i < 3; i++) await db.tutor.insert.insert(createMockTutor({ email: `tutor${i + 1}@example.ca`, phone: `(${i}${i}${i}) 456-7890`, accepting_students: i - 1 }));
+			for (let i = 0; i < 3; i++) await db.tutor_subjects.addSubjects(i + 1, allSubjects.slice(i, i + 3));
+
+			const result = await db.tutor_subjects.get.getAcceptingTutorsByOneOfSubjects(allSubjects.slice(6, 9));
+			expect(result.rows.length).toEqual(0);
+		});
+
+		it("should get error when getting all accepting tutors who teach at least one subject in a null set of subjects", async () => {
+			for (let i = 1; i < 3; i++) await db.tutor.insert.insert(createMockTutor({ email: `tutor${i + 1}@example.ca`, phone: `(${i}${i}${i}) 456-7890`, accepting_students: i - 1 }));
+			for (let i = 0; i < 3; i++) await db.tutor_subjects.addSubjects(i + 1, allSubjects.slice(i, i + 3));
+
+			const result = await db.tutor_subjects.get.getAcceptingTutorsByOneOfSubjects([]);
+			expect(result.rows.length).toEqual(0);
+		});
+
+		it("should get all tutors who teach all subjects in a given set of subjects (all valid)", async () => {
+			for (let i = 1; i < 3; i++) await db.tutor.insert.insert(createMockTutor({ email: `tutor${i + 1}@example.ca`, phone: `(${i}${i}${i}) 456-7890` }));
+			for (let i = 1; i < 4; i++) await db.tutor_subjects.addSubjects(i, allSubjects.slice(0, 3));
+
+			const result1 = await db.tutor_subjects.get.getTutorsByAllOfSubjects(allSubjects.slice(0, 3));
+			expect(result1.rows.length).toEqual(3);
+			for (let i = 0; i < 3; i++) expect(result1.rows[i].tutor_id).toEqual(i + 1);
+
+			const result2 = await db.tutor_subjects.get.getTutorsByAllOfSubjects(allSubjects.slice(2, 5));
+			expect(result2.rows.length).toEqual(0);
+		});
+
+		it("should get all tutors who teach all subjects in a given set of subjects (some valid)", async () => {
+			for (let i = 1; i < 3; i++) await db.tutor.insert.insert(createMockTutor({ email: `tutor${i + 1}@example.ca`, phone: `(${i}${i}${i}) 456-7890` }));
+			for (let i = 0; i < 3; i++) await db.tutor_subjects.addSubjects(i + 1, allSubjects.slice(i, i + 3));
+
+			const result1 = await db.tutor_subjects.get.getTutorsByAllOfSubjects(allSubjects.slice(0, 3));
+			expect(result1.rows.length).toEqual(1);
+			expect(result1.rows[0].tutor_id).toEqual(1);
+
+			const result2 = await db.tutor_subjects.get.getTutorsByAllOfSubjects(allSubjects.slice(3, 6));
+			expect(result2.rows.length).toEqual(0);
+		});
+
+		it("should get all tutors who teach all subjects in a given set of subjects (none valid)", async () => {
+			for (let i = 1; i < 3; i++) await db.tutor.insert.insert(createMockTutor({ email: `tutor${i + 1}@example.ca`, phone: `(${i}${i}${i}) 456-7890` }));
+			for (let i = 0; i < 3; i++) await db.tutor_subjects.addSubjects(i + 1, allSubjects.slice(i, i + 3));
+
+			const result = await db.tutor_subjects.get.getTutorsByAllOfSubjects(allSubjects.slice(6, 9));
+			expect(result.rows.length).toEqual(0);
+		});
+
+		it("should get error when getting all tutors who teach all subjects in a null set of subjects", async () => {
+			for (let i = 1; i < 3; i++) await db.tutor.insert.insert(createMockTutor({ email: `tutor${i + 1}@example.ca`, phone: `(${i}${i}${i}) 456-7890` }));
+			for (let i = 0; i < 3; i++) await db.tutor_subjects.addSubjects(i + 1, allSubjects.slice(i, i + 3));
+
+			const result = await db.tutor_subjects.get.getTutorsByAllOfSubjects([]);
+			expect(result.rows.length).toEqual(0);
+		});
+
+		it("should get all accepting tutors who teach all subjects in a given set of subjects (all valid)", async () => {
+			for (let i = 1; i < 3; i++) await db.tutor.insert.insert(createMockTutor({ email: `tutor${i + 1}@example.ca`, phone: `(${i}${i}${i}) 456-7890`, accepting_students: i - 1 }));
+			for (let i = 1; i < 4; i++) await db.tutor_subjects.addSubjects(i, allSubjects.slice(0, 3));
+
+			const result1 = await db.tutor_subjects.get.getAcceptingTutorsByAllOfSubjects(allSubjects.slice(0, 3));
+			expect(result1.rows.length).toEqual(2);
+			expect(result1.rows[0].tutor_id).toEqual(1);
+			expect(result1.rows[1].tutor_id).toEqual(3);
+
+			const result2 = await db.tutor_subjects.get.getAcceptingTutorsByAllOfSubjects(allSubjects.slice(2, 5));
+			expect(result2.rows.length).toEqual(0);
+		});
+
+		it("should get all accepting tutors who teach all subjects in a given set of subjects (some valid)", async () => {
+			for (let i = 1; i < 3; i++) await db.tutor.insert.insert(createMockTutor({ email: `tutor${i + 1}@example.ca`, phone: `(${i}${i}${i}) 456-7890`, accepting_students: i - 1 }));
+			for (let i = 0; i < 3; i++) await db.tutor_subjects.addSubjects(i + 1, allSubjects.slice(i, i + 3));
+
+			const result1 = await db.tutor_subjects.get.getAcceptingTutorsByAllOfSubjects(allSubjects.slice(0, 3));
+			expect(result1.rows.length).toEqual(1);
+			expect(result1.rows[0].tutor_id).toEqual(1);
+
+			const result2 = await db.tutor_subjects.get.getAcceptingTutorsByAllOfSubjects(allSubjects.slice(3, 6));
+			expect(result2.rows.length).toEqual(0);
+		});
+
+		it("should get all accepting tutors who teach all subjects in a given set of subjects (none valid)", async () => {
+			for (let i = 1; i < 3; i++) await db.tutor.insert.insert(createMockTutor({ email: `tutor${i + 1}@example.ca`, phone: `(${i}${i}${i}) 456-7890`, accepting_students: i - 1 }));
+			for (let i = 0; i < 3; i++) await db.tutor_subjects.addSubjects(i + 1, allSubjects.slice(i, i + 3));
+
+			const result = await db.tutor_subjects.get.getAcceptingTutorsByAllOfSubjects(allSubjects.slice(6, 9));
+			expect(result.rows.length).toEqual(0);
+		});
+
+		it("should get error when getting all accepting tutors who teach all subjects in a null set of subjects", async () => {
+			for (let i = 1; i < 3; i++) await db.tutor.insert.insert(createMockTutor({ email: `tutor${i + 1}@example.ca`, phone: `(${i}${i}${i}) 456-7890`, accepting_students: i - 1 }));
+			for (let i = 0; i < 3; i++) await db.tutor_subjects.addSubjects(i + 1, allSubjects.slice(i, i + 3));
+
+			const result = await db.tutor_subjects.get.getAcceptingTutorsByAllOfSubjects([]);
 			expect(result.rows.length).toEqual(0);
 		});
 	});
@@ -175,7 +388,7 @@ describe("Tutor Subjects Repository Integration Tests", () => {
 			const subjects2 = ts2.rows.map((row: { subject: string }) => row.subject);
 			expect(subjects2).toEqual(allSubjects.slice(3, 6));
 
-			const ts3 = await db.tutor_subjects.get.getSubjects(1);
+			const ts3 = await db.tutor_subjects.get.getSubjectsByTutor(1);
 			expect(ts3.rows.length).toEqual(6);
 			const subjects3 = ts3.rows.map((row: { subject: string }) => row.subject);
 			expect(subjects3).toEqual(allSubjects.slice(0, 6));
@@ -183,12 +396,12 @@ describe("Tutor Subjects Repository Integration Tests", () => {
 
 		it("should update subjects", async () => {
 			for (let i = 0; i < 3; i++) await db.tutor_subjects.insert({ tutor_id: 1, subject: allSubjects[i] });
-			const ts1 = await db.tutor_subjects.get.getSubjects(1);
+			const ts1 = await db.tutor_subjects.get.getSubjectsByTutor(1);
 			expect(ts1.rows.length).toEqual(3);
 			const subjects1 = ts1.rows.map((row: { subject: string }) => row.subject);
 			expect(subjects1).toEqual(allSubjects.slice(0, 3));
 			await db.tutor_subjects.update(1, allSubjects.slice(3, 6));
-			const ts2 = await db.tutor_subjects.get.getSubjects(1);
+			const ts2 = await db.tutor_subjects.get.getSubjectsByTutor(1);
 			expect(ts2.rows.length).toEqual(3);
 			const subjects2 = ts2.rows.map((row: { subject: string }) => row.subject);
 			expect(subjects2).toEqual(allSubjects.slice(3, 6));
@@ -224,11 +437,11 @@ describe("Tutor Subjects Repository Integration Tests", () => {
 	describe("Delete Operations", () => {
 		it("should remove all tutor_subject pairs by tutor ID", async () => {
 			await db.tutor_subjects.addSubjects(1, allSubjects.slice(0, 3));
-			const result1 = await db.tutor_subjects.get.getSubjects(1);
+			const result1 = await db.tutor_subjects.get.getSubjectsByTutor(1);
 			expect(result1.rows.length).toEqual(3);
 			const removed = await db.tutor_subjects.removeByTutor(1);
 			expect(removed.rows.length).toEqual(3);
-			const result2 = await db.tutor_subjects.get.getSubjects(1);
+			const result2 = await db.tutor_subjects.get.getSubjectsByTutor(1);
 			expect(result2.rows.length).toEqual(0);
 		});
 

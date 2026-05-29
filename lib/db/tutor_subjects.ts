@@ -6,15 +6,34 @@ export type TutorSubjectsType = {
 };
 
 export const createTutorSubjectsRepo = (sql: any, pool: any) => {
-	const getSubjects = async (tutor_id: number, db: any = sql) => {
+	const getSubjectsByTutor = async (tutor_id: number, db: any = sql) => {
 		return db`SELECT subject FROM tutor_subjects WHERE tutor_id = ${tutor_id};`;
 	};
 
-	const getTutors = async (subject: string, db: any = sql) => {
+	const getAllSubjects = async (db: any = sql) => {
+		return db`SELECT DISTINCT subject FROM tutor_subjects ORDER BY subject;`;
+	};
+
+	const getTutorsBySubject = async (subject: string, db: any = sql) => {
 		return db`SELECT tutor_id FROM tutor_subjects WHERE subject = ${subject};`;
 	};
 
-	const getAcceptingTutors = async (subject: string, db: any = sql) => {
+	const getTutorsByOneOfSubjects = async (subjects: string[], db: any = sql) => {
+		return db`SELECT DISTINCT tutor_id FROM tutor_subjects WHERE subject = ANY(${subjects}) ORDER BY tutor_id;`;
+	};
+
+	const getTutorsByAllOfSubjects = async (subjects: string[], db: any = sql) => {
+		return db`
+			SELECT tutor_id
+			FROM tutor_subjects
+			WHERE subject = ANY(${subjects})
+			GROUP BY tutor_id
+			HAVING COUNT(DISTINCT subject) = ${subjects.length}
+			ORDER BY tutor_id;
+		`;
+	};
+
+	const getAcceptingTutorsBySubject = async (subject: string, db: any = sql) => {
 		return db`
 			SELECT
 				t.tutor_id,
@@ -30,6 +49,54 @@ export const createTutorSubjectsRepo = (sql: any, pool: any) => {
 				t.accepting_students
 			FROM tutor_subjects ts JOIN tutors t ON ts.tutor_id = t.tutor_id
 			WHERE ts.subject = ${subject} AND t.accepting_students > 0;
+		`;
+	};
+
+	const getAcceptingTutorsByOneOfSubjects = async (subjects: string[], db: any = sql) => {
+		return db`
+			SELECT DISTINCT
+				t.tutor_id,
+				t.gov_first_name,
+				t.gov_last_name,
+				t.pref_name,
+				t.availability,
+				t.in_person,
+				t.location,
+				t.current_uni,
+				t.current_degree,
+				t.year_of_study,
+				t.accepting_students
+			FROM tutor_subjects ts JOIN tutors t ON ts.tutor_id = t.tutor_id
+			WHERE ts.subject = ANY(${subjects}) AND t.accepting_students > 0
+			ORDER BY t.tutor_id;
+		`;
+	};
+
+	const getAcceptingTutorsByAllOfSubjects = async (subjects: string[], db: any = sql) => {
+		return db`
+			SELECT
+				t.tutor_id,
+				t.gov_first_name,
+				t.gov_last_name,
+				t.pref_name,
+				t.availability,
+				t.in_person,
+				t.location,
+				t.subjects,
+				t.current_uni,
+				t.current_degree,
+				t.year_of_study,
+				t.accepting_students
+			FROM tutors t
+			WHERE t.accepting_students > 0
+			AND t.tutor_id IN (
+         	SELECT ts.tutor_id
+         	FROM tutor_subjects ts
+         	WHERE ts.subject = ANY(${subjects})
+         	GROUP BY ts.tutor_id
+         	HAVING COUNT(DISTINCT ts.subject) = ${subjects.length}
+      	)
+			ORDER BY t.tutor_id;
 		`;
 	};
 
@@ -87,9 +154,14 @@ export const createTutorSubjectsRepo = (sql: any, pool: any) => {
 
 	return {
 		get: {
-			getSubjects,
-			getTutors,
-			getAcceptingTutors,
+			getSubjectsByTutor,
+			getAllSubjects,
+			getTutorsBySubject,
+			getTutorsByOneOfSubjects,
+			getTutorsByAllOfSubjects,
+			getAcceptingTutorsBySubject,
+			getAcceptingTutorsByOneOfSubjects,
+			getAcceptingTutorsByAllOfSubjects,
 			getAll,
 		},
 		find,
