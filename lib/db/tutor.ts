@@ -5,6 +5,7 @@ import parseSubjects from "./subjects";
 
 export type TutorType = Omit<TutorFormValues, "subjects"> & {
 	tutor_id?: number;
+	display_name?: string;
 	subjects: string;
 };
 
@@ -14,7 +15,11 @@ export const createTutorRepo = (sql: any, pool: any) => {
 	};
 
 	const getAll = async (db: any = sql) => {
-		return db`SELECT * FROM tutors WHERE availability IS NOT NULL ORDER BY accepting_students DESC, gov_last_name ASC, gov_first_name ASC;`;
+		return db`
+			SELECT *, COALESCE(pref_name, gov_first_name) as display_name
+			FROM tutors
+			WHERE availability IS NOT NULL
+			ORDER BY accepting_students DESC, gov_last_name ASC, gov_first_name ASC;`;
 	};
 
 	const find = async (gov_first_name: string, gov_last_name: string, db: any = sql) => {

@@ -157,6 +157,20 @@ describe("Tutor Repository Integration Tests", () => {
 			expect(result.rows[2].gov_first_name).toBe("A-B-C");
 		});
 
+		it("should get the display_name for all tutors ordered by number of accepting students", async () => {
+			const names = ["A-B-C", "1-2-3", "Do-Re-Mi"];
+			const nickname = "MJ";
+			for (let i = 1; i <= 3; i++)
+				await db.tutor.insert.insert(createMockTutor({ gov_first_name: names[i - 1], email: `tutor${i}@test.ca`, phone: `(${i}${i}${i}) 456-7890`, accepting_students: i, pref_name: nickname.slice(0, i - 1) }));
+			const result = await db.tutor.get.getAll();
+			expect(Array.isArray(result.rows)).toBe(true);
+			expect(result.rows.length).toEqual(3);
+			for (let i = 0; i < 3; i++) expect(result.rows[i].tutor_id).toEqual(3 - i);
+			expect(result.rows[0].display_name).toBe("MJ");
+			expect(result.rows[1].display_name).toBe("M");
+			expect(result.rows[2].display_name).toBe("A-B-C");
+		});
+
 		it("should return all tutors ordered by government first name", async () => {
 			const names = ["A-B-C", "1-2-3", "Do-Re-Mi"];
 			for (let i = 1; i <= 3; i++) await db.tutor.insert.insert(createMockTutor({ gov_first_name: names[i - 1], email: `tutor${i}@test.ca`, phone: `(${i}${i}${i}) 456-7890` }));

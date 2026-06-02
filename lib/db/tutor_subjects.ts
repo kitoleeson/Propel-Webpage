@@ -37,16 +37,13 @@ export const createTutorSubjectsRepo = (sql: any, pool: any) => {
 		return db`
 			SELECT
 				t.tutor_id,
-				t.gov_first_name,
-				t.gov_last_name,
-				t.pref_name,
+				COALESCE(t.pref_name, t.gov_first_name) as display_name,
 				t.availability,
 				t.in_person,
 				t.location,
 				t.current_uni,
 				t.current_degree,
-				t.year_of_study,
-				t.accepting_students
+				t.year_of_study
 			FROM tutor_subjects ts JOIN tutors t ON ts.tutor_id = t.tutor_id
 			WHERE ts.subject = ${subject} AND t.accepting_students > 0;
 		`;
@@ -54,39 +51,38 @@ export const createTutorSubjectsRepo = (sql: any, pool: any) => {
 
 	const getAcceptingTutorsByOneOfSubjects = async (subjects: string[], db: any = sql) => {
 		return db`
-			SELECT DISTINCT
-				t.tutor_id,
-				t.gov_first_name,
-				t.gov_last_name,
-				t.pref_name,
-				t.availability,
-				t.in_person,
-				t.location,
-				t.current_uni,
-				t.current_degree,
-				t.year_of_study,
-				t.accepting_students
-			FROM tutor_subjects ts JOIN tutors t ON ts.tutor_id = t.tutor_id
-			WHERE ts.subject = ANY(${subjects}) AND t.accepting_students > 0
-			ORDER BY t.tutor_id;
-		`;
+         SELECT
+            t.tutor_id,
+				COALESCE(t.pref_name, t.gov_first_name) as display_name,
+            t.availability,
+            t.in_person,
+            t.location,
+            t.current_uni,
+            t.current_degree,
+            t.year_of_study
+         FROM tutors t
+         WHERE t.accepting_students > 0
+         AND t.tutor_id IN (
+            SELECT ts.tutor_id
+            FROM tutor_subjects ts
+            WHERE ts.subject = ANY(${subjects})
+         )
+         ORDER BY t.tutor_id;
+      `;
 	};
 
 	const getAcceptingTutorsByAllOfSubjects = async (subjects: string[], db: any = sql) => {
 		return db`
 			SELECT
 				t.tutor_id,
-				t.gov_first_name,
-				t.gov_last_name,
-				t.pref_name,
+				COALESCE(t.pref_name, t.gov_first_name) as display_name,
 				t.availability,
 				t.in_person,
 				t.location,
 				t.subjects,
 				t.current_uni,
 				t.current_degree,
-				t.year_of_study,
-				t.accepting_students
+				t.year_of_study
 			FROM tutors t
 			WHERE t.accepting_students > 0
 			AND t.tutor_id IN (
