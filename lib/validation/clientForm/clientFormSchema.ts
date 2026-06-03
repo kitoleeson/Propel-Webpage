@@ -44,56 +44,56 @@ const guardianSchema = personBase.extend({
 	email_password: z.string().email("Invalid email address").optional(),
 });
 
-// export const defaultStudent: ClientFormValues["student"] = {
-// 	gov_first_name: "test",
-// 	gov_last_name: "student",
-// 	pref_name: "tessy",
-// 	email: "tessy@test.ca",
-// 	phone: "1234567890",
-// 	pref_communication: "Email",
-// 	grade: 12,
-// 	city: "edmonton",
-// 	how_found_us: "Word of Mouth",
-// 	biller: "Guardian",
-// };
-
-// export const defaultGuardian: ClientFormValues["guardians"][0] = {
-// 	gov_first_name: "test",
-// 	gov_last_name: "guardian",
-// 	pref_name: "tessa",
-// 	email: "tessa@test.ca",
-// 	phone: "1234567890",
-// 	pref_communication: "Text Message",
-// 	relationship: "Mother",
-// 	is_primary_biller: false,
-// };
-
 export const defaultStudent: ClientFormValues["student"] = {
-	gov_first_name: "",
-	gov_last_name: "",
-	pref_name: "",
-	email: "",
-	phone: "",
-	pref_communication: undefined,
-	grade: undefined,
-	city: "",
-	how_found_us: undefined,
-	biller: undefined,
+	gov_first_name: "test",
+	gov_last_name: "student",
+	pref_name: "tessy",
+	email: "tessy@test.ca",
+	phone: "1234567890",
+	pref_communication: "Email",
+	grade: 12,
+	city: "edmonton",
+	how_found_us: "Word of Mouth",
+	biller: "Guardian",
 };
 
 export const defaultGuardian: ClientFormValues["guardians"][0] = {
-	gov_first_name: "",
-	gov_last_name: "",
-	pref_name: "",
-	email: "",
-	phone: "",
-	pref_communication: undefined,
-	relationship: undefined,
+	gov_first_name: "test",
+	gov_last_name: "guardian",
+	pref_name: "tessa",
+	email: "tessa@test.ca",
+	phone: "1234567890",
+	pref_communication: "Text Message",
+	relationship: "Mother",
 	is_primary_biller: false,
-	already_exists: false,
-	id: undefined,
-	email_password: "",
 };
+
+// export const defaultStudent: ClientFormValues["student"] = {
+// 	gov_first_name: "",
+// 	gov_last_name: "",
+// 	pref_name: "",
+// 	email: "",
+// 	phone: "",
+// 	pref_communication: undefined,
+// 	grade: undefined,
+// 	city: "",
+// 	how_found_us: undefined,
+// 	biller: undefined,
+// };
+
+// export const defaultGuardian: ClientFormValues["guardians"][0] = {
+// 	gov_first_name: "",
+// 	gov_last_name: "",
+// 	pref_name: "",
+// 	email: "",
+// 	phone: "",
+// 	pref_communication: undefined,
+// 	relationship: undefined,
+// 	is_primary_biller: false,
+// 	already_exists: false,
+// 	id: undefined,
+// 	email_password: "",
+// };
 
 export const formSchema = z
 	.object({
