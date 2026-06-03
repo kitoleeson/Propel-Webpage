@@ -102,10 +102,7 @@ const FormDataListInput = (props: FormDataListInputProps) => {
 
 								return (
 									<div key={categoryKey} className="w-[95%] mx-auto flex flex-col gap-x-1.5">
-										{/* Category Heading */}
 										<h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 border-b pb-0.5">{formatCategoryName(categoryKey)}</h4>
-
-										{/* Grid layout for the subject items inside this category */}
 										<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-1.5 pt-1">
 											{selectedOptions.map((option) => (
 												<div
@@ -122,7 +119,6 @@ const FormDataListInput = (props: FormDataListInputProps) => {
 							})}
 						</div>
 
-						{/* Fallback if filtering returns nothing at all across all blocks */}
 						{Object.values(SUBJECT_CATEGORIES)
 							.flat()
 							.filter((opt) => opt.toLowerCase().includes(query.toLowerCase()) && !selected.includes(opt)).length === 0 && <p className="text-gray-400 text-center py-2">No matching subjects found.</p>}

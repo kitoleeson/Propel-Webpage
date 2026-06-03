@@ -43,7 +43,9 @@ type FormTextInputProps = FormRegisterableProps;
 
 type FormPhoneInputProps = FormRegisterableProps;
 
-type FormDropdownInputProps = FormOptionProps;
+type FormDropdownInputProps = FormRegisterableProps & {
+	options: string[] | { label: string; value: string | number }[];
+};
 
 type FormRadioInputProps = FormOptionProps;
 

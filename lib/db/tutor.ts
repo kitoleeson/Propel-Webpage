@@ -3,10 +3,52 @@
 import { TutorFormValues } from "../validation/tutorForm/tutorFormSchema";
 import parseSubjects from "./subjects";
 
-export type TutorType = Omit<TutorFormValues, "subjects"> & {
+// export type TutorType = Omit<TutorFormValues, "subjects"> & {
+// 	tutor_id?: number;
+// 	display_name?: string;
+// 	subjects: string;
+// };
+
+export type TutorType = {
 	tutor_id?: number;
+
+	gov_first_name: TutorFormValues["gov_first_name"];
+	gov_last_name: TutorFormValues["gov_last_name"];
+	pref_name?: TutorFormValues["pref_name"];
 	display_name?: string;
+	email: TutorFormValues["email"];
+	phone: TutorFormValues["phone"];
+
+	date_hired: TutorFormValues["date_hired"];
+	prior_experience: NonNullable<TutorFormValues["prior_experience"]>;
+	current_rate: NonNullable<TutorFormValues["current_rate"]>;
+	accepting_students: NonNullable<TutorFormValues["accepting_students"]>;
+
+	emerg_contact_name: TutorFormValues["emerg_contact_name"];
+	emerg_contact_phone: TutorFormValues["emerg_contact_phone"];
+	emerg_contact_relationship: TutorFormValues["emerg_contact_relationship"];
+
+	availability: TutorFormValues["availability"];
+	in_person: NonNullable<TutorFormValues["in_person"]>;
+	city: TutorFormValues["city"];
+	location?: TutorFormValues["location"];
+
 	subjects: string;
+
+	current_uni: TutorFormValues["current_uni"];
+	current_degree: NonNullable<TutorFormValues["current_degree"]>;
+	field_of_study: TutorFormValues["field_of_study"];
+	year_of_study: NonNullable<TutorFormValues["year_of_study"]>;
+	current_fav_class: TutorFormValues["current_fav_class"];
+	academic_interests: TutorFormValues["academic_interests"];
+
+	bio: TutorFormValues["bio"];
+	hobbies: TutorFormValues["hobbies"];
+
+	high_school: TutorFormValues["high_school"];
+	high_school_city: TutorFormValues["high_school_city"];
+	fav_high_school_class: TutorFormValues["fav_high_school_class"];
+	ap_ib_credentials: NonNullable<TutorFormValues["ap_ib_credentials"]>;
 };
 
 export const createTutorRepo = (sql: any, pool: any) => {
@@ -62,7 +104,7 @@ export const createTutorRepo = (sql: any, pool: any) => {
 		const parsedTutor: TutorType = {
 			...data,
 			subjects: parseSubjects(data.subjects),
-		};
+		} as TutorType;
 		const client = await pool.connect();
 		const tx = sql(client);
 		try {
@@ -158,7 +200,7 @@ export const createTutorRepo = (sql: any, pool: any) => {
 		const parsedTutor: TutorType = {
 			...data,
 			subjects: parseSubjects(data.subjects),
-		};
+		} as TutorType;
 		const client = await pool.connect();
 		const tx = sql(client);
 		try {

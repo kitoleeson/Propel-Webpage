@@ -100,6 +100,10 @@ export const formSchema = z
 		student: studentSchema,
 		guardians: z.array(guardianSchema),
 		primary_biller_index: z.number().min(-1),
+		tutors: z
+			.array(z.number().int())
+			.length(2, "Exactly 2 tutor options must be selected")
+			.refine((arr) => arr[0] !== arr[1], { message: "Tutor options must be different", path: [1] }),
 	})
 	.superRefine((data, ctx) => {
 		const guardianBilling = data.student.biller === "Guardian";

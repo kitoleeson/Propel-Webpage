@@ -43,6 +43,7 @@ export const createTutorSubjectsRepo = (sql: any, pool: any) => {
 				t.location,
 				t.current_uni,
 				t.current_degree,
+				t.field_of_study,
 				t.year_of_study
 			FROM tutor_subjects ts JOIN tutors t ON ts.tutor_id = t.tutor_id
 			WHERE ts.subject = ${subject} AND t.accepting_students > 0;
@@ -59,6 +60,7 @@ export const createTutorSubjectsRepo = (sql: any, pool: any) => {
             t.location,
             t.current_uni,
             t.current_degree,
+				t.field_of_study,
             t.year_of_study
          FROM tutors t
          WHERE t.accepting_students > 0
@@ -82,6 +84,7 @@ export const createTutorSubjectsRepo = (sql: any, pool: any) => {
 				t.subjects,
 				t.current_uni,
 				t.current_degree,
+				t.field_of_study,
 				t.year_of_study
 			FROM tutors t
 			WHERE t.accepting_students > 0
