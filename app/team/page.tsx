@@ -4,7 +4,7 @@ import BasePage from "@/components/ui/base_page/BasePage";
 import TutorCard from "@/components/ui/TutorCard";
 import { db } from "@/lib/db";
 
-const AboutPage = async () => {
+const TeamPage = async () => {
 	const result = await db.tutor.get.getAll();
 	const tutors = result.rows;
 
@@ -25,4 +25,4 @@ const AboutPage = async () => {
 	);
 };
 
-export default AboutPage;
+export default TeamPage;
