@@ -4,7 +4,7 @@
 import NavBarIconLink from "./NavBarIconLink";
 import { usePathname } from "next/navigation";
 import LinkUnderline from "@/components/ui/LinkUnderline";
-import { allLinks } from "./links";
+import { navLinks } from "./links";
 
 const NavBar = () => {
 	const pathname = usePathname();
@@ -16,7 +16,7 @@ const NavBar = () => {
 				{/* <NavBarIconLink iconName="instagram" href="https://www.instagram.com" label="Instagram" className="nav-icon" /> */}
 			</div>
 			<div className="flex items-center landscape:gap-3 portrait:gap-0">
-				{Object.values(allLinks)
+				{Object.values(navLinks)
 					.sort((a, b) => a.order - b.order)
 					.map((link) => (
 						<LinkUnderline key={link.href} link={link} showActive={pathname === link.href} />

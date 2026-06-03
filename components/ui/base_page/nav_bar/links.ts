@@ -6,7 +6,7 @@ export type NavLink = {
 	order: number;
 };
 
-export const allLinks: Record<string, NavLink> = {
+export const navLinks: Record<string, NavLink> = {
 	home: { href: "/", anchor: "HOME", order: 1 },
 	team: { href: "/team", anchor: "OUR TEAM", order: 2 },
 	signup: { href: "/signup", anchor: "SIGN UP", order: 3 },

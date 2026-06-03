@@ -9,7 +9,7 @@ import HighlightCard from "@/components/ui/highlight_card/HighlightCard";
 import HighlightCardStrictGrid from "@/components/ui/highlight_card/HighlightCardStrictGrid";
 import Image from "next/image";
 import Link from "next/link";
-import { allLinks } from "@/components/ui/base_page/nav_bar/links";
+import { navLinks } from "@/components/ui/base_page/nav_bar/links";
 
 export default function Home() {
 	return (
@@ -55,8 +55,8 @@ export default function Home() {
 							adjustments. We will take our lead from you and use our experience to help you power up. This starts from the get-go when you select the tutor you want to work with.{" "}
 							{
 								<Link
-									key={allLinks["team"].href}
-									href={allLinks["team"].href}
+									key={navLinks["team"].href}
+									href={navLinks["team"].href}
 									className="inline font-bold duration-300 text-primary hover:text-primary-hover bg-linear-to-r from-current to-current  bg-size-[0%_2px] bg-no-repeat bg-bottom hover:bg-size-[98%_2px] transition-[background-size] ease-out"
 								>
 									Check out our crew here
@@ -66,7 +66,7 @@ export default function Home() {
 						</p>
 					</div>
 				</Body>
-				<Link key={allLinks["signup"].href} href={allLinks["signup"].href} className="group @container-size h-60 flex flex-col justify-center bg-primary overflow-hidden relative">
+				<Link key={navLinks["signup"].href} href={navLinks["signup"].href} className="group @container-size h-60 flex flex-col justify-center bg-primary overflow-hidden relative">
 					<div className="absolute -translate-x-1/2 -translate-y-1/2 top-5/6 @landscape:left-auto @landscape:right-[-120cqh] @portrait:left-1/2 w-[175cqh] h-[175cqh] opacity-15 pointer-events-none z-0">
 						<Image src="/images/logos/full-white.svg" alt="Propel Tutoring Logo Background" fill sizes="(max-width: 768px) 100vw, 1200px" priority className="object-contain" />
 					</div>
