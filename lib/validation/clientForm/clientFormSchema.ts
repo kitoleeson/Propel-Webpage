@@ -44,6 +44,22 @@ const guardianSchema = personBase.extend({
 	email_password: z.string().email("Invalid email address").optional(),
 });
 
+const tutorsSchema = z
+	.object({
+		first_choice: z.number().int(),
+		second_choice: z.number().int(),
+		notes: z.string().optional(),
+	})
+	.superRefine((data, ctx) => {
+		if (data.first_choice === data.second_choice) {
+			ctx.addIssue({
+				code: z.ZodIssueCode.custom,
+				message: "Tutor options must be different",
+				path: ["second_choice"],
+			});
+		}
+	});
+
 export const defaultStudent: ClientFormValues["student"] = {
 	gov_first_name: "test",
 	gov_last_name: "student",
@@ -100,10 +116,8 @@ export const formSchema = z
 		student: studentSchema,
 		guardians: z.array(guardianSchema),
 		primary_biller_index: z.number().min(-1),
-		tutors: z
-			.array(z.number().int())
-			.length(2, "Exactly 2 tutor options must be selected")
-			.refine((arr) => arr[0] !== arr[1], { message: "Tutor options must be different", path: [1] }),
+		tutors: tutorsSchema,
+		comments: z.string().optional(),
 	})
 	.superRefine((data, ctx) => {
 		const guardianBilling = data.student.biller === "Guardian";

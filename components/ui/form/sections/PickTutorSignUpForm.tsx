@@ -8,7 +8,7 @@ import { getTutorsBySubjects } from "@/lib/db/actions";
 import { useFormContext } from "react-hook-form";
 import { ClientFormValues } from "@/lib/validation/clientForm/clientFormSchema";
 import { FormInputCluster } from "../layout";
-import { FormDropdownInput } from "../inputs";
+import { FormDropdownInput, FormTextAreaInput } from "../inputs";
 
 const PickTutorSignUpForm = ({ tutors, subjects }: { tutors: TutorType[]; subjects: string[] }) => {
 	const [filteredTutors, setFilteredTutors] = useState<TutorType[]>(tutors);
@@ -56,8 +56,6 @@ const PickTutorSignUpForm = ({ tutors, subjects }: { tutors: TutorType[]; subjec
 			</p>
 			<div className="w-full max-w-[97%] m-auto flex flex-col landscape:items-start portrait:items-center gap-12">
 				<FormDataListInput label="Filter by Subject" options={subjects} placeholder="Choose your subjects" onChange={updateAvailableTutors} />
-				{/* INCLUDE A TEXT BOX where they can indicate whether they would like tutoring from more than one tutor if no single tutor can tutor all subjects. preferably, one tutor for all subjects, but if they would like another then that is okay too */}
-				{/* ALSO ADD FIELD FOR ANY OTHER COMMENTS/STUFF YOU WANT US TO KNOW */}
 				<div className="w-full grow landscape:basis-2/3 relative">
 					{loading && (
 						<div className="absolute top-0 left-0 right-0 text-center bg-white/90 py-3 rounded-md z-5 shadow-sm border border-slate-100 opacity-100">
@@ -82,20 +80,35 @@ const PickTutorSignUpForm = ({ tutors, subjects }: { tutors: TutorType[]; subjec
 					</div>
 				</div>
 			</div>
-			<FormInputCluster className="border-t-2 border-primary-hover mx-6 py-6 pt-10">
-				<FormDropdownInput
-					label="First Option"
-					register={register("tutors.0", { valueAsNumber: true })}
-					options={tutors.map((tutor) => ({ label: tutor.display_name ?? "Unknown Tutor", value: tutor.tutor_id ?? -1 }))}
-					error={errors.tutors?.[0]?.message}
-				/>
-				<FormDropdownInput
-					label="Second Option"
-					register={register("tutors.1", { valueAsNumber: true })}
-					options={tutors.map((tutor) => ({ label: tutor.display_name ?? "Unknown Tutor", value: tutor.tutor_id ?? -1 }))}
-					error={errors.tutors?.[1]?.message}
-				/>
-			</FormInputCluster>
+			<div className="border-t-2 border-primary-hover mx-6 mt-6 py-3">
+				<FormInputCluster>
+					<FormDropdownInput
+						label="First Option"
+						register={register("tutors.first_choice", { valueAsNumber: true })}
+						options={tutors.map((tutor) => ({ label: tutor.display_name ?? "Unknown Tutor", value: tutor.tutor_id ?? -1 }))}
+						error={errors.tutors?.first_choice?.message}
+					/>
+					<FormDropdownInput
+						label="Second Option"
+						register={register("tutors.second_choice", { valueAsNumber: true })}
+						options={tutors.map((tutor) => ({ label: tutor.display_name ?? "Unknown Tutor", value: tutor.tutor_id ?? -1 }))}
+						error={errors.tutors?.second_choice?.message}
+					/>
+				</FormInputCluster>
+				{/* INCLUDE A TEXT BOX where they can indicate whether they would like tutoring from more than one tutor if no single tutor can tutor all subjects. preferably, one tutor for all subjects, but if they would like another then that is okay too */}
+				<FormInputCluster>
+					<FormTextAreaInput
+						label="We generally recommend working with a single tutor for all subjects. This allows for a more personalized and consistent learning experience. However, we can also accomodate different tutors for different subjects, if
+					preferred for any reason. Please indicate whether you would like tutoring from more than one tutor, and the details regarding your preferences:"
+						register={register("tutors.notes")}
+						error={errors.tutors?.notes?.message}
+					/>
+				</FormInputCluster>
+				{/* ALSO ADD FIELD FOR ANY OTHER COMMENTS/STUFF YOU WANT US TO KNOW */}
+				<FormInputCluster>
+					<FormTextAreaInput label="Any other comments or information you would like us to know:" register={register("comments")} error={errors.comments?.message} />
+				</FormInputCluster>
+			</div>
 		</div>
 	);
 };

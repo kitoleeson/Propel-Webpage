@@ -23,6 +23,12 @@ describe("Tutor Repository Integration Tests", () => {
 		in_person: "Hybrid",
 		current_degree: "Bachelor's Degree",
 		ap_ib_credentials: "AP Scholar with Distinction",
+
+		prior_experience: 11,
+		current_rate: 37.5,
+		accepting_students: 2,
+		year_of_study: 5,
+
 		...overrides,
 	});
 
