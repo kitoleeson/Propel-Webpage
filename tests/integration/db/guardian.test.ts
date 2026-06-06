@@ -1,6 +1,6 @@
 /** @format */
 
-import { GuardianFormValues, StudentFormValues } from "@/lib/validation/clientForm/clientFormSchema";
+import { GuardianFormValues } from "@/lib/validation/clientForm/clientFormSchema";
 import { withNeonTestBranch } from "@/tests/test-setup";
 
 withNeonTestBranch();
