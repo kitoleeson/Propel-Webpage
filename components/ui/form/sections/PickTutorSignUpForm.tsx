@@ -52,7 +52,7 @@ const PickTutorSignUpForm = ({ tutors, subjects }: { tutors: TutorType[]; subjec
 				<a href="mailto:propeltutoringyeg@gmail.com" className="font-semibold text-primary hover:text-primary-hover">
 					propeltutoringyeg@gmail.com
 				</a>{" "}
-				for any questions.
+				for any questions. Although only certain subjects are displayed in the dropdown filter below, Propel offers tutoring for all grades and all curriculums at the high school level and below.
 			</p>
 			<div className="w-full max-w-[97%] m-auto flex flex-col landscape:items-start portrait:items-center gap-12">
 				<FormDataListInput label="Filter by Subject" options={subjects} placeholder="Choose your subjects" onChange={updateAvailableTutors} />
@@ -95,7 +95,6 @@ const PickTutorSignUpForm = ({ tutors, subjects }: { tutors: TutorType[]; subjec
 						error={errors.tutors?.second_choice?.message}
 					/>
 				</FormInputCluster>
-				{/* INCLUDE A TEXT BOX where they can indicate whether they would like tutoring from more than one tutor if no single tutor can tutor all subjects. preferably, one tutor for all subjects, but if they would like another then that is okay too */}
 				<FormInputCluster>
 					<FormTextAreaInput
 						label="We generally recommend working with a single tutor for all subjects. This allows for a more personalized and consistent learning experience. However, we can also accomodate different tutors for different subjects, if
@@ -104,9 +103,8 @@ const PickTutorSignUpForm = ({ tutors, subjects }: { tutors: TutorType[]; subjec
 						error={errors.tutors?.notes?.message}
 					/>
 				</FormInputCluster>
-				{/* ALSO ADD FIELD FOR ANY OTHER COMMENTS/STUFF YOU WANT US TO KNOW */}
 				<FormInputCluster>
-					<FormTextAreaInput label="Any other comments or information you would like us to know:" register={register("comments")} error={errors.comments?.message} />
+					<FormTextAreaInput label="Any other comments or information you would like us to know. Please include any specific requests or concerns, and :" register={register("comments")} error={errors.comments?.message} />
 				</FormInputCluster>
 			</div>
 		</div>

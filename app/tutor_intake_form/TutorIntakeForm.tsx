@@ -183,7 +183,7 @@ const TutorIntakeForm = () => {
 					<FormCheckboxInput
 						label="What computer science do you teach?"
 						register={register("subjects.computer_science")}
-						options={["Comp Sci 10", "Comp Sci 20 (AP)", "Comp Sci 30 (AP)"]}
+						options={["Computer Science 10 (AP)", "Computer Science 20 (AP)", "Computer Science 30 (AP)"]}
 						error={errors.subjects?.computer_science?.message}
 					/>
 				</FormInputCluster>
