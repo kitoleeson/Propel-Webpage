@@ -16,7 +16,7 @@ jobs:
       - run: npm ci
 
       - name: Integration Tests
-        run: npm test -- --maxWorkers=8
+        run: npm test -- --maxWorkers=1
         env:
           NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
           NEON_PROJECT_ID: ${{ vars.NEON_PROJECT_ID }}
