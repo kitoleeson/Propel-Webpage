@@ -9,14 +9,17 @@ jobs:
     environment: CI Testing
     steps:
       - uses: actions/checkout@v4
+        with:
+          clean: true
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      - run: npm ci
+      - run: npm ci --no-audit --no-fund --force
 
       - name: Integration Tests
-        run: npm test -- --maxWorkers=1
+        run: npm test
         env:
           NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
           NEON_PROJECT_ID: ${{ vars.NEON_PROJECT_ID }}
