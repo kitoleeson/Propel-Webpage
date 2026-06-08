@@ -40,7 +40,6 @@ const guardianSchema = personBase.extend({
 		.refine((val) => val !== undefined, { message: "Required" }),
 	is_primary_biller: z.boolean(),
 	already_exists: z.boolean().optional(),
-	id: z.number().int().optional(),
 	email_password: z.string().email("Invalid email address").optional(),
 });
 

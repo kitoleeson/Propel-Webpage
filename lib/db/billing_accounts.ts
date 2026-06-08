@@ -13,11 +13,17 @@ export const createBillingAccountsRepo = (sql: any, pool: any) => {
 		return db`SELECT * FROM billing_accounts WHERE billing_id = ${billing_id};`;
 	};
 
-	const getByOwner = async (type: "student" | "guardian", owner_id: number, db: any = sql) => {
+	const getByGuardianOwner = async (guardian_id: number, db: any = sql) => {
 		return db`
          SELECT * FROM billing_accounts 
-         WHERE (student_id = ${owner_id} AND ${type} = 'student')
-            OR (guardian_id = ${owner_id} AND ${type} = 'guardian');
+         WHERE guardian_id = ${guardian_id};
+      `;
+	};
+
+	const getByStudentOwner = async (student_id: number, db: any = sql) => {
+		return db`
+         SELECT * FROM billing_accounts 
+         WHERE student_id = ${student_id};
       `;
 	};
 
@@ -83,7 +89,8 @@ export const createBillingAccountsRepo = (sql: any, pool: any) => {
 	return {
 		get: {
 			get,
-			getByOwner,
+			getByGuardianOwner,
+			getByStudentOwner,
 			getOwner,
 			getAll,
 		},

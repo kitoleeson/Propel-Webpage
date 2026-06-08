@@ -217,7 +217,7 @@ describe("Billing Accounts Repository Integration Tests", () => {
 			const mockData = await createMockGuardianBiller();
 			const guardianBillerResult = await db.billing_account.insert(mockData);
 			const guardianBiller = guardianBillerResult.rows[0];
-			const result = await db.billing_account.get.getByOwner("guardian", guardianBiller.guardian_id);
+			const result = await db.billing_account.get.getByGuardianOwner(guardianBiller.guardian_id);
 			expect(result.rows[0].guardian_id).toEqual(guardianBiller.guardian_id);
 			expect(result.rows[0].email).toEqual(guardianBiller.email);
 			expect(result.rows[0].billing_id).toEqual(guardianBiller.billing_id);
@@ -227,7 +227,7 @@ describe("Billing Accounts Repository Integration Tests", () => {
 			const mockData = await createMockStudentBiller();
 			const studentBillerResult = await db.billing_account.insert(mockData);
 			const studentBiller = studentBillerResult.rows[0];
-			const result = await db.billing_account.get.getByOwner("student", studentBiller.student_id);
+			const result = await db.billing_account.get.getByStudentOwner(studentBiller.student_id);
 			expect(result.rows[0].student_id).toEqual(studentBiller.student_id);
 			expect(result.rows[0].email).toEqual(studentBiller.email);
 			expect(result.rows[0].billing_id).toEqual(studentBiller.billing_id);
