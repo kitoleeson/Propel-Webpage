@@ -1,6 +1,6 @@
 /** @format */
 
-import { StudentFormValues } from "@/lib/validation/clientForm/clientFormSchema";
+import { StudentClientFormValues } from "@/lib/validation/clientForm/clientFormSchema";
 import { withNeonTestBranch } from "@/tests/test-setup";
 
 withNeonTestBranch();
@@ -16,7 +16,7 @@ describe("Student Repository Integration Tests", () => {
 		await db.pool.query("TRUNCATE TABLE students RESTART IDENTITY CASCADE");
 	});
 
-	const createMockStudent = (overrides = {}): StudentFormValues => ({
+	const createMockStudent = (overrides = {}): StudentClientFormValues => ({
 		gov_first_name: "Rocket",
 		gov_last_name: "Man",
 		pref_name: "RM",

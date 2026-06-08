@@ -48,7 +48,6 @@ const GuardianSection = ({ index, placeholder, optional }: Props) => {
 
 	const clearFields = (e: React.ChangeEvent<HTMLInputElement>) => {
 		if (e.target.checked) return;
-		setValue(`guardians.${index}.id`, undefined);
 		setValue(`guardians.${index}.email_password`, "");
 		setValue(`guardians.${index}.gov_first_name`, "");
 		setValue(`guardians.${index}.gov_last_name`, "");

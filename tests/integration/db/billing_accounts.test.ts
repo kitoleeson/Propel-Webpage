@@ -1,7 +1,7 @@
 /** @format */
 
 import { BillingAccountType } from "@/lib/db/billing_accounts";
-import { GuardianFormValues, StudentFormValues } from "@/lib/validation/clientForm/clientFormSchema";
+import { GuardianClientFormValues, StudentClientFormValues } from "@/lib/validation/clientForm/clientFormSchema";
 import { withNeonTestBranch } from "@/tests/test-setup";
 
 withNeonTestBranch();
@@ -17,7 +17,7 @@ describe("Billing Accounts Repository Integration Tests", () => {
 		await db.pool.query("TRUNCATE TABLE billing_accounts, guardians, students RESTART IDENTITY CASCADE");
 	});
 
-	const createMockGuardian = (overrides = {}): GuardianFormValues => ({
+	const createMockGuardian = (overrides = {}): GuardianClientFormValues => ({
 		gov_first_name: "Rosanna",
 		gov_last_name: "Toto",
 		pref_name: "Rose",
@@ -29,7 +29,7 @@ describe("Billing Accounts Repository Integration Tests", () => {
 		...overrides,
 	});
 
-	const createMockStudent = (overrides = {}): StudentFormValues => ({
+	const createMockStudent = (overrides = {}): StudentClientFormValues => ({
 		gov_first_name: "Rocket",
 		gov_last_name: "Man",
 		pref_name: "RM",

@@ -139,5 +139,6 @@ export const formSchema = z
 	});
 
 export type ClientFormValues = z.infer<typeof formSchema>;
-export type StudentFormValues = z.infer<typeof studentSchema>;
-export type GuardianFormValues = z.infer<typeof guardianSchema>;
+export type StudentClientFormValues = z.infer<typeof studentSchema>;
+export type GuardianClientFormValues = z.infer<typeof guardianSchema>;
+export type TutorClientFormValues = z.infer<typeof tutorsSchema>;

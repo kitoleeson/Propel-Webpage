@@ -1,6 +1,6 @@
 /** @format */
 
-import { GuardianFormValues } from "@/lib/validation/clientForm/clientFormSchema";
+import { GuardianClientFormValues } from "@/lib/validation/clientForm/clientFormSchema";
 import { withNeonTestBranch } from "@/tests/test-setup";
 
 withNeonTestBranch();
@@ -16,7 +16,7 @@ describe("Guardian Repository Integration Tests", () => {
 		await db.pool.query("TRUNCATE TABLE guardians RESTART IDENTITY CASCADE");
 	});
 
-	const createMockGuardian = (overrides = {}): GuardianFormValues => ({
+	const createMockGuardian = (overrides = {}): GuardianClientFormValues => ({
 		gov_first_name: "Rosanna",
 		gov_last_name: "Toto",
 		pref_name: "Rose",

@@ -1,7 +1,7 @@
 /** @format */
 
 import { TutorType } from "@/lib/db/tutor";
-import { StudentFormValues } from "@/lib/validation/clientForm/clientFormSchema";
+import { StudentClientFormValues } from "@/lib/validation/clientForm/clientFormSchema";
 import { tutorPlaceholder } from "@/lib/validation/tutorForm/tutorFormSchema";
 import { withNeonTestBranch } from "@/tests/test-setup";
 
@@ -33,7 +33,7 @@ describe("Student Tutor Repository Integration Tests", () => {
 		...overrides,
 	});
 
-	const createMockStudent = (overrides = {}): StudentFormValues => ({
+	const createMockStudent = (overrides = {}): StudentClientFormValues => ({
 		gov_first_name: "Rocket",
 		gov_last_name: "Man",
 		pref_name: "RM",
