@@ -279,5 +279,6 @@ const allSubjectPlaceholder: SubjectFormValues = {
 	languages: ["French 10-30", "Spanish 10-30", "German 10-30"],
 };
 
+// NEXT THING TO DO: change all the FormValues types to be nullable only on truly optional() fields -- with no refine()
 export type TutorFormValues = z.infer<typeof tutorSchema>;
 export type SubjectFormValues = z.infer<typeof subjectSchema>;

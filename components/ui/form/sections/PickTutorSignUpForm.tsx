@@ -98,13 +98,10 @@ const PickTutorSignUpForm = ({ tutors, subjects }: { tutors: DBTypes.Tutors[]; s
 				<FormInputCluster>
 					<FormTextAreaInput
 						label="We generally recommend working with a single tutor for all subjects. This allows for a more personalized and consistent learning experience. However, we can also accomodate different tutors for different subjects, if
-					preferred for any reason. Please indicate whether you would like tutoring from more than one tutor, and the details regarding your preferences:"
+					preferred for any reason. Please indicate whether you would like tutoring from more than one tutor, and the details regarding your preferences (optional):"
 						register={register("tutors.notes")}
 						error={errors.tutors?.notes?.message}
 					/>
-				</FormInputCluster>
-				<FormInputCluster>
-					<FormTextAreaInput label="Any other comments or information you would like us to know. Please include any specific requests or concerns, and :" register={register("comments")} error={errors.comments?.message} />
 				</FormInputCluster>
 			</div>
 		</div>

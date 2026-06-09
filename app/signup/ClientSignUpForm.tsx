@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormProvider, SubmitHandler, useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
-import { FormButtonInput, StudentSection, GuardianSection, FormInputCluster } from "@/components/ui/form";
+import { FormButtonInput, StudentSection, GuardianSection, FormInputCluster, FormTextAreaInput } from "@/components/ui/form";
 import { defaultStudent, defaultGuardian, formSchema, ClientFormValues } from "@/lib/validation/clientForm/clientFormSchema";
 import { placeholders } from "@/lib/validation/clientForm/clientFormPersonPlaceholders";
 import PickTutorSignUpForm from "@/components/ui/form/sections/PickTutorSignUpForm";
@@ -45,6 +45,7 @@ const ClientSignUpForm = ({ tutors, subjects }: { tutors: DBTypes.Tutors[]; subj
 		formState: { errors },
 		handleSubmit,
 		watch,
+		register,
 		control,
 		setValue,
 	} = methods;
@@ -120,6 +121,9 @@ const ClientSignUpForm = ({ tutors, subjects }: { tutors: DBTypes.Tutors[]; subj
 					<FormButtonInput label="Add New Guardian" onClick={addGuardian} divFormat="mt-14" format="w-full" />
 				</div>
 				<PickTutorSignUpForm tutors={tutors} subjects={subjects} />
+				<FormInputCluster>
+					<FormTextAreaInput label="Any other specific requests, concerns, or extra comments/information you would like us to know (optional):" rows={3} register={register("comments")} error={errors.comments?.message} />
+				</FormInputCluster>
 				<FormButtonInput label="Sign Up" onClick={handleSubmit(onSubmit)} format="self-stretch text-primary font-bold text-primary" />
 			</form>
 		</FormProvider>
