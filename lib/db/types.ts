@@ -19,7 +19,7 @@ export namespace DBTypes {
 		pref_name?: string;
 		email: string;
 		phone?: string;
-		pref_communication: string;
+		pref_communication: "Email" | "Text Message";
 	};
 
 	export type Invoices = {
@@ -71,7 +71,7 @@ export namespace DBTypes {
 	export type PendingTutors = {
 		pending_tutor_id?: number;
 		tutor_id: number;
-		created_at?: Date;
+		created_at: Date;
 		gov_first_name: string;
 		gov_last_name: string;
 		pref_name?: string;
@@ -83,24 +83,24 @@ export namespace DBTypes {
 		accepting_students: number;
 		emerg_contact_name: string;
 		emerg_contact_phone: string;
-		emerg_contact_relationship?: string;
-		availability?: string;
-		in_person: string;
-		city?: string;
+		emerg_contact_relationship: string;
+		availability: string;
+		in_person: "In-Person Only" | "Online Only" | "Hybrid";
+		city: string;
 		location?: string;
 		subjects_json: SubjectFormValues;
-		current_uni?: string;
-		current_degree?: string;
-		field_of_study?: string;
-		year_of_study?: number;
-		current_fav_class?: string;
-		academic_interests?: string;
-		bio?: string;
-		hobbies?: string;
-		high_school?: string;
-		high_school_city?: string;
-		fav_high_school_class?: string;
-		ap_ib_credentials?: string;
+		current_uni: string;
+		current_degree: "Bachelor's Degree" | "Master's Degree" | "Associate's Degree" | "Doctorate" | "Vocational Certificate" | "Other";
+		field_of_study: string;
+		year_of_study: number;
+		current_fav_class: string;
+		academic_interests: string;
+		bio: string;
+		hobbies: string;
+		high_school: string;
+		high_school_city: string;
+		fav_high_school_class: string;
+		ap_ib_credentials: "AP Scholar" | "AP Scholar with Honours" | "AP Scholar with Distinction" | "IB Certificate" | "IB Diploma" | "N/A";
 	};
 
 	export type Sessions = {
@@ -145,7 +145,7 @@ export namespace DBTypes {
 		city: string;
 		email?: string;
 		phone?: string;
-		pref_communication: string;
+		pref_communication: "Email" | "Text Message";
 		how_found_us?: string;
 	};
 
@@ -155,6 +155,7 @@ export namespace DBTypes {
 		subject: string;
 	};
 
+	// ONCE TUTOR 6 FILLS OUT FORM, MAKE ALL DATABASE COLUMNS NOT NULLABLE
 	export type Tutors = {
 		tutor_id?: number;
 		gov_first_name: string;
@@ -168,23 +169,59 @@ export namespace DBTypes {
 		accepting_students: number;
 		emerg_contact_name: string;
 		emerg_contact_phone: string;
-		emerg_contact_relationship?: string;
-		availability?: string;
-		in_person: string;
-		city?: string;
+		emerg_contact_relationship: string;
+		availability: string;
+		in_person: "In-Person Only" | "Online Only" | "Hybrid";
+		city: string;
 		location?: string;
 		subjects: string;
-		current_uni?: string;
-		current_degree?: string;
-		field_of_study?: string;
-		year_of_study?: number;
-		current_fav_class?: string;
-		academic_interests?: string;
-		bio?: string;
-		hobbies?: string;
-		high_school?: string;
-		high_school_city?: string;
-		fav_high_school_class?: string;
-		ap_ib_credentials?: string;
+		current_uni: string;
+		current_degree: "Bachelor's Degree" | "Master's Degree" | "Associate's Degree" | "Doctorate" | "Vocational Certificate" | "Other";
+		field_of_study: string;
+		year_of_study: number;
+		current_fav_class: string;
+		academic_interests: string;
+		bio: string;
+		hobbies: string;
+		high_school: string;
+		high_school_city: string;
+		fav_high_school_class: string;
+		ap_ib_credentials: "AP Scholar" | "AP Scholar with Honours" | "AP Scholar with Distinction" | "IB Certificate" | "IB Diploma" | "N/A";
 	};
 }
+
+// re-allow nullables after fixing FormValues types
+// export type PendingTutors = {
+// 	pending_tutor_id?: number;
+// 	tutor_id: number;
+// 	created_at: Date;
+// 	gov_first_name: string;
+// 	gov_last_name: string;
+// 	pref_name?: string;
+// 	email: string;
+// 	phone: string;
+// 	date_hired: Date;
+// 	prior_experience: number;
+// 	current_rate: number;
+// 	accepting_students: number;
+// 	emerg_contact_name: string;
+// 	emerg_contact_phone: string;
+// 	emerg_contact_relationship?: string;
+// 	availability?: string;
+// 	in_person: string;
+// 	city?: string;
+// 	location?: string;
+// 	subjects_json: SubjectFormValues;
+// 	current_uni?: string;
+// 	current_degree?: string;
+// 	field_of_study?: string;
+// 	year_of_study?: number;
+// 	current_fav_class?: string;
+// 	academic_interests?: string;
+// 	bio?: string;
+// 	hobbies?: string;
+// 	high_school?: string;
+// 	high_school_city?: string;
+// 	fav_high_school_class?: string;
+// 	ap_ib_credentials?: string;
+// };

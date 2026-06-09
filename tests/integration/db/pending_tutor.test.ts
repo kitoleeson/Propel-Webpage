@@ -18,7 +18,7 @@ describe("Pending Tutor Repository Integration Tests", () => {
 		await db.pool.query("TRUNCATE TABLE pending_tutors, tutors RESTART IDENTITY CASCADE");
 	});
 
-	const createMockTutor = (overrides = {}): DBTypes.Tutors => ({
+	const createMockPendingTutor = (overrides = {}): DBTypes.Tutors => ({
 		...tutorPlaceholder,
 		subjects: parseSubjects(subjectPlaceholder),
 		in_person: "Hybrid",
@@ -34,7 +34,7 @@ describe("Pending Tutor Repository Integration Tests", () => {
 	});
 
 	const insertMockTutor = async (overrides = {}): Promise<DBTypes.PendingTutors> => {
-		const mockData = createMockTutor(overrides);
+		const mockData = createMockPendingTutor(overrides);
 		const result = await db.tutor.insert.insert(mockData);
 		return { ...result.rows[0], subjects_json: JSON.stringify(result.rows[0].subjects) };
 	};
@@ -76,7 +76,7 @@ describe("Pending Tutor Repository Integration Tests", () => {
 		});
 
 		it("should insert duplicate pending tutor entries for consecutive new tutors", async () => {
-			const tutor = createMockTutor();
+			const tutor = createMockPendingTutor();
 			const pending_tutor1 = await db.pending_tutor.insert({ ...tutor, subjects_json: subjectPlaceholder, created_at: new Date(), tutor_id: -1 });
 			const pending_tutor2 = await db.pending_tutor.insert({ ...tutor, subjects_json: subjectPlaceholder, created_at: new Date(), tutor_id: -1 });
 			expect(pending_tutor1.rows[0]).toBeDefined();
