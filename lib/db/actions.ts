@@ -35,7 +35,7 @@ export async function approvePendingTutor(pending_tutor_id: number) {
 	if (!pendingResults.rows?.length) throw new Error("PENDING_NOT_FOUND");
 
 	const pending_tutor = pendingResults.rows[0];
-	const formData = mapDbToTutorFormValues(pending_tutor);
+	const formData = await mapDbToTutorFormValues(pending_tutor);
 
 	if (pending_tutor.tutor_id === -1) await db.tutor.insert.insertWithSubjects(formData);
 	else await db.tutor.update.updateWithSubjects(formData);
@@ -45,7 +45,7 @@ export async function approvePendingTutor(pending_tutor_id: number) {
 	return { gov_first: pending_tutor.gov_first_name, gov_last: pending_tutor.gov_last_name, insertion: pending_tutor.tutor_id === -1 };
 }
 
-export const mapDbToTutorFormValues = (data: DBTypes.PendingTutors): TutorFormValues => ({
+export const mapDbToTutorFormValues = async (data: DBTypes.PendingTutors): Promise<TutorFormValues> => ({
 	...data,
 	date_hired: new Date(data.date_hired),
 	subjects: data.subjects_json as any,
