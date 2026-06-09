@@ -1,7 +1,6 @@
 /** @format */
 "use client";
 
-import { TutorType } from "@/lib/db/tutor";
 import FormDataListInput from "../inputs/FormDataListInput";
 import { useState } from "react";
 import { getTutorsBySubjects } from "@/lib/db/actions";
@@ -9,9 +8,10 @@ import { useFormContext } from "react-hook-form";
 import { ClientFormValues } from "@/lib/validation/clientForm/clientFormSchema";
 import { FormInputCluster } from "../layout";
 import { FormDropdownInput, FormTextAreaInput } from "../inputs";
+import { DBTypes } from "@/lib/db/types";
 
-const PickTutorSignUpForm = ({ tutors, subjects }: { tutors: TutorType[]; subjects: string[] }) => {
-	const [filteredTutors, setFilteredTutors] = useState<TutorType[]>(tutors);
+const PickTutorSignUpForm = ({ tutors, subjects }: { tutors: DBTypes.Tutors[]; subjects: string[] }) => {
+	const [filteredTutors, setFilteredTutors] = useState<DBTypes.Tutors[]>(tutors);
 	const [loading, setLoading] = useState(false);
 
 	const {

@@ -161,6 +161,7 @@ export namespace DBTypes {
 		gov_first_name: string;
 		gov_last_name: string;
 		pref_name?: string;
+		display_name?: string;
 		email: string;
 		phone: string;
 		date_hired: Date;
