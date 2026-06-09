@@ -181,6 +181,7 @@ CREATE TABLE IF NOT EXISTS tutor_subjects (
     tutor_subject_id SERIAL PRIMARY KEY,
     tutor_id INTEGER NOT NULL REFERENCES tutors(tutor_id),
     subject TEXT NOT NULL,
+    specialty INTEGER NOT NULL DEFAULT 1, -- 0 = specializes, 1 = regularly tutors, 2 = if needed
     UNIQUE (tutor_id, subject)
 );
 -- inputed: through the website during onboarding form

@@ -69,7 +69,7 @@ const PickTutorSignUpForm = ({ tutors, subjects }: { tutors: DBTypes.Tutors[]; s
 								<div className="space-y-2 w-full">
 									<h3 className="text-2xl font-bold">{tutor.display_name}</h3>
 									<p className="font-bold text-primary leading-tight">{tutor.subjects}</p>
-									<p className="">{`${getYearString(tutor.year_of_study)} ${tutor.field_of_study.split(",")[0]} student @ ${tutor.current_uni}`}</p>
+									<p className="">{`${tutor.year_of_study ? getYearString(tutor.year_of_study) : ""} ${tutor.field_of_study ? tutor.field_of_study.split(",")[0] : ""} ${tutor.year_of_study || tutor.field_of_study ? "s" : "S"}tudent @ ${tutor.current_uni}`}</p>
 									<div className="bg-primary-faded rounded-md p-3 w-full space-y-3">
 										<p className="">{`Tutors ${tutor.in_person === "Online Only" ? "online only" : "at " + tutor.location + (tutor.in_person === "Hybrid" ? " or online" : "")}`}</p>
 										<p className="">{`Available ${tutor.availability}`}</p>

@@ -5,7 +5,7 @@
 import { db, sql } from ".";
 import { sendAdminApprovalPendingTutorEmail } from "../mail/sendEmail";
 import { ClientFormValues } from "../validation/clientForm/clientFormSchema";
-import { TutorFormValues } from "../validation/tutorForm/tutorFormSchema";
+import { TutorFormValues, tutorPlaceholder } from "../validation/tutorForm/tutorFormSchema";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { DBTypes } from "./types";
@@ -45,11 +45,12 @@ export async function approvePendingTutor(pending_tutor_id: number) {
 	return { gov_first: pending_tutor.gov_first_name, gov_last: pending_tutor.gov_last_name, insertion: pending_tutor.tutor_id === -1 };
 }
 
-export const mapDbToTutorFormValues = async (data: DBTypes.PendingTutors): Promise<TutorFormValues> => ({
-	...data,
-	date_hired: new Date(data.date_hired),
-	subjects: data.subjects_json as any,
-});
+export const mapDbToTutorFormValues = async (data: DBTypes.PendingTutors): Promise<TutorFormValues> =>
+	({
+		...data,
+		date_hired: new Date(data.date_hired),
+		subjects: data.subjects_json as any,
+	}) as any;
 
 export async function checkGuardianStatus(email: string) {
 	const response = await db.guardian.get.getByEmail(email);
