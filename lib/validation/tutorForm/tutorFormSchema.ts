@@ -33,51 +33,31 @@ export const tutorSchema = z
 		phone: z.string().min(1, "Phone number is required"),
 
 		date_hired: z.date(),
-		prior_experience: z
-			.number()
-			.int()
-			.min(0, "Prior experience must be a positive number")
-			.optional()
-			.refine((val) => val !== undefined, { message: "Prior experience is required" }),
+		prior_experience: z.number().int().min(0, "Prior experience must be a positive number"),
 		current_rate: z
 			.number()
 			.min(0, "Current rate must be a positive number")
-			.optional()
-			.refine((val) => val !== undefined, { message: "Current rate is required" })
 			.refine((val) => (val * 10) % 25 === 0, { message: "Rate must be in increments of $2.5" }),
-		accepting_students: z
-			.number()
-			.int()
-			.min(0, "Number of desired additional students must be a non-negative number")
-			.optional()
-			.refine((val) => val !== undefined, { message: "Number of desired additional students is required" }),
+		accepting_students: z.number().int().min(0, "Number of desired additional students must be a non-negative number"),
 
 		emerg_contact_name: z.string().min(1, "Emergency contact name is required"),
 		emerg_contact_phone: z.string().min(1, "Emergency contact phone number is required"),
 		emerg_contact_relationship: z.string().min(1, "Emergency contact relationship is required"),
 
 		availability: z.string().min(1, "Availability is required"),
-		in_person: z
-			.enum(["In-Person Only", "Online Only", "Hybrid"])
-			.optional()
-			.refine((val) => val !== undefined, { message: "Required" }),
+		in_person: z.enum(["In-Person Only", "Online Only", "Hybrid"]),
 		city: z.string().min(1, { message: "City is required" }),
 		location: z.string().optional(),
 
 		subjects: subjectSchema,
 
 		current_uni: z.string().min(1, "Current university is required"),
-		current_degree: z
-			.enum(["Bachelor's Degree", "Master's Degree", "Associate's Degree", "Doctorate", "Vocational Certificate", "Other"])
-			.optional()
-			.refine((val) => val !== undefined, { message: "Required" }),
+		current_degree: z.enum(["Bachelor's Degree", "Master's Degree", "Associate's Degree", "Doctorate", "Vocational Certificate", "Other"]),
 		field_of_study: z.string().min(1, "Current field of study is required"),
 		year_of_study: z
 			.number()
 			.int()
 			.min(-1)
-			.optional()
-			.refine((val) => val !== undefined, { message: "Year of study is required" })
 			.refine((val) => val != 0, { message: "Year of study cannot be zero" }),
 		current_fav_class: z.string().min(1, "Current favorite class is required"),
 		academic_interests: z.string().min(1, "Academic interests are required"),
@@ -88,10 +68,7 @@ export const tutorSchema = z
 		high_school: z.string().min(1, "High school is required"),
 		high_school_city: z.string().min(1, "High school city is required"),
 		fav_high_school_class: z.string().min(1, "Favorite high school class is required"),
-		ap_ib_credentials: z
-			.enum(["AP Scholar", "AP Scholar with Honours", "AP Scholar with Distinction", "IB Certificate", "IB Diploma", "N/A"])
-			.optional()
-			.refine((val) => val !== undefined, { message: "Required" }),
+		ap_ib_credentials: z.enum(["AP Scholar", "AP Scholar with Honours", "AP Scholar with Distinction", "IB Certificate", "IB Diploma", "N/A"]),
 	})
 	.superRefine((data, ctx) => {
 		if (data.in_person != "Online Only" && (!data.location || data.location?.length < 1)) {
@@ -121,7 +98,7 @@ export const defaultTutor: TutorFormValues = testing
 			emerg_contact_relationship: "Mother",
 
 			availability: "Thursdays maybe?",
-			in_person: undefined,
+			in_person: undefined as any,
 			city: "",
 			location: "UAlberta Campus",
 
@@ -139,7 +116,7 @@ export const defaultTutor: TutorFormValues = testing
 			},
 
 			current_uni: "University of Alberta",
-			current_degree: undefined,
+			current_degree: undefined as any,
 			field_of_study: "CS",
 			year_of_study: 1,
 			current_fav_class: "229",
@@ -151,7 +128,7 @@ export const defaultTutor: TutorFormValues = testing
 			high_school: "Scona",
 			high_school_city: "Edmonton",
 			fav_high_school_class: "Physics",
-			ap_ib_credentials: undefined,
+			ap_ib_credentials: undefined as any,
 		}
 	: {
 			gov_first_name: "",
@@ -161,16 +138,16 @@ export const defaultTutor: TutorFormValues = testing
 			phone: "",
 
 			date_hired: new Date(),
-			prior_experience: undefined,
-			current_rate: undefined,
-			accepting_students: undefined,
+			prior_experience: undefined as any,
+			current_rate: undefined as any,
+			accepting_students: undefined as any,
 
 			emerg_contact_name: "",
 			emerg_contact_phone: "",
 			emerg_contact_relationship: "",
 
 			availability: "",
-			in_person: undefined,
+			in_person: undefined as any,
 			city: "",
 			location: "",
 
@@ -188,9 +165,9 @@ export const defaultTutor: TutorFormValues = testing
 			},
 
 			current_uni: "",
-			current_degree: undefined,
+			current_degree: undefined as any,
 			field_of_study: "",
-			year_of_study: undefined,
+			year_of_study: undefined as any,
 			current_fav_class: "",
 			academic_interests: "",
 
@@ -200,7 +177,7 @@ export const defaultTutor: TutorFormValues = testing
 			high_school: "",
 			high_school_city: "",
 			fav_high_school_class: "",
-			ap_ib_credentials: undefined,
+			ap_ib_credentials: undefined as any,
 		};
 
 export const tutorPlaceholder: TutorFormValues = {
@@ -220,7 +197,7 @@ export const tutorPlaceholder: TutorFormValues = {
 	emerg_contact_relationship: "Cousin",
 
 	availability: "Tuesdays and Thursdays after 11am, Saturdays after 2pm",
-	in_person: undefined,
+	in_person: undefined as any,
 	city: "Ithiani",
 	location: "Kenyatta University Campus, Kensington, or Kitui County",
 
@@ -238,7 +215,7 @@ export const tutorPlaceholder: TutorFormValues = {
 	},
 
 	current_uni: "University of Johannesburg",
-	current_degree: undefined,
+	current_degree: undefined as any,
 	field_of_study: "Chemical Sciences",
 	year_of_study: 5,
 	current_fav_class: "Nanotechnology in Water Purification",
@@ -250,7 +227,7 @@ export const tutorPlaceholder: TutorFormValues = {
 	high_school: "Lugulu Girls School",
 	high_school_city: "Bungoma County",
 	fav_high_school_class: "Applied Chemistry 20",
-	ap_ib_credentials: undefined,
+	ap_ib_credentials: undefined as any,
 };
 
 export const subjectPlaceholder: SubjectFormValues = {
@@ -279,6 +256,5 @@ const allSubjectPlaceholder: SubjectFormValues = {
 	languages: ["French 10-30", "Spanish 10-30", "German 10-30"],
 };
 
-// NEXT THING TO DO: change all the FormValues types to be nullable only on truly optional() fields -- with no refine()
 export type TutorFormValues = z.infer<typeof tutorSchema>;
 export type SubjectFormValues = z.infer<typeof subjectSchema>;
