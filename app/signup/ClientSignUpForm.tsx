@@ -9,7 +9,7 @@ import { FormButtonInput, StudentSection, GuardianSection, FormInputCluster } fr
 import { defaultStudent, defaultGuardian, formSchema, ClientFormValues } from "@/lib/validation/clientForm/clientFormSchema";
 import { placeholders } from "@/lib/validation/clientForm/clientFormPersonPlaceholders";
 import PickTutorSignUpForm from "@/components/ui/form/sections/PickTutorSignUpForm";
-import { TutorType } from "@/lib/db/tutor";
+import { DBTypes } from "@/lib/db/types";
 
 function shuffle(array: any[]) {
 	const newArray = [...array];
@@ -22,7 +22,7 @@ function shuffle(array: any[]) {
 
 const SESSION_STORAGE_KEY = "propel_signup_form_data";
 
-const ClientSignUpForm = ({ tutors, subjects }: { tutors: TutorType[]; subjects: string[] }) => {
+const ClientSignUpForm = ({ tutors, subjects }: { tutors: DBTypes.Tutors[]; subjects: string[] }) => {
 	const [shuffledPlaceholders, setShuffledPlaceholders] = useState(placeholders);
 	useEffect(() => setShuffledPlaceholders(shuffle(placeholders)), []);
 
