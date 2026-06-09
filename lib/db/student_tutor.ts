@@ -1,15 +1,6 @@
 /** @format */
 
-export type StudentTutorType = {
-	student_id: number;
-	tutor_id: number;
-	usual_duration: number;
-	hourly_rate: number;
-	subjects: string;
-	markup: number;
-	travel_fee: number;
-	had_session: boolean;
-};
+import { DBTypes } from "./types";
 
 export const createStudentTutorRepo = (sql: any, pool: any) => {
 	const get = async (student_id: number, tutor_id: number, db: any = sql) => {
@@ -38,7 +29,7 @@ export const createStudentTutorRepo = (sql: any, pool: any) => {
       `;
 	};
 
-	const insert = (data: StudentTutorType, db: any = sql) => {
+	const insert = (data: DBTypes.StudentTutor, db: any = sql) => {
 		return db`
          INSERT INTO student_tutor (student_id, tutor_id, usual_duration, hourly_rate, subjects, markup, travel_fee, had_session)
          VALUES (${data.student_id}, ${data.tutor_id}, ${data.usual_duration}, ${data.hourly_rate}, ${data.subjects}, ${data.markup}, ${data.travel_fee}, ${data.had_session})
@@ -78,7 +69,7 @@ export const createStudentTutorRepo = (sql: any, pool: any) => {
       `;
 	};
 
-	const update = (data: StudentTutorType, db: any = sql) => {
+	const update = (data: DBTypes.StudentTutor, db: any = sql) => {
 		return db`
          UPDATE student_tutor
          SET

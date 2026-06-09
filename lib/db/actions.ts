@@ -8,7 +8,7 @@ import { ClientFormValues } from "../validation/clientForm/clientFormSchema";
 import { TutorFormValues } from "../validation/tutorForm/tutorFormSchema";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { TutorType } from "./tutor";
+import { DBTypes } from "./types";
 
 export async function updateTutorWithSubjectsAndGoHome(data: TutorFormValues) {
 	try {
@@ -31,15 +31,18 @@ export async function submitTutorForApproval(data: TutorFormValues) {
 }
 
 export async function submitStudentForAcceptance(data: ClientFormValues) {
-	const student_result = await db.student.insert(data.student);
+	const student_result = await db.student.insert(data.student as DBTypes.Students);
 	const db_student = student_result.rows[0];
 	for (let guardian of data.guardians) {
 		let guardian_id;
 		if (!guardian.already_exists) {
-			const guardian_result = await db.guardian.insert(guardian);
-			guardian_id = guardian_result.rows[0].id;
-		} else guardian_id = guardian.id;
-		db.student_guardian.insert({ student_id: db_student.id, guardian_id: guardian_id, relationship_type: guardian.relationship, is_primary_biller: guardian.is_primary_biller });
+			const guardian_result = await db.guardian.insert(guardian as DBTypes.Guardians);
+			guardian_id = guardian_result.rows[0].guardian_id;
+		} else {
+			const guardian_result = await db.guardian.find(guardian.gov_first_name, guardian.gov_last_name);
+			guardian_id = guardian_result.rows[0].guardian_id;
+		}
+		db.student_guardian.insert({ student_id: db_student.id, guardian_id: guardian_id, relationship_type: guardian.relationship ?? "Legal Guardian", is_primary_biller: guardian.is_primary_biller });
 	}
 }
 
@@ -75,7 +78,7 @@ export async function checkGuardianStatus(email: string) {
 	};
 }
 
-export async function getTutorsBySubjects(subjects: string[]): Promise<TutorType[]> {
+export async function getTutorsBySubjects(subjects: string[]): Promise<DBTypes.Tutors[]> {
 	const tutors = !subjects || subjects.length === 0 ? await db.tutor.get.getAll() : await db.tutor_subjects.get.getAcceptingTutorsByAllOfSubjects(subjects);
 	return tutors.rows;
 }

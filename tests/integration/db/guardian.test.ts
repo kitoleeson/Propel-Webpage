@@ -1,6 +1,6 @@
 /** @format */
 
-import { GuardianClientFormValues } from "@/lib/validation/clientForm/clientFormSchema";
+import { DBTypes } from "@/lib/db/types";
 import { withNeonTestBranch } from "@/tests/test-setup";
 
 withNeonTestBranch();
@@ -16,15 +16,13 @@ describe("Guardian Repository Integration Tests", () => {
 		await db.pool.query("TRUNCATE TABLE guardians RESTART IDENTITY CASCADE");
 	});
 
-	const createMockGuardian = (overrides = {}): GuardianClientFormValues => ({
+	const createMockGuardian = (overrides = {}): DBTypes.Guardians => ({
 		gov_first_name: "Rosanna",
 		gov_last_name: "Toto",
 		pref_name: "Rose",
 		email: "rosanna@africa.ca",
 		phone: "(123) 456-7890",
 		pref_communication: "Email",
-		relationship: "Mother",
-		is_primary_biller: true,
 		...overrides,
 	});
 

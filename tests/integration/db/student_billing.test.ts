@@ -1,7 +1,6 @@
 /** @format */
 
-import { BillingAccountType } from "@/lib/db/billing_accounts";
-import { GuardianClientFormValues, StudentClientFormValues } from "@/lib/validation/clientForm/clientFormSchema";
+import { DBTypes } from "@/lib/db/types";
 import { withNeonTestBranch } from "@/tests/test-setup";
 
 withNeonTestBranch();
@@ -17,19 +16,17 @@ describe("Student Billing Repository Integration Tests", () => {
 		await db.pool.query("TRUNCATE TABLE student_guardian, guardians, students, billing_accounts, student_billing RESTART IDENTITY CASCADE");
 	});
 
-	const createMockGuardian = (overrides = {}): GuardianClientFormValues => ({
+	const createMockGuardian = (overrides = {}): DBTypes.Guardians => ({
 		gov_first_name: "Rosanna",
 		gov_last_name: "Toto",
 		pref_name: "Rose",
 		email: "rosanna@africa.ca",
 		phone: "(123) 456-7890",
 		pref_communication: "Email",
-		relationship: "Mother",
-		is_primary_biller: true,
 		...overrides,
 	});
 
-	const createMockStudent = (overrides = {}): StudentClientFormValues => ({
+	const createMockStudent = (overrides = {}): DBTypes.Students => ({
 		gov_first_name: "Rocket",
 		gov_last_name: "Man",
 		pref_name: "RM",
@@ -39,11 +36,10 @@ describe("Student Billing Repository Integration Tests", () => {
 		grade: 12,
 		city: "Edmonton",
 		how_found_us: "Word of Mouth",
-		biller: "Guardian",
 		...overrides,
 	});
 
-	const createMockGuardianBiller = async (overrides = {}): Promise<BillingAccountType> => {
+	const createMockGuardianBiller = async (overrides = {}): Promise<DBTypes.BillingAccounts> => {
 		const mockData = createMockGuardian(overrides);
 		const result = await db.guardian.insert(mockData);
 		const guardian = result.rows[0];
@@ -83,7 +79,7 @@ describe("Student Billing Repository Integration Tests", () => {
 		return { student: student, guardian: guardian, student_guardian: student_guardian, billing_account: billing_account, student_billing: student_billing };
 	};
 
-	const createMockStudentBillerPair = async (studentOverrides = {}, guardianOverrides = {}) => {
+	const createMockStudentBillerPair = async (studentOverrides = {}) => {
 		const student = (await db.student.insert(createMockStudent(studentOverrides))).rows[0];
 		const billing_account = (
 			await db.billing_account.insert({

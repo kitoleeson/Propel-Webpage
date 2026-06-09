@@ -1,12 +1,6 @@
 /** @format */
 
-export type BillingAccountType = {
-	display_name: string;
-	email: string;
-	first_invoice: boolean;
-	student_id?: number;
-	guardian_id?: number;
-};
+import { DBTypes } from "./types";
 
 export const createBillingAccountsRepo = (sql: any, pool: any) => {
 	const get = async (billing_id: number, db: any = sql) => {
@@ -52,7 +46,7 @@ export const createBillingAccountsRepo = (sql: any, pool: any) => {
    `;
 	};
 
-	const insert = (data: BillingAccountType, db: any = sql) => {
+	const insert = (data: DBTypes.BillingAccounts, db: any = sql) => {
 		return db`
 	      INSERT INTO billing_accounts (display_name, email, first_invoice, student_id, guardian_id)
 	      VALUES (${data.display_name}, ${data.email}, ${data.first_invoice}, ${data.student_id}, ${data.guardian_id})

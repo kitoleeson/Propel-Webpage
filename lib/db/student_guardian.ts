@@ -1,11 +1,6 @@
 /** @format */
 
-export type StudentGuardianType = {
-	student_id: number;
-	guardian_id: number;
-	relationship_type: string | undefined;
-	is_primary_biller: boolean;
-};
+import { DBTypes } from "./types";
 
 export const createStudentGuardianRepo = (sql: any, pool: any) => {
 	const get = async (student_id: number, guardian_id: number, db: any = sql) => {
@@ -34,7 +29,7 @@ export const createStudentGuardianRepo = (sql: any, pool: any) => {
       `;
 	};
 
-	const insert = (data: StudentGuardianType, db: any = sql) => {
+	const insert = (data: DBTypes.StudentGuardian, db: any = sql) => {
 		return db`
          INSERT INTO student_guardian (student_id, guardian_id, relationship_type, is_primary_biller)
          VALUES (${data.student_id}, ${data.guardian_id}, ${data.relationship_type}, ${data.is_primary_biller})
@@ -78,7 +73,7 @@ export const createStudentGuardianRepo = (sql: any, pool: any) => {
       `;
 	};
 
-	const update = (data: StudentGuardianType, db: any = sql) => {
+	const update = (data: DBTypes.StudentGuardian, db: any = sql) => {
 		return db`
          UPDATE student_guardian
          SET

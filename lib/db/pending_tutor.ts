@@ -1,9 +1,9 @@
 /** @format */
 
-import { TutorFormValues } from "../validation/tutorForm/tutorFormSchema";
+import { DBTypes } from "./types";
 
 export const createPendingTutorRepo = (sql: any, pool: any) => {
-	const insert = (tutor_id: number, data: TutorFormValues, db: any = sql) => {
+	const insert = (data: DBTypes.PendingTutors, db: any = sql) => {
 		return db`
          INSERT INTO pending_tutors (
             tutor_id,
@@ -16,13 +16,13 @@ export const createPendingTutorRepo = (sql: any, pool: any) => {
             bio, hobbies,
             high_school, high_school_city, fav_high_school_class, ap_ib_credentials
          ) VALUES (
-            ${tutor_id},
+            ${data.tutor_id},
             ${data.gov_first_name}, ${data.gov_last_name}, ${data.pref_name}, ${data.email}, ${data.phone},
             ${data.date_hired.toISOString().split("T")[0]}, ${data.prior_experience}, 
             ${data.current_rate}, ${data.accepting_students},
             ${data.emerg_contact_name}, ${data.emerg_contact_phone}, ${data.emerg_contact_relationship},
             ${data.availability}, ${data.in_person}, ${data.city}, ${data.location},
-            ${JSON.stringify(data.subjects)},
+            ${JSON.stringify(data.subjects_json)},
             ${data.current_uni}, ${data.current_degree}, ${data.field_of_study}, 
             ${data.year_of_study}, ${data.current_fav_class}, ${data.academic_interests}, ${data.bio}, ${data.hobbies},
             ${data.high_school}, ${data.high_school_city}, ${data.fav_high_school_class}, ${data.ap_ib_credentials}

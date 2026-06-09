@@ -1,9 +1,6 @@
 /** @format */
 
-export type TutorSubjectsType = {
-	tutor_id: number;
-	subject: string;
-};
+import { DBTypes } from "./types";
 
 export const createTutorSubjectsRepo = (sql: any, pool: any) => {
 	const getSubjectsByTutor = async (tutor_id: number, db: any = sql) => {
@@ -103,7 +100,7 @@ export const createTutorSubjectsRepo = (sql: any, pool: any) => {
 		return db`SELECT * FROM tutor_subjects ORDER BY tutor_id, subject;`;
 	};
 
-	const insert = (data: TutorSubjectsType, db: any = sql) => {
+	const insert = (data: DBTypes.TutorSubjects, db: any = sql) => {
 		return db`
          INSERT INTO tutor_subjects (tutor_id, subject)
          VALUES (${data.tutor_id}, ${data.subject})
@@ -112,7 +109,7 @@ export const createTutorSubjectsRepo = (sql: any, pool: any) => {
       `;
 	};
 
-	const find = (data: TutorSubjectsType, db: any = sql) => {
+	const find = (data: DBTypes.TutorSubjects, db: any = sql) => {
 		return db`
          SELECT *
 			FROM tutor_subjects

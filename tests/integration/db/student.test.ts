@@ -1,6 +1,6 @@
 /** @format */
 
-import { StudentClientFormValues } from "@/lib/validation/clientForm/clientFormSchema";
+import { DBTypes } from "@/lib/db/types";
 import { withNeonTestBranch } from "@/tests/test-setup";
 
 withNeonTestBranch();
@@ -16,7 +16,7 @@ describe("Student Repository Integration Tests", () => {
 		await db.pool.query("TRUNCATE TABLE students RESTART IDENTITY CASCADE");
 	});
 
-	const createMockStudent = (overrides = {}): StudentClientFormValues => ({
+	const createMockStudent = (overrides = {}): DBTypes.Students => ({
 		gov_first_name: "Rocket",
 		gov_last_name: "Man",
 		pref_name: "RM",
@@ -26,7 +26,6 @@ describe("Student Repository Integration Tests", () => {
 		grade: 12,
 		city: "Edmonton",
 		how_found_us: "Word of Mouth",
-		biller: "Guardian",
 		...overrides,
 	});
 

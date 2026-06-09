@@ -1,7 +1,6 @@
 /** @format */
 
-import { TutorType } from "@/lib/db/tutor";
-import { StudentClientFormValues } from "@/lib/validation/clientForm/clientFormSchema";
+import { DBTypes } from "@/lib/db/types";
 import { tutorPlaceholder } from "@/lib/validation/tutorForm/tutorFormSchema";
 import { withNeonTestBranch } from "@/tests/test-setup";
 
@@ -18,7 +17,7 @@ describe("Student Tutor Repository Integration Tests", () => {
 		await db.pool.query("TRUNCATE TABLE student_tutor, tutors, students RESTART IDENTITY CASCADE");
 	});
 
-	const createMockTutor = (overrides = {}): TutorType => ({
+	const createMockTutor = (overrides = {}): DBTypes.Tutors => ({
 		...tutorPlaceholder,
 		subjects: "Math, Science",
 		in_person: "Hybrid",
@@ -33,7 +32,7 @@ describe("Student Tutor Repository Integration Tests", () => {
 		...overrides,
 	});
 
-	const createMockStudent = (overrides = {}): StudentClientFormValues => ({
+	const createMockStudent = (overrides = {}): DBTypes.Students => ({
 		gov_first_name: "Rocket",
 		gov_last_name: "Man",
 		pref_name: "RM",
@@ -43,7 +42,6 @@ describe("Student Tutor Repository Integration Tests", () => {
 		grade: 12,
 		city: "Edmonton",
 		how_found_us: "Word of Mouth",
-		biller: "Guardian",
 		...overrides,
 	});
 

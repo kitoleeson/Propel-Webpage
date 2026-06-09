@@ -1,6 +1,6 @@
 /** @format */
 
-import { GuardianClientFormValues, StudentClientFormValues } from "@/lib/validation/clientForm/clientFormSchema";
+import { DBTypes } from "@/lib/db/types";
 import { withNeonTestBranch } from "@/tests/test-setup";
 
 withNeonTestBranch();
@@ -16,19 +16,17 @@ describe("Student Guardian Repository Integration Tests", () => {
 		await db.pool.query("TRUNCATE TABLE student_guardian, guardians, students RESTART IDENTITY CASCADE");
 	});
 
-	const createMockGuardian = (overrides = {}): GuardianClientFormValues => ({
+	const createMockGuardian = (overrides = {}): DBTypes.Guardians => ({
 		gov_first_name: "Rosanna",
 		gov_last_name: "Toto",
 		pref_name: "Rose",
 		email: "rosanna@africa.ca",
 		phone: "(123) 456-7890",
 		pref_communication: "Email",
-		relationship: "Mother",
-		is_primary_biller: true,
 		...overrides,
 	});
 
-	const createMockStudent = (overrides = {}): StudentClientFormValues => ({
+	const createMockStudent = (overrides = {}): DBTypes.Students => ({
 		gov_first_name: "Rocket",
 		gov_last_name: "Man",
 		pref_name: "RM",
@@ -38,7 +36,6 @@ describe("Student Guardian Repository Integration Tests", () => {
 		grade: 12,
 		city: "Edmonton",
 		how_found_us: "Word of Mouth",
-		biller: "Guardian",
 		...overrides,
 	});
 

@@ -1,6 +1,6 @@
 /** @format */
 
-import { GuardianClientFormValues } from "../validation/clientForm/clientFormSchema";
+import { DBTypes } from "./types";
 
 export const createGuardianRepo = (sql: any, pool: any) => {
 	const get = async (id: number, db: any = sql) => {
@@ -27,7 +27,7 @@ export const createGuardianRepo = (sql: any, pool: any) => {
 		return result.rows[0]?.guardian_id ?? null;
 	};
 
-	const insert = (data: GuardianClientFormValues, db: any = sql) => {
+	const insert = (data: DBTypes.Guardians, db: any = sql) => {
 		return db`
          INSERT INTO guardians (gov_first_name, gov_last_name, pref_name, email, phone, pref_communication)
          VALUES (${data.gov_first_name}, ${data.gov_last_name}, ${data.pref_name || null}, ${data.email}, ${data.phone}, ${data.pref_communication?.toLowerCase()})
@@ -48,7 +48,7 @@ export const createGuardianRepo = (sql: any, pool: any) => {
       `;
 	};
 
-	const update = (id: number, data: GuardianClientFormValues, db: any = sql) => {
+	const update = (id: number, data: DBTypes.Guardians, db: any = sql) => {
 		return db`
          UPDATE guardians
          SET

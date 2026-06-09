@@ -1,6 +1,6 @@
 /** @format */
 
-import { StudentClientFormValues } from "../validation/clientForm/clientFormSchema";
+import { DBTypes } from "./types";
 
 export const createStudentRepo = (sql: any, pool: any) => {
 	const get = async (id: number, db: any = sql) => {
@@ -20,7 +20,7 @@ export const createStudentRepo = (sql: any, pool: any) => {
 		return result.rows[0]?.student_id ?? null;
 	};
 
-	const insert = (data: StudentClientFormValues, db: any = sql) => {
+	const insert = (data: DBTypes.Students, db: any = sql) => {
 		return db`
          INSERT INTO students (gov_first_name, gov_last_name, pref_name, grade, city, email, phone, pref_communication, how_found_us)
          VALUES (${data.gov_first_name}, ${data.gov_last_name}, ${data.pref_name || null}, ${data.grade}, ${data.city}, ${data.email}, ${data.phone}, ${data.pref_communication?.toLowerCase()}, ${data.how_found_us?.toLowerCase()})
@@ -41,7 +41,7 @@ export const createStudentRepo = (sql: any, pool: any) => {
       `;
 	};
 
-	const update = (id: number, data: StudentClientFormValues, db: any = sql) => {
+	const update = (id: number, data: DBTypes.Students, db: any = sql) => {
 		return db`
          UPDATE students
          SET

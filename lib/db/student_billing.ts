@@ -1,9 +1,6 @@
 /** @format */
 
-export type StudentBillingType = {
-	student_id: number;
-	billing_id: number;
-};
+import { DBTypes } from "./types";
 
 export const createStudentBillingRepo = (sql: any, pool: any) => {
 	const get = async (student_id: number, db: any = sql) => {
@@ -14,7 +11,7 @@ export const createStudentBillingRepo = (sql: any, pool: any) => {
 		return db`SELECT * FROM student_billing ORDER BY student_id`;
 	};
 
-	const insert = (data: StudentBillingType, db: any = sql) => {
+	const insert = (data: DBTypes.StudentBilling, db: any = sql) => {
 		return db`
 	      INSERT INTO student_billing (student_id, billing_id)
 	      VALUES (${data.student_id}, ${data.billing_id})

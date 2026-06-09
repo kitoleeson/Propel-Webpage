@@ -1,6 +1,6 @@
 /** @format */
 
-import { TutorType } from "@/lib/db/tutor";
+import { DBTypes } from "@/lib/db/types";
 import { SubjectFormValues, subjectPlaceholder, TutorFormValues, tutorPlaceholder } from "@/lib/validation/tutorForm/tutorFormSchema";
 import { withNeonTestBranch } from "@/tests/test-setup";
 
@@ -17,7 +17,7 @@ describe("Tutor Repository Integration Tests", () => {
 		await db.pool.query("TRUNCATE TABLE tutors, tutor_subjects RESTART IDENTITY CASCADE");
 	});
 
-	const createMockTutor = (overrides = {}): TutorType => ({
+	const createMockTutor = (overrides = {}): DBTypes.Tutors => ({
 		...tutorPlaceholder,
 		subjects: "Math, Science",
 		in_person: "Hybrid",

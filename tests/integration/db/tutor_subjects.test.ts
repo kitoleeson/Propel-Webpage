@@ -1,7 +1,6 @@
 /** @format */
 
-import { TutorType } from "@/lib/db/tutor";
-import { TutorSubjectsType } from "@/lib/db/tutor_subjects";
+import { DBTypes } from "@/lib/db/types";
 import { tutorPlaceholder } from "@/lib/validation/tutorForm/tutorFormSchema";
 import { withNeonTestBranch } from "@/tests/test-setup";
 
@@ -19,7 +18,7 @@ describe("Tutor Subjects Repository Integration Tests", () => {
 		await db.tutor.insert.insert(createMockTutor());
 	});
 
-	const createMockTutor = (overrides = {}): TutorType => ({
+	const createMockTutor = (overrides = {}): DBTypes.Tutors => ({
 		...tutorPlaceholder,
 		subjects: "Math, Science",
 		in_person: "Hybrid",
@@ -34,7 +33,7 @@ describe("Tutor Subjects Repository Integration Tests", () => {
 		...overrides,
 	});
 
-	const createMockTutorSubject = (overrides = {}): TutorSubjectsType => ({
+	const createMockTutorSubject = (overrides = {}): DBTypes.TutorSubjects => ({
 		tutor_id: 1,
 		subject: "Math 10 (AP)",
 		...overrides,

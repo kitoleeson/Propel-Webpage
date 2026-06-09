@@ -1,12 +1,9 @@
 /** @format */
 
-import { TutorFormValues } from "../validation/tutorForm/tutorFormSchema";
-import { StudentTutorType } from "./student_tutor";
-
-export type PendingTutorType = TutorFormValues & { tutor_id: number };
+import { DBTypes } from "./types";
 
 export const createPendingStudentTutorRepo = (sql: any, pool: any) => {
-	const insert = (data: StudentTutorType, db: any = sql) => {
+	const insert = (data: DBTypes.StudentTutor, db: any = sql) => {
 		return db`
          INSERT INTO pending_student_tutor (student_id, tutor_id, usual_duration, hourly_rate, subjects, markup, travel_fee, had_session)
          VALUES (${data.student_id}, ${data.tutor_id}, ${data.usual_duration}, ${data.hourly_rate}, ${data.subjects}, ${data.markup}, ${data.travel_fee}, ${data.had_session})

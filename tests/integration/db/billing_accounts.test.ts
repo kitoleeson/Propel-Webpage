@@ -1,7 +1,6 @@
 /** @format */
 
-import { BillingAccountType } from "@/lib/db/billing_accounts";
-import { GuardianClientFormValues, StudentClientFormValues } from "@/lib/validation/clientForm/clientFormSchema";
+import { DBTypes } from "@/lib/db/types";
 import { withNeonTestBranch } from "@/tests/test-setup";
 
 withNeonTestBranch();
@@ -17,19 +16,17 @@ describe("Billing Accounts Repository Integration Tests", () => {
 		await db.pool.query("TRUNCATE TABLE billing_accounts, guardians, students RESTART IDENTITY CASCADE");
 	});
 
-	const createMockGuardian = (overrides = {}): GuardianClientFormValues => ({
+	const createMockGuardian = (overrides = {}): DBTypes.Guardians => ({
 		gov_first_name: "Rosanna",
 		gov_last_name: "Toto",
 		pref_name: "Rose",
 		email: "rosanna@africa.ca",
 		phone: "(123) 456-7890",
 		pref_communication: "Email",
-		relationship: "Mother",
-		is_primary_biller: true,
 		...overrides,
 	});
 
-	const createMockStudent = (overrides = {}): StudentClientFormValues => ({
+	const createMockStudent = (overrides = {}): DBTypes.Students => ({
 		gov_first_name: "Rocket",
 		gov_last_name: "Man",
 		pref_name: "RM",
@@ -39,11 +36,10 @@ describe("Billing Accounts Repository Integration Tests", () => {
 		grade: 12,
 		city: "Edmonton",
 		how_found_us: "Word of Mouth",
-		biller: "Guardian",
 		...overrides,
 	});
 
-	const createMockGuardianBiller = async (overrides = {}): Promise<BillingAccountType> => {
+	const createMockGuardianBiller = async (overrides = {}): Promise<DBTypes.BillingAccounts> => {
 		const mockData = createMockGuardian(overrides);
 		const result = await db.guardian.insert(mockData);
 		const guardian = result.rows[0];
@@ -55,7 +51,7 @@ describe("Billing Accounts Repository Integration Tests", () => {
 		};
 	};
 
-	const createMockStudentBiller = async (overrides = {}): Promise<BillingAccountType> => {
+	const createMockStudentBiller = async (overrides = {}): Promise<DBTypes.BillingAccounts> => {
 		const mockData = createMockStudent(overrides);
 		const result = await db.student.insert(mockData);
 		const student = result.rows[0];
@@ -64,10 +60,11 @@ describe("Billing Accounts Repository Integration Tests", () => {
 			first_invoice: true,
 			student_id: student.student_id,
 			...mockData,
+			email: mockData.email ?? "rocket.man@mars.ca",
 		};
 	};
 
-	const createMockBiller = (mockData: any, overrides = {}): BillingAccountType => {
+	const createMockBiller = (mockData: any, overrides = {}): DBTypes.BillingAccounts => {
 		return {
 			display_name: (mockData.pref_name || mockData.gov_first_name) + " " + mockData.gov_last_name,
 			email: mockData.email,
