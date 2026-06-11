@@ -3,24 +3,24 @@
 import { DBTypes } from "./types";
 
 export const createStudentRepo = (sql: any, pool: any) => {
-	const get = async (id: number, db: any = sql) => {
+	const get = async (id: number, db: any = sql): Promise<DBTypes.StudentsRow[]> => {
 		return db`SELECT * FROM students WHERE student_id = ${id};`;
 	};
 
-	const getAll = async (db: any = sql) => {
+	const getAll = async (db: any = sql): Promise<DBTypes.StudentsRow[]> => {
 		return db`SELECT * FROM students ORDER BY student_id`;
 	};
 
-	const find = async (gov_first_name: string, gov_last_name: string, db: any = sql) => {
-		const result = await db`
+	const find = async (gov_first_name: string, gov_last_name: string, db: any = sql): Promise<number | null> => {
+		const rows = await db`
          SELECT student_id
          FROM students
          WHERE gov_first_name ILIKE ${gov_first_name} AND gov_last_name ILIKE ${gov_last_name};
       `;
-		return result.rows[0]?.student_id ?? null;
+		return rows[0]?.student_id ?? null;
 	};
 
-	const insert = (data: DBTypes.Students, db: any = sql) => {
+	const insert = (data: DBTypes.Students, db: any = sql): Promise<DBTypes.StudentsRow[]> => {
 		return db`
          INSERT INTO students (gov_first_name, gov_last_name, pref_name, grade, city, email, phone, pref_communication, how_found_us)
          VALUES (${data.gov_first_name}, ${data.gov_last_name}, ${data.pref_name || null}, ${data.grade}, ${data.city}, ${data.email}, ${data.phone}, ${data.pref_communication?.toLowerCase()}, ${data.how_found_us?.toLowerCase()})
@@ -28,20 +28,20 @@ export const createStudentRepo = (sql: any, pool: any) => {
       `;
 	};
 
-	const removeById = (id: number, db: any = sql) => {
+	const removeById = (id: number, db: any = sql): Promise<DBTypes.StudentsRow[]> => {
 		return db`
          DELETE FROM students WHERE student_id = ${id};
       `;
 	};
 
-	const removeByName = (gov_first_name: string, gov_last_name: string, db: any = sql) => {
+	const removeByName = (gov_first_name: string, gov_last_name: string, db: any = sql): Promise<DBTypes.StudentsRow[]> => {
 		return db`
          DELETE FROM students
          WHERE gov_first_name = ${gov_first_name} AND gov_last_name = ${gov_last_name};
       `;
 	};
 
-	const update = (id: number, data: DBTypes.Students, db: any = sql) => {
+	const update = (id: number, data: DBTypes.Students, db: any = sql): Promise<DBTypes.StudentsRow[]> => {
 		return db`
          UPDATE students
          SET

@@ -71,14 +71,14 @@ describe("Tutor Repository Integration Tests", () => {
 		it("should insert a new tutor", async () => {
 			const mockData = createMockTutor();
 			const result = await db.tutor.insert.insert(mockData);
-			expect(result.rows[0]).toBeDefined();
-			expect(result.rows[0].gov_first_name).toBe("Jane Catherine");
+			expect(result[0]).toBeDefined();
+			expect(result[0].gov_first_name).toBe("Jane Catherine");
 		});
 
 		it("should insert a new tutor and retrieve their ID by name", async () => {
 			const mockData = createMockTutor();
 			const result = await db.tutor.insert.insert(mockData);
-			expect(result.rows[0]).toBeDefined();
+			expect(result[0]).toBeDefined();
 
 			const tutorId = await db.tutor.find("Jane Catherine", "Ngila");
 			expect(tutorId).toEqual(1);
@@ -87,7 +87,7 @@ describe("Tutor Repository Integration Tests", () => {
 		it("should insert a new tutor and retrieve their ID by case-insensitive name", async () => {
 			const mockData = createMockTutor();
 			const result = await db.tutor.insert.insert(mockData);
-			expect(result.rows[0]).toBeDefined();
+			expect(result[0]).toBeDefined();
 
 			let tutorId;
 			tutorId = await db.tutor.find("JANE CATHERINE", "NGILA");
@@ -111,23 +111,23 @@ describe("Tutor Repository Integration Tests", () => {
 		});
 
 		it("should insert tutor with subjects into tutors and tutor_subjects", async () => {
-			const inserted = (await db.tutor.insert.insertWithSubjects(createMockTutorWithSubjects())).rows[0];
+			const inserted = (await db.tutor.insert.insertWithSubjects(createMockTutorWithSubjects()))[0];
 			expect(inserted.gov_first_name).toEqual("Jane Catherine");
-			const tutor = (await db.tutor.get.get(inserted.tutor_id)).rows[0];
+			const tutor = (await db.tutor.get.get(inserted.tutor_id))[0];
 			expect(tutor.gov_first_name).toEqual("Jane Catherine");
-			expect(parseFloat(tutor.current_rate)).toEqual(37.5);
+			expect(tutor.current_rate).toEqual(37.5);
 			const subjects = await db.tutor_subjects.get.getSubjectsByTutor(inserted.tutor_id);
-			expect(subjects.rows.map((row: { subject: string }) => row.subject).sort()).toEqual(Object.values(subjectPlaceholder).flat().sort());
+			expect(subjects.map((row: { subject: string }) => row.subject).sort()).toEqual(Object.values(subjectPlaceholder).flat().sort());
 		});
 
 		it("should insert tutor with no subjects", async () => {
-			const inserted = (await db.tutor.insert.insertWithSubjects(createMockTutorWithSubjects({ subjects: emptySubjects }))).rows[0];
+			const inserted = (await db.tutor.insert.insertWithSubjects(createMockTutorWithSubjects({ subjects: emptySubjects })))[0];
 			expect(inserted.gov_first_name).toEqual("Jane Catherine");
-			const tutor = (await db.tutor.get.get(inserted.tutor_id)).rows[0];
+			const tutor = (await db.tutor.get.get(inserted.tutor_id))[0];
 			expect(tutor.gov_first_name).toEqual("Jane Catherine");
-			expect(parseFloat(tutor.current_rate)).toEqual(37.5);
+			expect(tutor.current_rate).toEqual(37.5);
 			const subjects = await db.tutor_subjects.get.getSubjectsByTutor(inserted.tutor_id);
-			expect(subjects.rows.map((row: { subject: string }) => row.subject).sort()).toEqual([]);
+			expect(subjects.map((row: { subject: string }) => row.subject).sort()).toEqual([]);
 		});
 	});
 
@@ -135,32 +135,32 @@ describe("Tutor Repository Integration Tests", () => {
 		it("should fetch a specific tutor by ID", async () => {
 			const mockData = createMockTutor();
 			const inserted = await db.tutor.insert.insert(mockData);
-			const id = inserted.rows[0].tutor_id;
+			const id = inserted[0].tutor_id;
 
 			const result = await db.tutor.get.get(id);
-			expect(result.rows[0].gov_first_name).toBe("Jane Catherine");
-			expect(result.rows[0].email).toBe("jane@example.ca");
+			expect(result[0].gov_first_name).toBe("Jane Catherine");
+			expect(result[0].email).toBe("jane@example.ca");
 		});
 
 		it("should error when getting non-existent tutor ID", async () => {
 			const result = await db.tutor.get.get(1);
-			expect(result.rows.length).toEqual(0);
+			expect(result.length).toEqual(0);
 		});
 
 		it("should error when getting all non-existent tutor IDs", async () => {
 			const result = await db.tutor.get.getAll();
-			expect(result.rows.length).toEqual(0);
+			expect(result.length).toEqual(0);
 		});
 
 		it("should return all tutors ordered by number of accepting students", async () => {
 			const names = ["A-B-C", "1-2-3", "Do-Re-Mi"];
 			for (let i = 1; i <= 3; i++) await db.tutor.insert.insert(createMockTutor({ gov_first_name: names[i - 1], email: `tutor${i}@test.ca`, phone: `(${i}${i}${i}) 456-7890`, accepting_students: i }));
 			const result = await db.tutor.get.getAll();
-			expect(Array.isArray(result.rows)).toBe(true);
-			expect(result.rows.length).toEqual(3);
-			expect(result.rows[0].gov_first_name).toBe("Do-Re-Mi");
-			expect(result.rows[1].gov_first_name).toBe("1-2-3");
-			expect(result.rows[2].gov_first_name).toBe("A-B-C");
+			expect(Array.isArray(result)).toBe(true);
+			expect(result.length).toEqual(3);
+			expect(result[0].gov_first_name).toBe("Do-Re-Mi");
+			expect(result[1].gov_first_name).toBe("1-2-3");
+			expect(result[2].gov_first_name).toBe("A-B-C");
 		});
 
 		it("should get the display_name for all tutors ordered by number of accepting students", async () => {
@@ -169,34 +169,34 @@ describe("Tutor Repository Integration Tests", () => {
 			for (let i = 1; i <= 3; i++)
 				await db.tutor.insert.insert(createMockTutor({ gov_first_name: names[i - 1], email: `tutor${i}@test.ca`, phone: `(${i}${i}${i}) 456-7890`, accepting_students: i, pref_name: nickname.slice(0, i - 1) }));
 			const result = await db.tutor.get.getAll();
-			expect(Array.isArray(result.rows)).toBe(true);
-			expect(result.rows.length).toEqual(3);
-			for (let i = 0; i < 3; i++) expect(result.rows[i].tutor_id).toEqual(3 - i);
-			expect(result.rows[0].display_name).toBe("MJ");
-			expect(result.rows[1].display_name).toBe("M");
-			expect(result.rows[2].display_name).toBe("A-B-C");
+			expect(Array.isArray(result)).toBe(true);
+			expect(result.length).toEqual(3);
+			for (let i = 0; i < 3; i++) expect(result[i].tutor_id).toEqual(3 - i);
+			expect(result[0].display_name).toBe("MJ");
+			expect(result[1].display_name).toBe("M");
+			expect(result[2].display_name).toBe("A-B-C");
 		});
 
 		it("should return all tutors ordered by government first name", async () => {
 			const names = ["A-B-C", "1-2-3", "Do-Re-Mi"];
 			for (let i = 1; i <= 3; i++) await db.tutor.insert.insert(createMockTutor({ gov_first_name: names[i - 1], email: `tutor${i}@test.ca`, phone: `(${i}${i}${i}) 456-7890` }));
 			const result = await db.tutor.get.getAll();
-			expect(Array.isArray(result.rows)).toBe(true);
-			expect(result.rows.length).toEqual(3);
-			expect(result.rows[0].gov_first_name).toBe("1-2-3");
-			expect(result.rows[1].gov_first_name).toBe("A-B-C");
-			expect(result.rows[2].gov_first_name).toBe("Do-Re-Mi");
+			expect(Array.isArray(result)).toBe(true);
+			expect(result.length).toEqual(3);
+			expect(result[0].gov_first_name).toBe("1-2-3");
+			expect(result[1].gov_first_name).toBe("A-B-C");
+			expect(result[2].gov_first_name).toBe("Do-Re-Mi");
 		});
 
 		it("should return all tutors ordered by number of accepting students and government first name", async () => {
 			const names = ["A-B-C", "1-2-3", "Do-Re-Mi"];
 			for (let i = 1; i <= 3; i++) await db.tutor.insert.insert(createMockTutor({ gov_first_name: names[i - 1], email: `tutor${i}@test.ca`, phone: `(${i}${i}${i}) 456-7890`, accepting_students: i % 2 }));
 			const result = await db.tutor.get.getAll();
-			expect(Array.isArray(result.rows)).toBe(true);
-			expect(result.rows.length).toEqual(3);
-			expect(result.rows[0].gov_first_name).toBe("A-B-C");
-			expect(result.rows[1].gov_first_name).toBe("Do-Re-Mi");
-			expect(result.rows[2].gov_first_name).toBe("1-2-3");
+			expect(Array.isArray(result)).toBe(true);
+			expect(result.length).toEqual(3);
+			expect(result[0].gov_first_name).toBe("A-B-C");
+			expect(result[1].gov_first_name).toBe("Do-Re-Mi");
+			expect(result[2].gov_first_name).toBe("1-2-3");
 		});
 	});
 
@@ -204,15 +204,15 @@ describe("Tutor Repository Integration Tests", () => {
 		it("should update tutor preferred name successfully", async () => {
 			const mockData = createMockTutor();
 			const inserted = await db.tutor.insert.insert(mockData);
-			const id = inserted.rows[0].tutor_id;
-			expect(inserted.rows[0].pref_name).toBe("Janie");
+			const id = inserted[0].tutor_id;
+			expect(inserted[0].pref_name).toBe("Janie");
 
 			const updatedData = { ...mockData, pref_name: "Jane" };
 			const updated = await db.tutor.update.update(id, updatedData);
 
-			expect(updated.rows[0].pref_name).toBe("Jane");
-			expect(updated.rows[0].gov_first_name).toBe("Jane Catherine");
-			expect(updated.rows[0].gov_last_name).toBe("Ngila");
+			expect(updated[0].pref_name).toBe("Jane");
+			expect(updated[0].gov_first_name).toBe("Jane Catherine");
+			expect(updated[0].gov_last_name).toBe("Ngila");
 		});
 
 		it("should error update on duplicate email", async () => {
@@ -226,26 +226,26 @@ describe("Tutor Repository Integration Tests", () => {
 		});
 
 		it("should update tutor and their subjects", async () => {
-			const inserted = (await db.tutor.insert.insertWithSubjects(createMockTutorWithSubjects())).rows[0];
+			const inserted = (await db.tutor.insert.insertWithSubjects(createMockTutorWithSubjects()))[0];
 			expect(inserted.gov_first_name).toEqual("Jane Catherine");
-			const tutor1 = (await db.tutor.get.get(inserted.tutor_id)).rows[0];
+			const tutor1 = (await db.tutor.get.get(inserted.tutor_id))[0];
 			expect(tutor1.gov_first_name).toEqual("Jane Catherine");
-			expect(parseFloat(tutor1.current_rate)).toEqual(37.5);
+			expect(tutor1.current_rate).toEqual(37.5);
 			const subjects1 = await db.tutor_subjects.get.getSubjectsByTutor(inserted.tutor_id);
-			expect(subjects1.rows.map((row: { subject: string }) => row.subject).sort()).toEqual(Object.values(subjectPlaceholder).flat().sort());
+			expect(subjects1.map((row: { subject: string }) => row.subject).sort()).toEqual(Object.values(subjectPlaceholder).flat().sort());
 
-			const updated = (await db.tutor.update.updateWithSubjects(createMockTutorWithSubjects({ pref_name: "Jane", subjects: newSubjects }))).rows[0];
+			const updated = (await db.tutor.update.updateWithSubjects(createMockTutorWithSubjects({ pref_name: "Jane", subjects: newSubjects })))[0];
 			expect(updated.gov_first_name).toEqual("Jane Catherine");
 			expect(updated.pref_name).toEqual("Jane");
-			const tutor2 = (await db.tutor.get.get(inserted.tutor_id)).rows[0];
+			const tutor2 = (await db.tutor.get.get(inserted.tutor_id))[0];
 			expect(tutor2.gov_first_name).toEqual("Jane Catherine");
 			expect(tutor2.pref_name).toEqual("Jane");
 			const subjects2 = await db.tutor_subjects.get.getSubjectsByTutor(inserted.tutor_id);
-			expect(subjects2.rows.map((row: { subject: string }) => row.subject).sort()).toEqual(Object.values(newSubjects).flat().sort());
+			expect(subjects2.map((row: { subject: string }) => row.subject).sort()).toEqual(Object.values(newSubjects).flat().sort());
 		});
 
 		it("should error update tutor with subject on non-existent tutor name", async () => {
-			const inserted = (await db.tutor.insert.insertWithSubjects(createMockTutorWithSubjects())).rows[0];
+			const inserted = (await db.tutor.insert.insertWithSubjects(createMockTutorWithSubjects()))[0];
 			expect(inserted.gov_first_name).toEqual("Jane Catherine");
 			await expect(db.tutor.update.updateWithSubjects(createMockTutorWithSubjects({ gov_first_name: "Jane", subjects: newSubjects }))).rejects.toThrow("Tutor not found");
 		});
@@ -254,25 +254,25 @@ describe("Tutor Repository Integration Tests", () => {
 	describe("Delete Operations", () => {
 		it("should remove a tutor by ID", async () => {
 			const inserted = await db.tutor.insert.insert(createMockTutor());
-			const id = inserted.rows[0].tutor_id;
+			const id = inserted[0].tutor_id;
 
 			await db.tutor.remove.byId(id);
 			const result = await db.tutor.get.get(id);
-			expect(result.rows.length).toEqual(0);
+			expect(result.length).toEqual(0);
 		});
 
 		it("should remove a tutor by name", async () => {
 			const inserted = await db.tutor.insert.insert(createMockTutor());
-			const id = inserted.rows[0].tutor_id;
+			const id = inserted[0].tutor_id;
 
 			await db.tutor.remove.byName("Jane Catherine", "Ngila");
 			const result = await db.tutor.get.get(id);
-			expect(result.rows.length).toEqual(0);
+			expect(result.length).toEqual(0);
 		});
 
 		it("should throw an error when trying to remove a non-existent tutor by ID", async () => {
 			const result = await db.tutor.remove.byId(1);
-			expect(result.rowCount).toEqual(0);
+			expect((result as any).meta.rowCount).toEqual(0);
 		});
 	});
 });

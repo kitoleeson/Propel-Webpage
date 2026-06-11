@@ -1,6 +1,6 @@
 /** @format */
 
-import { Pool, neonConfig } from "@neondatabase/serverless";
+import { Pool, neonConfig, types } from "@neondatabase/serverless";
 import ws from "ws";
 import SQL from "sql-template-strings";
 
@@ -21,6 +21,7 @@ const url: string | undefined = process.env.DATABASE_URL || (process.env.APP_ENV
 if (!url) throw new Error("Database URL is not defined");
 
 const pool = new Pool({ connectionString: url });
+types.setTypeParser(1700, (value) => parseFloat(value));
 
 export const sql = (strings_or_client: any, ...values: any[]) => {
 	const transaction: boolean = strings_or_client && typeof strings_or_client.query === "function";
@@ -28,11 +29,16 @@ export const sql = (strings_or_client: any, ...values: any[]) => {
 	if (transaction) {
 		return async (s: any, ...v: any[]) => {
 			const query = s.raw ? SQL(s, ...v) : s;
-			return await strings_or_client.query(query);
+			const result = await strings_or_client.query(query);
+			Object.defineProperty(result.rows, "meta", { value: result, enumerable: false });
+			return result.rows;
 		};
 	} else {
 		const query = strings_or_client.raw ? SQL(strings_or_client, ...values) : strings_or_client;
-		return pool.query(query);
+		return pool.query(query).then((result: any) => {
+			Object.defineProperty(result.rows, "meta", { value: result, enumerable: false });
+			return result.rows;
+		});
 	}
 };
 

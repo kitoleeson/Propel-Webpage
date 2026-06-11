@@ -33,14 +33,14 @@ describe("Student Repository Integration Tests", () => {
 		it("should insert a new student", async () => {
 			const mockData = createMockStudent();
 			const result = await db.student.insert(mockData);
-			expect(result.rows[0]).toBeDefined();
-			expect(result.rows[0].gov_first_name).toBe("Rocket");
+			expect(result[0]).toBeDefined();
+			expect(result[0].gov_first_name).toBe("Rocket");
 		});
 
 		it("should insert a new student and retrieve their ID by name", async () => {
 			const mockData = createMockStudent({ gov_first_name: "Bennie" });
 			const result = await db.student.insert(mockData);
-			expect(result.rows[0]).toBeDefined();
+			expect(result[0]).toBeDefined();
 
 			const studentId = await db.student.find("Bennie", "Man");
 			expect(typeof studentId).toBe("number");
@@ -50,7 +50,7 @@ describe("Student Repository Integration Tests", () => {
 		it("should insert a new student and retrieve their ID by case-insensitive name", async () => {
 			const mockData = createMockStudent({ gov_first_name: "Bennie" });
 			const result = await db.student.insert(mockData);
-			expect(result.rows[0]).toBeDefined();
+			expect(result[0]).toBeDefined();
 
 			let studentId;
 			studentId = await db.student.find("BENNIE", "MAN");
@@ -81,22 +81,22 @@ describe("Student Repository Integration Tests", () => {
 		it("should fetch a specific student by ID", async () => {
 			const mockData = createMockStudent({ gov_first_name: "Jet", email: "jet@magazine.ca" });
 			const inserted = await db.student.insert(mockData);
-			const id = inserted.rows[0].student_id;
+			const id = inserted[0].student_id;
 
 			const result = await db.student.get.get(id);
-			expect(result.rows[0].gov_first_name).toBe("Jet");
-			expect(result.rows[0].email).toBe("jet@magazine.ca");
+			expect(result[0].gov_first_name).toBe("Jet");
+			expect(result[0].email).toBe("jet@magazine.ca");
 		});
 
 		it("should return all students", async () => {
 			const names = ["A-B-C", "1-2-3", "Do-Re-Mi"];
 			for (let i = 1; i <= 3; i++) await db.student.insert(createMockStudent({ gov_first_name: names[i - 1], email: `student${i}@test.ca`, phone: `(${i}${i}${i}) 456-7890` }));
 			const result = await db.student.get.getAll();
-			expect(Array.isArray(result.rows)).toBe(true);
-			expect(result.rows.length).toEqual(3);
-			expect(result.rows[0].gov_first_name).toBe("A-B-C");
-			expect(result.rows[1].gov_first_name).toBe("1-2-3");
-			expect(result.rows[2].gov_first_name).toBe("Do-Re-Mi");
+			expect(Array.isArray(result)).toBe(true);
+			expect(result.length).toEqual(3);
+			expect(result[0].gov_first_name).toBe("A-B-C");
+			expect(result[1].gov_first_name).toBe("1-2-3");
+			expect(result[2].gov_first_name).toBe("Do-Re-Mi");
 		});
 	});
 
@@ -104,15 +104,15 @@ describe("Student Repository Integration Tests", () => {
 		it("should update student details successfully", async () => {
 			const mockData = createMockStudent({ gov_first_name: "Daniel" });
 			const inserted = await db.student.insert(mockData);
-			const id = inserted.rows[0].student_id;
-			expect(inserted.rows[0].pref_name).toBe("RM");
+			const id = inserted[0].student_id;
+			expect(inserted[0].pref_name).toBe("RM");
 
 			const updatedData = { ...mockData, pref_name: "Dan" };
 			const updated = await db.student.update(id, updatedData);
 
-			expect(updated.rows[0].pref_name).toBe("Dan");
-			expect(updated.rows[0].gov_first_name).toBe("Daniel");
-			expect(updated.rows[0].gov_last_name).toBe("Man");
+			expect(updated[0].pref_name).toBe("Dan");
+			expect(updated[0].gov_first_name).toBe("Daniel");
+			expect(updated[0].gov_last_name).toBe("Man");
 		});
 
 		it("should error update on duplicate email", async () => {
@@ -129,25 +129,25 @@ describe("Student Repository Integration Tests", () => {
 	describe("Delete Operations", () => {
 		it("should remove a student by ID", async () => {
 			const inserted = await db.student.insert(createMockStudent({ gov_first_name: "Nikita" }));
-			const id = inserted.rows[0].student_id;
+			const id = inserted[0].student_id;
 
 			await db.student.remove.byId(id);
 			const result = await db.student.get.get(id);
-			expect(result.rows.length).toEqual(0);
+			expect(result.length).toEqual(0);
 		});
 
 		it("should remove a student by name", async () => {
 			const inserted = await db.student.insert(createMockStudent({ gov_first_name: "Nikita", gov_last_name: "Levon" }));
-			const id = inserted.rows[0].student_id;
+			const id = inserted[0].student_id;
 
 			await db.student.remove.byName("Nikita", "Levon");
 			const result = await db.student.get.get(id);
-			expect(result.rows.length).toEqual(0);
+			expect(result.length).toEqual(0);
 		});
 
 		it("should throw an error when trying to remove a non-existent student by ID", async () => {
 			const result = await db.student.remove.byId(1);
-			expect(result.rowCount).toEqual(0);
+			expect((result as any).meta.rowCount).toEqual(0);
 		});
 	});
 });

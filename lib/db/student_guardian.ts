@@ -3,15 +3,15 @@
 import { DBTypes } from "./types";
 
 export const createStudentGuardianRepo = (sql: any, pool: any) => {
-	const get = async (student_id: number, guardian_id: number, db: any = sql) => {
+	const get = async (student_id: number, guardian_id: number, db: any = sql): Promise<DBTypes.StudentGuardianRow[]> => {
 		return db`SELECT * FROM student_guardian WHERE student_id = ${student_id} AND guardian_id = ${guardian_id};`;
 	};
 
-	const getAll = async (db: any = sql) => {
+	const getAll = async (db: any = sql): Promise<DBTypes.StudentGuardianRow[]> => {
 		return db`SELECT * FROM student_guardian ORDER BY student_id ASC, guardian_id ASC;`;
 	};
 
-	const getStudents = async (guardian_id: number, db: any = sql) => {
+	const getStudents = async (guardian_id: number, db: any = sql): Promise<DBTypes.StudentsRow[]> => {
 		return db`
          SELECT s.*
          FROM students s
@@ -20,7 +20,7 @@ export const createStudentGuardianRepo = (sql: any, pool: any) => {
       `;
 	};
 
-	const getGuardians = async (student_id: number, db: any = sql) => {
+	const getGuardians = async (student_id: number, db: any = sql): Promise<DBTypes.GuardiansRow[]> => {
 		return db`
          SELECT g.*
          FROM guardians g
@@ -29,7 +29,7 @@ export const createStudentGuardianRepo = (sql: any, pool: any) => {
       `;
 	};
 
-	const insert = (data: DBTypes.StudentGuardian, db: any = sql) => {
+	const insert = (data: DBTypes.StudentGuardian, db: any = sql): Promise<DBTypes.StudentGuardianRow[]> => {
 		return db`
          INSERT INTO student_guardian (student_id, guardian_id, relationship_type, is_primary_biller)
          VALUES (${data.student_id}, ${data.guardian_id}, ${data.relationship_type}, ${data.is_primary_biller})
@@ -37,43 +37,42 @@ export const createStudentGuardianRepo = (sql: any, pool: any) => {
       `;
 	};
 
-	const remove = (student_id: number, guardian_id: number, db: any = sql) => {
+	const remove = (student_id: number, guardian_id: number, db: any = sql): Promise<DBTypes.StudentGuardianRow[]> => {
 		return db`
 			DELETE FROM student_guardian
-			WHERE student_id = ${student_id} AND guardian_id = ${guardian_id};
+			WHERE student_id = ${student_id} AND guardian_id = ${guardian_id}
+			RETURNING *;
 		`;
 	};
 
-	const removeByStudentId = (student_id: number, db: any = sql) => {
-		return db`
-		DELETE FROM student_guardian WHERE student_id = ${student_id};
-      `;
+	const removeByStudentId = (student_id: number, db: any = sql): Promise<DBTypes.StudentGuardianRow[]> => {
+		return db`DELETE FROM student_guardian WHERE student_id = ${student_id} RETURNING *;`;
 	};
 
-	const removeByGuardianId = (guardian_id: number, db: any = sql) => {
-		return db`
-		DELETE FROM student_guardian WHERE guardian_id = ${guardian_id};
-      `;
+	const removeByGuardianId = (guardian_id: number, db: any = sql): Promise<DBTypes.StudentGuardianRow[]> => {
+		return db`DELETE FROM student_guardian WHERE guardian_id = ${guardian_id} RETURNING *;`;
 	};
 
 	// IMPLEMENT LATER: maybe do remove by emails rather than names, since multiple people can have the same name but not the same email
-	const removeByStudentName = (gov_first_name: string, gov_last_name: string, db: any = sql) => {
+	const removeByStudentName = (gov_first_name: string, gov_last_name: string, db: any = sql): Promise<DBTypes.StudentGuardianRow[]> => {
 		return db`
          DELETE FROM student_guardian sg
          USING students s WHERE sg.student_id = s.student_id
-         AND s.gov_first_name = ${gov_first_name} AND s.gov_last_name = ${gov_last_name};
+         AND s.gov_first_name = ${gov_first_name} AND s.gov_last_name = ${gov_last_name}
+			RETURNING *;
       `;
 	};
 
-	const removeByGuardianName = (gov_first_name: string, gov_last_name: string, db: any = sql) => {
+	const removeByGuardianName = (gov_first_name: string, gov_last_name: string, db: any = sql): Promise<DBTypes.StudentGuardianRow[]> => {
 		return db`
          DELETE FROM student_guardian sg
          USING guardians g WHERE sg.guardian_id = g.guardian_id
-         AND g.gov_first_name = ${gov_first_name} AND g.gov_last_name = ${gov_last_name};
+         AND g.gov_first_name = ${gov_first_name} AND g.gov_last_name = ${gov_last_name}
+			RETURNING *;
       `;
 	};
 
-	const update = (data: DBTypes.StudentGuardian, db: any = sql) => {
+	const update = (data: DBTypes.StudentGuardian, db: any = sql): Promise<DBTypes.StudentGuardianRow[]> => {
 		return db`
          UPDATE student_guardian
          SET
@@ -85,7 +84,7 @@ export const createStudentGuardianRepo = (sql: any, pool: any) => {
 	};
 
 	// UPDATE URGENTISH: check if new primary biller has billing_account, create one if not, then update student_billing to link billing_account
-	const setPrimaryBillerGuardian = async (student_id: number, guardian_id: number, db: any = sql) => {
+	const setPrimaryBillerGuardian = async (student_id: number, guardian_id: number, db: any = sql): Promise<DBTypes.StudentGuardianRow[]> => {
 		const client = await pool.connect();
 		const tx = sql(client);
 		try {

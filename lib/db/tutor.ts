@@ -5,28 +5,29 @@ import parseSubjects from "./subjects";
 import { DBTypes } from "./types";
 
 export const createTutorRepo = (sql: any, pool: any) => {
-	const get = async (tutor_id: number, db: any = sql) => {
+	const get = async (tutor_id: number, db: any = sql): Promise<DBTypes.TutorsRow[]> => {
 		return db`SELECT * FROM tutors WHERE tutor_id = ${tutor_id};`;
 	};
 
-	const getAll = async (db: any = sql) => {
+	const getAll = async (db: any = sql): Promise<DBTypes.TutorsRow[]> => {
 		return db`
 			SELECT *, COALESCE(pref_name, gov_first_name) as display_name
 			FROM tutors
 			WHERE availability IS NOT NULL
-			ORDER BY accepting_students DESC, gov_last_name ASC, gov_first_name ASC;`;
+			ORDER BY accepting_students DESC, gov_last_name ASC, gov_first_name ASC;
+		`;
 	};
 
-	const find = async (gov_first_name: string, gov_last_name: string, db: any = sql) => {
-		const result = await db`
+	const find = async (gov_first_name: string, gov_last_name: string, db: any = sql): Promise<number | null> => {
+		const rows = await db`
          SELECT tutor_id
          FROM tutors
          WHERE gov_first_name ILIKE ${gov_first_name} AND gov_last_name ILIKE ${gov_last_name};
       `;
-		return result.rows[0]?.tutor_id ?? null;
+		return rows[0]?.tutor_id ?? null;
 	};
 
-	const insert = (data: DBTypes.Tutors, db: any = sql) => {
+	const insert = (data: DBTypes.Tutors, db: any = sql): Promise<DBTypes.TutorsRow[]> => {
 		return db`
          INSERT INTO tutors (
             gov_first_name, gov_last_name, pref_name, email, phone,
@@ -52,7 +53,7 @@ export const createTutorRepo = (sql: any, pool: any) => {
       `;
 	};
 
-	const insertWithSubjects = async (data: TutorFormValues, db: any = sql) => {
+	const insertWithSubjects = async (data: TutorFormValues, db: any = sql): Promise<DBTypes.TutorsRow[]> => {
 		const flattened = Object.values(data.subjects).flat();
 		const parsedTutor: DBTypes.Tutors = {
 			...data,
@@ -63,7 +64,7 @@ export const createTutorRepo = (sql: any, pool: any) => {
 		try {
 			await client.query("BEGIN");
 			const result = await insert(parsedTutor, tx);
-			if (flattened.length > 0) await addSubjects(result.rows[0].tutor_id, flattened, tx);
+			if (flattened.length > 0) await addSubjects(result[0].tutor_id, flattened, tx);
 			await client.query("COMMIT");
 			return result;
 		} catch (e) {
@@ -74,20 +75,21 @@ export const createTutorRepo = (sql: any, pool: any) => {
 		}
 	};
 
-	const removeById = (tutor_id: number, db: any = sql) => {
+	const removeById = (tutor_id: number, db: any = sql): Promise<DBTypes.TutorsRow[]> => {
 		return db`
-         DELETE FROM tutors WHERE tutor_id = ${tutor_id};
+         DELETE FROM tutors WHERE tutor_id = ${tutor_id} RETURNING *;
       `;
 	};
 
-	const removeByName = (gov_first_name: string, gov_last_name: string, db: any = sql) => {
+	const removeByName = (gov_first_name: string, gov_last_name: string, db: any = sql): Promise<DBTypes.TutorsRow[]> => {
 		return db`
          DELETE FROM tutors
-         WHERE gov_first_name = ${gov_first_name} AND gov_last_name = ${gov_last_name};
+         WHERE gov_first_name = ${gov_first_name} AND gov_last_name = ${gov_last_name}
+			RETURNING *;
       `;
 	};
 
-	const update = (tutor_id: number, data: DBTypes.Tutors, db: any = sql) => {
+	const update = (tutor_id: number, data: DBTypes.Tutors, db: any = sql): Promise<DBTypes.TutorsRow[]> => {
 		return db`
          UPDATE tutors
          SET
@@ -132,7 +134,7 @@ export const createTutorRepo = (sql: any, pool: any) => {
       `;
 	};
 
-	const addSubjects = (tutor_id: number, subjects: string[], db: any = sql) => {
+	const addSubjects = (tutor_id: number, subjects: string[], db: any = sql): Promise<DBTypes.TutorSubjects[]> => {
 		const ids = Array(subjects.length).fill(tutor_id);
 		return db`
          INSERT INTO tutor_subjects (tutor_id, subject)
@@ -141,14 +143,15 @@ export const createTutorRepo = (sql: any, pool: any) => {
       `;
 	};
 
-	const deleteSubjects = (id: number, db: any = sql) => {
+	const deleteSubjects = (id: number, db: any = sql): Promise<DBTypes.TutorSubjects[]> => {
 		return db`
          DELETE FROM tutor_subjects
-         WHERE tutor_id = ${id};
+         WHERE tutor_id = ${id}
+			RETURNING *;
       `;
 	};
 
-	const updateWithSubjects = async (data: TutorFormValues, db: any = sql) => {
+	const updateWithSubjects = async (data: TutorFormValues, db: any = sql): Promise<DBTypes.TutorsRow[]> => {
 		const flattened = Object.values(data.subjects).flat();
 		const parsedTutor: DBTypes.Tutors = {
 			...data,

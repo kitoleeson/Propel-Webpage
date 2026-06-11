@@ -30,14 +30,14 @@ describe("Guardian Repository Integration Tests", () => {
 		it("should insert a new guardian", async () => {
 			const mockData = createMockGuardian();
 			const result = await db.guardian.insert(mockData);
-			expect(result.rows[0]).toBeDefined();
-			expect(result.rows[0].gov_first_name).toBe("Rosanna");
+			expect(result[0]).toBeDefined();
+			expect(result[0].gov_first_name).toBe("Rosanna");
 		});
 
 		it("should insert a new guardian and retrieve their ID by name", async () => {
 			const mockData = createMockGuardian({ gov_first_name: "Cecilia", gov_last_name: "Robinson" });
 			const result = await db.guardian.insert(mockData);
-			expect(result.rows[0]).toBeDefined();
+			expect(result[0]).toBeDefined();
 
 			const guardianId = await db.guardian.find("Cecilia", "Robinson");
 			expect(typeof guardianId).toBe("number");
@@ -70,46 +70,46 @@ describe("Guardian Repository Integration Tests", () => {
 	describe("Get Operations", () => {
 		it("should fetch a specific guardian by ID", async () => {
 			const inserted = await db.guardian.insert(createMockGuardian({ gov_first_name: "Julio" }));
-			const id = inserted.rows[0].guardian_id;
+			const id = inserted[0].guardian_id;
 
 			const result = await db.guardian.get.get(id);
-			expect(result.rows[0].gov_first_name).toBe("Julio");
+			expect(result[0].gov_first_name).toBe("Julio");
 		});
 
 		it("should fetch a specific guardian by email", async () => {
 			await db.guardian.insert(createMockGuardian({ gov_first_name: "Bobby", email: "bobby@toto.ca" }));
 			const result = await db.guardian.get.getByEmail("bobby@toto.ca");
-			expect(result.rows.length).toBe(1);
-			expect(result.rows[0].gov_first_name).toBe("Bobby");
+			expect(result.length).toBe(1);
+			expect(result[0].gov_first_name).toBe("Bobby");
 		});
 
 		it("should error fetch a specific guardian by non-existent email", async () => {
 			await db.guardian.insert(createMockGuardian({ gov_first_name: "Bobby", email: "bobby@toto.ca" }));
 			const result = await db.guardian.get.getByEmail("bobby1@toto.ca");
-			expect(result.rows.length).toBe(0);
+			expect(result.length).toBe(0);
 		});
 
 		it("should return all guardians", async () => {
 			const names = ["A-B-C", "1-2-3", "Do-Re-Mi"];
 			for (let i = 1; i <= 3; i++) await db.guardian.insert(createMockGuardian({ gov_first_name: names[i - 1], email: `guardian${i}@test.ca`, phone: `(${i}${i}${i}) 456-7890` }));
 			const result = await db.guardian.get.getAll();
-			expect(Array.isArray(result.rows)).toBe(true);
-			expect(result.rows.length).toEqual(3);
-			expect(result.rows[0].gov_first_name).toBe("A-B-C");
-			expect(result.rows[1].gov_first_name).toBe("1-2-3");
-			expect(result.rows[2].gov_first_name).toBe("Do-Re-Mi");
+			expect(Array.isArray(result)).toBe(true);
+			expect(result.length).toEqual(3);
+			expect(result[0].gov_first_name).toBe("A-B-C");
+			expect(result[1].gov_first_name).toBe("1-2-3");
+			expect(result[2].gov_first_name).toBe("Do-Re-Mi");
 		});
 	});
 
 	describe("Update Operations", () => {
 		it("should update guardian details", async () => {
 			const inserted = await db.guardian.insert(createMockGuardian({ gov_first_name: "Alejandro" }));
-			const id = inserted.rows[0].guardian_id;
+			const id = inserted[0].guardian_id;
 
 			const updated = await db.guardian.update(id, createMockGuardian({ gov_first_name: "Alejandro", pref_name: "Alex" }));
 
-			expect(updated.rows[0].pref_name).toBe("Alex");
-			expect(updated.rows[0].gov_first_name).toBe("Alejandro");
+			expect(updated[0].pref_name).toBe("Alex");
+			expect(updated[0].gov_first_name).toBe("Alejandro");
 		});
 
 		it("should error update on duplicate email", async () => {
@@ -126,11 +126,11 @@ describe("Guardian Repository Integration Tests", () => {
 	describe("Delete Operations", () => {
 		it("should remove a guardian by ID", async () => {
 			const inserted = await db.guardian.insert(createMockGuardian({ gov_first_name: "Roberto" }));
-			const id = inserted.rows[0].guardian_id;
+			const id = inserted[0].guardian_id;
 
 			await db.guardian.remove.byId(id);
 			const result = await db.guardian.get.get(id);
-			expect(result.rows.length).toEqual(0);
+			expect(result.length).toEqual(0);
 		});
 
 		it("should remove a guardian by name", async () => {
@@ -143,7 +143,7 @@ describe("Guardian Repository Integration Tests", () => {
 
 		it("should throw an error when trying to remove a non-existent student by ID", async () => {
 			const result = await db.guardian.remove.byId(1);
-			expect(result.rowCount).toEqual(0);
+			expect((result as any).meta.rowCount).toEqual(0);
 		});
 	});
 });

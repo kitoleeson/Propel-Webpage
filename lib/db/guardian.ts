@@ -3,31 +3,31 @@
 import { DBTypes } from "./types";
 
 export const createGuardianRepo = (sql: any, pool: any) => {
-	const get = async (id: number, db: any = sql) => {
+	const get = async (id: number, db: any = sql): Promise<DBTypes.GuardiansRow[]> => {
 		return db`SELECT * FROM guardians WHERE guardian_id = ${id};`;
 	};
 
-	const getAll = async (db: any = sql) => {
+	const getAll = async (db: any = sql): Promise<DBTypes.GuardiansRow[]> => {
 		return db`SELECT * FROM guardians ORDER BY guardian_id`;
 	};
 
-	const getByEmail = async (email: string, db: any = sql) => {
+	const getByEmail = async (email: string, db: any = sql): Promise<DBTypes.GuardiansRow[]> => {
 		return db`
          SELECT * FROM guardians
          WHERE email = ${email};
       `;
 	};
 
-	const find = async (gov_first_name: string, gov_last_name: string, db: any = sql) => {
-		const result = await db`
+	const find = async (gov_first_name: string, gov_last_name: string, db: any = sql): Promise<number | null> => {
+		const rows = await db`
          SELECT guardian_id
          FROM guardians
          WHERE gov_first_name ILIKE ${gov_first_name} AND gov_last_name ILIKE ${gov_last_name};
       `;
-		return result.rows[0]?.guardian_id ?? null;
+		return rows[0]?.guardian_id ?? null;
 	};
 
-	const insert = (data: DBTypes.Guardians, db: any = sql) => {
+	const insert = (data: DBTypes.Guardians, db: any = sql): Promise<DBTypes.GuardiansRow[]> => {
 		return db`
          INSERT INTO guardians (gov_first_name, gov_last_name, pref_name, email, phone, pref_communication)
          VALUES (${data.gov_first_name}, ${data.gov_last_name}, ${data.pref_name || null}, ${data.email}, ${data.phone}, ${data.pref_communication?.toLowerCase()})
@@ -35,20 +35,20 @@ export const createGuardianRepo = (sql: any, pool: any) => {
       `;
 	};
 
-	const removeById = (id: number, db: any = sql) => {
+	const removeById = (id: number, db: any = sql): Promise<DBTypes.GuardiansRow[]> => {
 		return db`
          DELETE FROM guardians WHERE guardian_id = ${id};
       `;
 	};
 
-	const removeByName = (gov_first_name: string, gov_last_name: string, db: any = sql) => {
+	const removeByName = (gov_first_name: string, gov_last_name: string, db: any = sql): Promise<DBTypes.GuardiansRow[]> => {
 		return db`
          DELETE FROM guardians
          WHERE gov_first_name = ${gov_first_name} AND gov_last_name = ${gov_last_name};
       `;
 	};
 
-	const update = (id: number, data: DBTypes.Guardians, db: any = sql) => {
+	const update = (id: number, data: DBTypes.Guardians, db: any = sql): Promise<DBTypes.GuardiansRow[]> => {
 		return db`
          UPDATE guardians
          SET

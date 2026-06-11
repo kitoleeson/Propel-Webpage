@@ -3,24 +3,24 @@
 import { DBTypes } from "./types";
 
 export const createTutorSubjectsRepo = (sql: any, pool: any) => {
-	const getSubjectsByTutor = async (tutor_id: number, db: any = sql) => {
+	const getSubjectsByTutor = async (tutor_id: number, db: any = sql): Promise<{ subject: string }[]> => {
 		return db`SELECT subject FROM tutor_subjects WHERE tutor_id = ${tutor_id};`;
 	};
 
-	const getAllSubjects = async (db: any = sql) => {
+	const getAllSubjects = async (db: any = sql): Promise<{ subject: string }[]> => {
 		return db`SELECT DISTINCT subject FROM tutor_subjects ORDER BY subject;`;
 	};
 
-	const getTutorsBySubject = async (subject: string, db: any = sql) => {
+	const getTutorsBySubject = async (subject: string, db: any = sql): Promise<{ tutor_id: number; specialty: number }[]> => {
 		return db`SELECT tutor_id, specialty FROM tutor_subjects WHERE subject = ${subject} ORDER BY specialty;`;
 	};
 
 	// maybe in the future: order by number of given subjects taught DESC and specialty ASC
-	const getTutorsByOneOfSubjects = async (subjects: string[], db: any = sql) => {
+	const getTutorsByOneOfSubjects = async (subjects: string[], db: any = sql): Promise<{ tutor_id: number }[]> => {
 		return db`SELECT DISTINCT tutor_id FROM tutor_subjects WHERE subject = ANY(${subjects}) ORDER BY tutor_id;`;
 	};
 
-	const getTutorsByAllOfSubjects = async (subjects: string[], db: any = sql) => {
+	const getTutorsByAllOfSubjects = async (subjects: string[], db: any = sql): Promise<{ tutor_id: number; specialty_score: number }[]> => {
 		return db`
 			SELECT tutor_id, SUM(specialty) as specialty_score
 			FROM tutor_subjects
@@ -31,7 +31,7 @@ export const createTutorSubjectsRepo = (sql: any, pool: any) => {
 		`;
 	};
 
-	const getAcceptingTutorsBySubject = async (subject: string, db: any = sql) => {
+	const getAcceptingTutorsBySubject = async (subject: string, db: any = sql): Promise<any[]> => {
 		return db`
 			SELECT
 				t.tutor_id,
@@ -51,7 +51,7 @@ export const createTutorSubjectsRepo = (sql: any, pool: any) => {
 	};
 
 	// maybe in the future: order by number of given subjects taught DESC and specialty ASC
-	const getAcceptingTutorsByOneOfSubjects = async (subjects: string[], db: any = sql) => {
+	const getAcceptingTutorsByOneOfSubjects = async (subjects: string[], db: any = sql): Promise<any[]> => {
 		return db`
          SELECT
             t.tutor_id,
@@ -74,7 +74,7 @@ export const createTutorSubjectsRepo = (sql: any, pool: any) => {
       `;
 	};
 
-	const getAcceptingTutorsByAllOfSubjects = async (subjects: string[], db: any = sql) => {
+	const getAcceptingTutorsByAllOfSubjects = async (subjects: string[], db: any = sql): Promise<any[]> => {
 		return db`
 			SELECT
 				t.tutor_id,
@@ -101,11 +101,11 @@ export const createTutorSubjectsRepo = (sql: any, pool: any) => {
 		`;
 	};
 
-	const getAll = async (db: any = sql) => {
+	const getAll = async (db: any = sql): Promise<DBTypes.TutorSubjectsRow[]> => {
 		return db`SELECT * FROM tutor_subjects ORDER BY specialty, tutor_id, subject;`;
 	};
 
-	const insert = (data: DBTypes.TutorSubjects, db: any = sql) => {
+	const insert = (data: DBTypes.TutorSubjects, db: any = sql): Promise<DBTypes.TutorSubjectsRow[]> => {
 		return db`
          INSERT INTO tutor_subjects (tutor_id, subject, specialty)
          VALUES (${data.tutor_id}, ${data.subject}, ${data.specialty})
@@ -114,7 +114,7 @@ export const createTutorSubjectsRepo = (sql: any, pool: any) => {
       `;
 	};
 
-	const find = (data: DBTypes.TutorSubjects, db: any = sql) => {
+	const find = (data: DBTypes.TutorSubjects, db: any = sql): Promise<DBTypes.TutorSubjectsRow[]> => {
 		return db`
          SELECT *
 			FROM tutor_subjects
@@ -122,11 +122,11 @@ export const createTutorSubjectsRepo = (sql: any, pool: any) => {
       `;
 	};
 
-	const removeByTutor = (tutor_id: number, db: any = sql) => {
+	const removeByTutor = (tutor_id: number, db: any = sql): Promise<DBTypes.TutorSubjectsRow[]> => {
 		return db`DELETE FROM tutor_subjects WHERE tutor_id = ${tutor_id} RETURNING *;`;
 	};
 
-	const update = async (tutor_id: number, subjects: string[], specialties: (0 | 1 | 2)[], db: any = sql) => {
+	const update = async (tutor_id: number, subjects: string[], specialties: (0 | 1 | 2)[], db: any = sql): Promise<DBTypes.TutorSubjectsRow[]> => {
 		const client = await pool.connect();
 		const tx = sql(client);
 		try {
@@ -134,7 +134,7 @@ export const createTutorSubjectsRepo = (sql: any, pool: any) => {
 			await removeByTutor(tutor_id);
 			const result = await addSubjects(tutor_id, subjects, specialties, tx);
 			await client.query("COMMIT");
-			return result.rows;
+			return result;
 		} catch (e) {
 			await client.query("ROLLBACK");
 			throw e;
@@ -143,7 +143,7 @@ export const createTutorSubjectsRepo = (sql: any, pool: any) => {
 		}
 	};
 
-	const addSubjects = (tutor_id: number, subjects: string[], specialties: (0 | 1 | 2)[], db: any = sql) => {
+	const addSubjects = (tutor_id: number, subjects: string[], specialties: (0 | 1 | 2)[], db: any = sql): Promise<DBTypes.TutorSubjectsRow[]> => {
 		const tutor_ids = Array(subjects.length).fill(tutor_id);
 		return db`
          INSERT INTO tutor_subjects (tutor_id, subject, specialty)

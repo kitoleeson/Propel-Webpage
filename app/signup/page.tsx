@@ -5,8 +5,8 @@ import ClientSignUpForm from "./ClientSignUpForm";
 import BasePage from "@/components/ui/base_page/BasePage";
 
 const SignupPage = async () => {
-	const tutors = (await db.tutor.get.getAll()).rows;
-	const subjects = (await db.tutor_subjects.get.getAllSubjects()).rows.map((row: { subject: string }) => row.subject);
+	const tutors = await db.tutor.get.getAll();
+	const subjects = (await db.tutor_subjects.get.getAllSubjects()).map((row: { subject: string }) => row.subject);
 
 	return (
 		<BasePage title={"Start Tutoring\nToday!"}>

@@ -3,7 +3,7 @@
 import { DBTypes } from "./types";
 
 export const createPendingTutorRepo = (sql: any, pool: any) => {
-	const insert = (data: DBTypes.PendingTutors, db: any = sql) => {
+	const insert = (data: DBTypes.PendingTutors, db: any = sql): Promise<DBTypes.PendingTutorsRow[]> => {
 		return db`
          INSERT INTO pending_tutors (
             tutor_id,
@@ -30,15 +30,15 @@ export const createPendingTutorRepo = (sql: any, pool: any) => {
       `;
 	};
 
-	const remove = (pending_tutor_id: number, db: any = sql) => {
+	const remove = (pending_tutor_id: number, db: any = sql): Promise<DBTypes.PendingTutorsRow[]> => {
 		return db`DELETE FROM pending_tutors WHERE pending_tutor_id = ${pending_tutor_id} RETURNING *`;
 	};
 
-	const get = (pending_tutor_id: number, db: any = sql) => {
+	const get = (pending_tutor_id: number, db: any = sql): Promise<DBTypes.PendingTutorsRow[]> => {
 		return db`SELECT * FROM pending_tutors WHERE pending_tutor_id = ${pending_tutor_id}`;
 	};
 
-	const getAll = (db: any = sql) => {
+	const getAll = (db: any = sql): Promise<DBTypes.PendingTutorsRow[]> => {
 		return db`SELECT * FROM pending_tutors ORDER BY pending_tutor_id`;
 	};
 
