@@ -95,6 +95,7 @@ describe("Guardian Repository Integration Tests", () => {
 			const result = await db.guardian.get.getByEmail("bobby@toto.ca");
 			expect(result.length).toBe(1);
 			expect(result[0].gov_first_name).toBe("Bobby");
+			expect(result[0].relationship_type).toBe("Parent");
 		});
 
 		it("should error fetch a specific guardian by non-existent email", async () => {
