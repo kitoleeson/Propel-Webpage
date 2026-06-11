@@ -7,7 +7,7 @@ import { getTutorsBySubjects } from "@/lib/db/actions";
 import { useFormContext } from "react-hook-form";
 import { ClientFormValues } from "@/lib/validation/clientForm/clientFormSchema";
 import { FormInputCluster } from "../layout";
-import { FormDropdownInput, FormTextAreaInput } from "../inputs";
+import { FormDropdownInput, FormTextAreaInput, FormTextInput } from "../inputs";
 import { DBTypes } from "@/lib/db/types";
 
 const PickTutorSignUpForm = ({ tutors, subjects }: { tutors: DBTypes.Tutors[]; subjects: string[] }) => {
@@ -82,18 +82,16 @@ const PickTutorSignUpForm = ({ tutors, subjects }: { tutors: DBTypes.Tutors[]; s
 			</div>
 			<div className="border-t-2 border-primary-hover mx-6 mt-6 py-3">
 				<FormInputCluster>
-					<FormDropdownInput
-						label="First Option"
-						register={register("tutors.first_choice", { valueAsNumber: true })}
-						options={tutors.map((tutor) => ({ label: tutor.display_name ?? "Unknown Tutor", value: tutor.tutor_id ?? -1 }))}
-						error={errors.tutors?.first_choice?.message}
-					/>
+					<FormDropdownInput label="First Option" register={register("tutors.choices.0", { valueAsNumber: true })} options={tutors.map((tutor) => ({ label: tutor.display_name ?? "Unknown Tutor", value: tutor.tutor_id ?? -1 }))} />
 					<FormDropdownInput
 						label="Second Option"
-						register={register("tutors.second_choice", { valueAsNumber: true })}
+						register={register("tutors.choices.1", { valueAsNumber: true })}
 						options={tutors.map((tutor) => ({ label: tutor.display_name ?? "Unknown Tutor", value: tutor.tutor_id ?? -1 }))}
-						error={errors.tutors?.second_choice?.message}
+						error={errors.tutors?.choices?.[1]?.message}
 					/>
+				</FormInputCluster>
+				<FormInputCluster>
+					<FormTextInput label="What subjects are you looking for tutoring in?" register={register("tutors.subjects")} placeholder="Math 10 AP, Chemistry 20 AP" error={errors.tutors?.subjects?.message} />
 				</FormInputCluster>
 				<FormInputCluster>
 					<FormTextAreaInput

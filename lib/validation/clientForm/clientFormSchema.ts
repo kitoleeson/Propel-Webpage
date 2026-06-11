@@ -27,16 +27,16 @@ const guardianSchema = personBase.extend({
 
 const tutorsSchema = z
 	.object({
-		first_choice: z.number().int(),
-		second_choice: z.number().int(),
+		choices: z.array(z.number().int()).length(2),
+		subjects: z.string().min(1),
 		notes: z.string().optional(),
 	})
 	.superRefine((data, ctx) => {
-		if (data.first_choice === data.second_choice) {
+		if (data.choices[0] === data.choices[1]) {
 			ctx.addIssue({
 				code: z.ZodIssueCode.custom,
 				message: "Tutor options must be different",
-				path: ["second_choice"],
+				path: ["choices", 1],
 			});
 		}
 	});

@@ -3,9 +3,8 @@
 "use server";
 
 import { db, sql } from ".";
-import { sendAdminApprovalPendingTutorEmail } from "../mail/sendEmail";
 import { ClientFormValues } from "../validation/clientForm/clientFormSchema";
-import { TutorFormValues, tutorPlaceholder } from "../validation/tutorForm/tutorFormSchema";
+import { TutorFormValues } from "../validation/tutorForm/tutorFormSchema";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { DBTypes } from "./types";
@@ -69,9 +68,8 @@ export async function getTutorsBySubjects(subjects: string[]): Promise<DBTypes.T
 
 export async function onboardClientWithFormData(data: ClientFormValues) {
 	// 1. Client fills out the form and submits it, including personal information, billing information, and tutor preferences (top 2 choices).
-	// 2. The form data is sent to the server, where it is processed and stored in the database under the "students", "guardians", "student_guardian", "billing_accounts", and "student_billing" tables.
+	// 2. The form data is sent to the server, where it is processed and stored in the database under the "students", "guardians", "student_guardian", "billing_accounts", "student_billing", and "pending_student_tutors" tables.
 	async function saveClientDataToDatabase() {
-		// ADD CLIENT DATA TO DATABASE
 		const client = await db.pool.connect();
 		const tx = sql(client);
 		try {
@@ -102,6 +100,22 @@ export async function onboardClientWithFormData(data: ClientFormValues) {
 					? result.rows[0]
 					: (await db.billing_account.insert({ display_name: `${student.pref_name ?? student.gov_first_name} ${student.gov_last_name}`, email: student.email, first_invoice: true, student_id: student.id }, tx)).rows[0];
 				await db.student_billing.insert({ student_id: student.id, billing_id: billing_account.billing_id }, tx);
+			}
+
+			// insert into pending_student_tutor
+			for (let tutor_id of data.tutors.choices) {
+				const tutor = (await db.tutor.get.get(tutor_id, tx)).rows[0];
+				const student_tutor_data: DBTypes.PendingStudentTutor = {
+					student_id: student.id,
+					tutor_id: tutor.tutor_id,
+					usual_duration: 1,
+					hourly_rate: tutor.current_rate,
+					subjects: data.tutors.subjects,
+					markup: 5,
+					travel_fee: 0,
+					had_session: false,
+				};
+				await db.pending_student_tutor.insert(student_tutor_data, tx);
 			}
 
 			await client.query("COMMIT");
