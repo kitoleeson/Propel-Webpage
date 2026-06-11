@@ -1,6 +1,7 @@
 /** @format */
 
 import { DBTypes } from "@/lib/db/types";
+import { tutorPlaceholder } from "@/lib/validation/tutorForm/tutorFormSchema";
 import { withNeonTestBranch } from "@/tests/test-setup";
 
 withNeonTestBranch();
@@ -77,7 +78,20 @@ describe("Guardian Repository Integration Tests", () => {
 		});
 
 		it("should fetch a specific guardian by email", async () => {
-			await db.guardian.insert(createMockGuardian({ gov_first_name: "Bobby", email: "bobby@toto.ca" }));
+			const guardian = (await db.guardian.insert(createMockGuardian({ gov_first_name: "Bobby", email: "bobby@toto.ca" })))[0];
+			const studentData: DBTypes.Students = {
+				gov_first_name: "Rocket",
+				gov_last_name: "Man",
+				pref_name: "RM",
+				email: "rocket.man@mars.ca",
+				phone: "(123) 456-7890",
+				pref_communication: "Text Message",
+				grade: 12,
+				city: "Edmonton",
+				how_found_us: "Word of Mouth",
+			};
+			const student = (await db.student.insert(studentData))[0];
+			await db.student_guardian.insert({ student_id: student.student_id, guardian_id: guardian.guardian_id, relationship_type: "Parent", is_primary_biller: true });
 			const result = await db.guardian.get.getByEmail("bobby@toto.ca");
 			expect(result.length).toBe(1);
 			expect(result[0].gov_first_name).toBe("Bobby");

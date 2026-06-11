@@ -39,9 +39,9 @@ const GuardianSection = ({ index, placeholder, optional }: Props) => {
 			setValue(`guardians.${index}.gov_last_name`, data.gov_last_name);
 			setValue(`guardians.${index}.pref_name`, data.pref_name);
 			setValue(`guardians.${index}.email`, data.email);
-			setValue(`guardians.${index}.phone`, data.phone);
+			setValue(`guardians.${index}.phone`, data.phone ?? "");
 			setValue(`guardians.${index}.pref_communication`, data.pref_communication);
-			setValue(`guardians.${index}.relationship`, data.relationship);
+			setValue(`guardians.${index}.relationship`, data.relationship_type);
 			clearErrors(`guardians.${index}.already_exists`);
 		} else setError(`guardians.${index}.already_exists`, { type: "manual", message: response.error || "Guardian not found" });
 	};

@@ -4,9 +4,9 @@ import { Pool, neonConfig, types } from "@neondatabase/serverless";
 import ws from "ws";
 import SQL from "sql-template-strings";
 
-import { createTutorRepo } from "./tutor";
+import { createTutorRepo } from "./tutors";
 import { createPendingTutorRepo } from "./pending_tutor";
-import { createGuardianRepo } from "./guardian";
+import { createGuardianRepo } from "./guardians";
 import { createStudentRepo } from "./student";
 import { createStudentGuardianRepo } from "./student_guardian";
 import { createBillingAccountsRepo } from "./billing_accounts";
