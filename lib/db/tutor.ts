@@ -5,8 +5,8 @@ import parseSubjects from "./subjects";
 import { DBTypes } from "./types";
 
 export const createTutorRepo = (sql: any, pool: any) => {
-	const get = async (id: number, db: any = sql) => {
-		return db`SELECT * FROM tutors WHERE tutor_id = ${id};`;
+	const get = async (tutor_id: number, db: any = sql) => {
+		return db`SELECT * FROM tutors WHERE tutor_id = ${tutor_id};`;
 	};
 
 	const getAll = async (db: any = sql) => {

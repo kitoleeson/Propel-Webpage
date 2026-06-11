@@ -8,6 +8,8 @@ import { TutorFormValues } from "../validation/tutorForm/tutorFormSchema";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { DBTypes } from "./types";
+import { sendAdminPendingTutorApprovalEmail, sendAdminClientSignupReviewEmail } from "../mail/sendAdmin";
+import { ClientEmailData, sendAgreementEmail } from "../mail/sendClient/clientAgreement";
 
 export async function updateTutorWithSubjectsAndGoHome(data: TutorFormValues) {
 	try {
@@ -23,25 +25,38 @@ export async function updateTutorWithSubjectsAndGoHome(data: TutorFormValues) {
 export async function submitTutorForApproval(data: TutorFormValues) {
 	const existing_id = await db.tutor.find(data.gov_first_name, data.gov_last_name);
 	const result = await db.pending_tutor.insert(existing_id ?? -1, data);
-	await sendAdminApprovalPendingTutorEmail(result.rows[0].pending_tutor_id, { ...data, tutor_id: existing_id ?? -1 });
+	await sendAdminPendingTutorApprovalEmail(result.rows[0].pending_tutor_id, { ...data, tutor_id: existing_id ?? -1 });
 
 	revalidatePath("/");
 	redirect("/");
 }
 
 export async function approvePendingTutor(pending_tutor_id: number) {
-	const pendingResults = await db.pending_tutor.get(pending_tutor_id);
-	if (!pendingResults.rows?.length) throw new Error("PENDING_NOT_FOUND");
+	const client = await db.pool.connect();
+	const tx = sql(client);
+	try {
+		await client.query("BEGIN");
 
-	const pending_tutor = pendingResults.rows[0];
-	const formData = await mapDbToTutorFormValues(pending_tutor);
+		const pendingResults = await db.pending_tutor.get(pending_tutor_id, tx);
+		if (!pendingResults.rows?.length) throw new Error("PENDING_NOT_FOUND");
 
-	if (pending_tutor.tutor_id === -1) await db.tutor.insert.insertWithSubjects(formData);
-	else await db.tutor.update.updateWithSubjects(formData);
+		const pending_tutor = pendingResults.rows[0];
+		const formData = await mapDbToTutorFormValues(pending_tutor);
 
-	await db.pending_tutor.remove(pending_tutor_id);
+		if (pending_tutor.tutor_id === -1) await db.tutor.insert.insertWithSubjects(formData, tx);
+		else await db.tutor.update.updateWithSubjects(formData, tx);
 
-	return { gov_first: pending_tutor.gov_first_name, gov_last: pending_tutor.gov_last_name, insertion: pending_tutor.tutor_id === -1 };
+		await db.pending_tutor.remove(pending_tutor_id, tx);
+
+		await client.query("COMMIT");
+		return { gov_first: pending_tutor.gov_first_name, gov_last: pending_tutor.gov_last_name, insertion: pending_tutor.tutor_id === -1 };
+	} catch (e) {
+		await client.query("ROLLBACK");
+		console.error("Failed tutor accept student database operation", e);
+		throw new Error("Failed tutor accept student database operation");
+	} finally {
+		client.release();
+	}
 }
 
 export const mapDbToTutorFormValues = async (data: DBTypes.PendingTutors): Promise<TutorFormValues> =>
@@ -130,22 +145,58 @@ export async function onboardClientWithFormData(data: ClientFormValues) {
 
 	async function sendClientDataToAdminForReview() {
 		// 3. An email is sent to the admin with a summary of the client's information for review.
-	}
-
-	async function sendClientAgreementEmail() {
-		// 4. An email is sent to the client with the client agreement contract attached.
+		try {
+			await sendAdminClientSignupReviewEmail(data);
+		} catch (e) {
+			console.error("Failed to send client signup review email to admin", e);
+			throw new Error("Failed to send client signup review email to admin");
+		}
 	}
 
 	saveClientDataToDatabase();
+	sendClientDataToAdminForReview();
 }
 
 // 5. An email is sent to the tutor who the client chooses, notifying them of the new student, providing the student's information for review, and providing a link to the API where they can accept or reject the tutoring request.
 // 	The tutor will reach out the student to decide whether the relationship will work, then either accept or reject the request.
 // 	If they accept, the "student_tutor" table is updated to reflect the match.
 // 	If they reject, the student's second choice tutor is notified. If they also reject, the admin is notified to manually assign a tutor.
-// 6. Once a tutor accepts the student, an email confirmation is sent to the client with the tutor's rate and client contract?
 export async function sendClientToFirstTutorChoice(data: ClientFormValues) {}
 
 export async function sendClientToSecondTutorChoice(data: ClientFormValues) {}
 
 export async function sendClientToAdminForManualMatching(data: ClientFormValues) {}
+
+export async function tutorAcceptStudent(tutor_id: number, student_id: number) {
+	const client = await db.pool.connect();
+	const tx = sql(client);
+	try {
+		await client.query("BEGIN");
+
+		const data = await db.pending_student_tutor.get.get(student_id, tutor_id, tx);
+		await db.student_tutor.insert(data, tx);
+		await db.pending_student_tutor.remove.byStudentId(student_id, tx);
+
+		await client.query("COMMIT");
+		sendClientAgreementEmail(data);
+	} catch (e) {
+		await client.query("ROLLBACK");
+		console.error("Failed tutor accept student database operation", e);
+		throw new Error("Failed tutor accept student database operation");
+	} finally {
+		client.release();
+	}
+}
+
+export async function sendClientAgreementEmail(data: DBTypes.StudentTutor) {
+	// 6. Once a tutor accepts the student, an email confirmation is sent to the client with the tutor's rate and client contract?
+	try {
+		const student = (await db.student.get.get(data.tutor_id)).rows[0];
+		const guardians = (await db.student_guardian.get.getGuardians(data.student_id)).rows;
+		const emailData: ClientEmailData = { student: student, guardians: guardians, student_tutor: data };
+		const success = await sendAgreementEmail(emailData);
+	} catch (e) {
+		console.error("Failed to send client signup review email to admin", e);
+		throw new Error("Failed to send client signup review email to admin");
+	}
+}

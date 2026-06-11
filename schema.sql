@@ -32,6 +32,7 @@ BEGIN;
 -- CLIENTS
 -- =========================
 
+-- ADD SIGNED CLIENT CONTRACT: BOOLEAN NOT NULL DEFAULT FALSE
 CREATE TABLE IF NOT EXISTS students (
     student_id SERIAL PRIMARY KEY,
     gov_first_name TEXT NOT NULL,
