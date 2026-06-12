@@ -176,6 +176,15 @@ export const createTutorRepo = (sql: any, pool: any) => {
 		}
 	};
 
+	const decrementAcceptingStudents = async (tutor_id: number, db: any = sql): Promise<{ accepting_students: number }[]> => {
+		return db`
+			UPDATE tutors
+			SET accepting_students = accepting_students - 1
+			WHERE tutor_id = ${tutor_id}
+			RETURNING accepting_students
+		`;
+	};
+
 	return {
 		get: {
 			get,
@@ -193,6 +202,7 @@ export const createTutorRepo = (sql: any, pool: any) => {
 		update: {
 			update,
 			updateWithSubjects,
+			decrementAcceptingStudents,
 		},
 	};
 };

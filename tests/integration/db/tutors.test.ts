@@ -249,6 +249,20 @@ describe("Tutor Repository Integration Tests", () => {
 			expect(inserted.gov_first_name).toEqual("Jane Catherine");
 			await expect(db.tutor.update.updateWithSubjects(createMockTutorWithSubjects({ gov_first_name: "Jane", subjects: newSubjects }))).rejects.toThrow("Tutor not found");
 		});
+
+		it("should decrement accepting students", async () => {
+			const inserted = (await db.tutor.insert.insertWithSubjects(createMockTutorWithSubjects()))[0];
+			expect(inserted.accepting_students).toEqual(2);
+			const updated = (await db.tutor.update.decrementAcceptingStudents(inserted.tutor_id))[0];
+			expect(updated.accepting_students).toEqual(1);
+			const result = (await db.tutor.get.get(inserted.tutor_id))[0];
+			expect(result.accepting_students).toEqual(1);
+		});
+
+		it("should error decrement accepting students on non-existent tutor id", async () => {
+			const result = await db.tutor.update.decrementAcceptingStudents(1);
+			expect(result.length).toEqual(0);
+		});
 	});
 
 	describe("Delete Operations", () => {
