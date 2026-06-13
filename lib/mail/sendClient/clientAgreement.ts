@@ -32,8 +32,8 @@ export default async function sendClientClientAgreementEmail(data: ClientAgreeme
 		const body = fs.readFileSync(bodyPath, "utf8").replace("??StudentFirstName??", data.student.gov_first_name);
 
 		await sendEmail({
-			to: "kleeson@ualberta.ca", // data.student.email,
-			cc: "kleeson@ualberta.ca", // data.guardians.map((g) => g.email),
+			to: data.student.email,
+			cc: data.guardians.map((g) => g.email),
 			subject: `Propel Tutoring Agreement — ${studentName}`,
 			text: body,
 			attachments: [{ filename: `Propel-Agreement_${data.student.gov_first_name.replace(" ", "-")}_${data.student.gov_last_name.replace(" ", "-")}.pdf`, content: pdfBuffer, contentType: "application/pdf" }],

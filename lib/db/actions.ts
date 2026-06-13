@@ -92,90 +92,85 @@ export async function getTutorsBySubjects(subjects: string[]): Promise<DBTypes.T
 export async function onboardClientWithFormData(data: ClientFormValues) {
 	// 1. Client fills out the form and submits it, including personal information, billing information, and tutor preferences (top 2 choices).
 	// 2. The form data is sent to the server, where it is processed and stored in the database under the "students", "guardians", "student_guardian", "billing_accounts", "student_billing", and "pending_student_tutors" tables.
-	async function saveClientDataToDatabase() {
-		const client = await db.pool.connect();
-		const tx = sql(client);
-		try {
-			await client.query("BEGIN");
+	const client = await db.pool.connect();
+	const tx = sql(client);
+	try {
+		await client.query("BEGIN");
 
-			// insert into student
-			const student = (await db.student.insert(data.student as DBTypes.Students, tx))[0];
+		// insert into student
+		const student = (await db.student.insert(data.student as DBTypes.Students, tx))[0];
 
-			// insert into guardians and student_guardian
-			for (let g of data.guardians) {
-				const guardianByEmail = (await db.guardian.get.getByEmail(g.email, tx))[0];
-				const exists = g.already_exists || guardianByEmail != null;
-				const guardian = exists ? guardianByEmail : (await db.guardian.insert(g as DBTypes.Guardians, tx))[0];
-				await db.student_guardian.insert({ student_id: student.student_id, guardian_id: guardian.guardian_id, relationship_type: g.relationship, is_primary_biller: g.is_primary_biller }, tx);
-			}
-
-			// insert into billing_accounts and student_billing
-			if (data.student.biller === "Guardian") {
-				const primaryBiller = data.guardians[data.primary_biller_index];
-				const guardian = (await db.guardian.get.getByEmail(primaryBiller.email, tx))[0];
-				const result = await db.billing_account.get.getByGuardianOwner(guardian.guardian_id, tx);
-				const billingAccount = result.length
-					? result[0]
-					: (await db.billing_account.insert({ display_name: `${guardian.pref_name ?? guardian.gov_first_name} ${guardian.gov_last_name}`, email: guardian.email, first_invoice: true, guardian_id: guardian.guardian_id }, tx))[0];
-				const billingId = billingAccount.billing_id;
-				await db.student_billing.insert({ student_id: student.student_id, billing_id: billingId }, tx);
-			} else {
-				const result = await db.billing_account.get.getByStudentOwner(student.student_id, tx);
-				const billingAccount = result.length
-					? result[0]
-					: (
-							await db.billing_account.insert(
-								{
-									display_name: `${student.pref_name ?? student.gov_first_name} ${student.gov_last_name}`,
-									email: student.email ?? "",
-									first_invoice: true,
-									student_id: student.student_id,
-								},
-								tx,
-							)
-						)[0];
-				const billingId = billingAccount.billing_id;
-				await db.student_billing.insert({ student_id: student.student_id, billing_id: billingId }, tx);
-			}
-
-			// insert into pending_student_tutor
-			for (let tutor_id of data.tutors.choices) {
-				const tutor = (await db.tutor.get.get(tutor_id, tx))[0];
-				const student_tutor_data: DBTypes.PendingStudentTutor = {
-					student_id: student.student_id,
-					tutor_id: tutor.tutor_id,
-					usual_duration: 1,
-					hourly_rate: tutor.current_rate,
-					subjects: data.tutors.subjects,
-					markup: 5,
-					travel_fee: 0,
-					had_session: false,
-				};
-				await db.pending_student_tutor.insert(student_tutor_data, tx);
-			}
-
-			await client.query("COMMIT");
-		} catch (e) {
-			await client.query("ROLLBACK");
-			console.error("Failed client intake database operation", e);
-			throw new Error("Failed client intake database operation");
-		} finally {
-			client.release();
+		// insert into guardians and student_guardian
+		for (let g of data.guardians) {
+			const guardianByEmail = (await db.guardian.get.getByEmail(g.email, tx))[0];
+			const exists = g.already_exists || guardianByEmail != null;
+			const guardian = exists ? guardianByEmail : (await db.guardian.insert(g as DBTypes.Guardians, tx))[0];
+			await db.student_guardian.insert({ student_id: student.student_id, guardian_id: guardian.guardian_id, relationship_type: g.relationship, is_primary_biller: g.is_primary_biller }, tx);
 		}
+
+		// insert into billing_accounts and student_billing
+		if (data.student.biller === "Guardian") {
+			const primaryBiller = data.guardians[data.primary_biller_index];
+			const guardian = (await db.guardian.get.getByEmail(primaryBiller.email, tx))[0];
+			const result = await db.billing_account.get.getByGuardianOwner(guardian.guardian_id, tx);
+			const billingAccount = result.length
+				? result[0]
+				: (await db.billing_account.insert({ display_name: guardian.pref_name ?? guardian.gov_first_name, email: guardian.email, first_invoice: true, guardian_id: guardian.guardian_id }, tx))[0];
+			const billingId = billingAccount.billing_id;
+			await db.student_billing.insert({ student_id: student.student_id, billing_id: billingId }, tx);
+		} else {
+			const result = await db.billing_account.get.getByStudentOwner(student.student_id, tx);
+			const billingAccount = result.length
+				? result[0]
+				: (
+						await db.billing_account.insert(
+							{
+								display_name: `${student.pref_name ?? student.gov_first_name} ${student.gov_last_name}`,
+								email: student.email ?? "",
+								first_invoice: true,
+								student_id: student.student_id,
+							},
+							tx,
+						)
+					)[0];
+			const billingId = billingAccount.billing_id;
+			await db.student_billing.insert({ student_id: student.student_id, billing_id: billingId }, tx);
+		}
+
+		// insert into pending_student_tutor
+		for (let tutor_id of data.tutors.choices) {
+			const tutor = (await db.tutor.get.get(tutor_id, tx))[0];
+			const student_tutor_data: DBTypes.PendingStudentTutor = {
+				student_id: student.student_id,
+				tutor_id: tutor.tutor_id,
+				usual_duration: 1,
+				hourly_rate: tutor.current_rate,
+				subjects: data.tutors.subjects,
+				markup: 5,
+				travel_fee: 0,
+				had_session: false,
+			};
+			await db.pending_student_tutor.insert(student_tutor_data, tx);
+		}
+
+		await client.query("COMMIT");
+	} catch (e) {
+		await client.query("ROLLBACK");
+		console.error("Failed client intake database operation", e);
+		throw new Error("Failed client intake database operation");
+	} finally {
+		client.release();
 	}
 
-	async function sendClientDataToAdminForReview() {
-		// 3. An email is sent to the admin with a summary of the client's information for review.
-		try {
-			await sendAdminClientSignupReviewEmail(data);
-		} catch (e) {
-			console.error("Failed to send client signup review email to admin", e);
-			throw new Error("Failed to send client signup review email to admin");
-		}
+	// 3. An email is sent to the admin with a summary of the client's information for review.
+	try {
+		await sendAdminClientSignupReviewEmail(data);
+	} catch (e) {
+		console.error("Failed to send client signup review email to admin", e);
+		throw new Error("Failed to send client signup review email to admin");
 	}
 
-	saveClientDataToDatabase();
-	sendClientDataToAdminForReview();
+	// TO ADD: email client with confirmation of form submission
 }
 
 // 4. An email is sent to the tutor who the client chooses, notifying them of the new student, providing the student's information for review, and providing a link to the API where they can accept or reject the tutoring request.

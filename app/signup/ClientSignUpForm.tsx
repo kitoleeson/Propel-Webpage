@@ -10,6 +10,7 @@ import { defaultStudent, defaultGuardian, formSchema, ClientFormValues } from "@
 import { placeholders } from "@/lib/validation/clientForm/clientFormPersonPlaceholders";
 import PickTutorSignUpForm from "@/components/ui/form/sections/PickTutorSignUpForm";
 import { DBTypes } from "@/lib/db/types";
+import { onboardClientWithFormData } from "@/lib/db/actions";
 
 function shuffle(array: any[]) {
 	const newArray = [...array];
@@ -67,6 +68,7 @@ const ClientSignUpForm = ({ tutors, subjects }: { tutors: DBTypes.Tutors[]; subj
 			console.log("Form submitted with data:");
 			console.log(data);
 			sessionStorage.removeItem(SESSION_STORAGE_KEY);
+			onboardClientWithFormData(data);
 		} catch (e) {
 			console.error("Submission failed", e);
 		}

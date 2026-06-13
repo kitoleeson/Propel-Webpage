@@ -103,7 +103,7 @@ export default async function sendAdminClientSignupReviewEmail(data: ClientFormV
 	`;
 
 	Object.entries(tutor_section.fields).forEach(([key, label]) => {
-		const value = data.tutors[key as keyof TutorClientFormValues];
+		const value = label.includes("Choice") ? (label.includes("First") ? data.tutors.choices[0] : data.tutors.choices[1]) : data.tutors[key as keyof TutorClientFormValues];
 		const displayValue = value !== undefined && value !== null && value !== "" ? value : "—";
 		tableContent += `
 			<tr>

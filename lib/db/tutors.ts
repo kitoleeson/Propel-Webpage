@@ -18,6 +18,15 @@ export const createTutorRepo = (sql: any, pool: any) => {
 		`;
 	};
 
+	const getAllAccepting = async (db: any = sql): Promise<DBTypes.TutorsRow[]> => {
+		return db`
+			SELECT *, COALESCE(pref_name, gov_first_name) as display_name
+			FROM tutors
+			WHERE availability IS NOT NULL AND accepting_students > 0
+			ORDER BY accepting_students DESC, gov_last_name ASC, gov_first_name ASC;
+		`;
+	};
+
 	const find = async (gov_first_name: string, gov_last_name: string, db: any = sql): Promise<number | null> => {
 		const rows = await db`
          SELECT tutor_id
@@ -189,6 +198,7 @@ export const createTutorRepo = (sql: any, pool: any) => {
 		get: {
 			get,
 			getAll,
+			getAllAccepting,
 		},
 		find,
 		insert: {
