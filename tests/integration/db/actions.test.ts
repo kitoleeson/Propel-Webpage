@@ -3,7 +3,7 @@
 import { ClientFormValues, GuardianClientFormValues, StudentClientFormValues, TutorClientFormValues } from "@/lib/validation/clientForm/clientFormSchema";
 import { subjectPlaceholder, TutorFormValues, tutorPlaceholder } from "@/lib/validation/tutorForm/tutorFormSchema";
 import { withNeonTestBranch } from "@/tests/test-setup";
-import * as sendAdmin from "@/lib/mail";
+import * as mail from "@/lib/mail";
 import Mail from "nodemailer/lib/mailer";
 
 withNeonTestBranch();
@@ -19,7 +19,7 @@ describe("Action Repository Integration Tests", () => {
 		await db.pool.query("TRUNCATE TABLE tutors RESTART IDENTITY CASCADE");
 		await db.tutor.insert.insertWithSubjects(createMockTutorWithSubjects(1, { current_rate: 35 }));
 		await db.tutor.insert.insertWithSubjects(createMockTutorWithSubjects(2, { current_rate: 40 }));
-		emailSpy = vi.spyOn(sendAdmin, "sendEmail").mockImplementation(async (data: Mail.Options) => ({
+		emailSpy = vi.spyOn(mail, "sendEmail").mockImplementation(async (data: Mail.Options) => ({
 			accepted: [data.to?.toString() || "test@example.com"],
 			rejected: [],
 			envelopeTime: 0,
@@ -156,12 +156,31 @@ describe("Action Repository Integration Tests", () => {
 			expect(pending_student_tutors[1].had_session).toEqual(false);
 
 			// check admin email send
-			expect(emailSpy).toHaveBeenCalledOnce();
-			expect(emailSpy).toHaveBeenCalledWith({
-				from: '"Propel System" <t5vnzbb64mfr6zbp@ethereal.email>',
+			expect(emailSpy).toHaveBeenCalledTimes(2);
+			const adminArguments = emailSpy.mock.calls[0][0];
+			expect(adminArguments).toEqual({
 				to: "propeltutoringyeg@gmail.com",
+				html: expect.any(String),
 				subject: `New Client Signup: Rocket Man`,
+				attachments: [{ filename: `Rocket_Man-Client_Signup_Form.json`, content: JSON.stringify(data, null, 2), contentType: "application/json" }],
 			});
+			expect(adminArguments.html).toContain(">Rocket<");
+			expect(adminArguments.html).toContain(">Man<");
+			expect(adminArguments.html).toContain(">rosanna1@africa.ca<");
+			expect(adminArguments.html).not.toContain("??");
+
+			// check client email send
+			const clientArguments = emailSpy.mock.calls[1][0];
+			expect(clientArguments).toEqual({
+				to: "rocket1.man@mars.ca",
+				cc: ["rosanna1@africa.ca"],
+				text: expect.any(String),
+				subject: `Propel Tutoring Signup Confirmation - Rocket Man`,
+			});
+			expect(clientArguments.text).toContain("Hi Rocket,");
+			expect(clientArguments.text).toContain("here is what comes next:");
+			expect(clientArguments.text).toContain("3.");
+			expect(clientArguments.text).not.toContain("??");
 		});
 
 		/**

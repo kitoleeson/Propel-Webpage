@@ -10,7 +10,7 @@ import { redirect } from "next/navigation";
 import { DBTypes } from "./types";
 import { sendAdminPendingTutorApprovalEmail, sendAdminClientSignupReviewEmail, sendAdminTutorClientAcceptanceReviewEmail } from "@/lib/mail/sendAdmin";
 import { ClientAgreementEmailData } from "@/lib/mail/sendClient/clientAgreement";
-import { sendClientClientAgreementEmail } from "@/lib/mail/sendClient";
+import { sendClientClientAgreementEmail, sendClientSignupConfirmationEmail } from "@/lib/mail/sendClient";
 
 export async function updateTutorWithSubjectsAndGoHome(data: TutorFormValues) {
 	try {
@@ -171,6 +171,12 @@ export async function onboardClientWithFormData(data: ClientFormValues) {
 	}
 
 	// TO ADD: email client with confirmation of form submission
+	try {
+		await sendClientSignupConfirmationEmail(data);
+	} catch (e) {
+		console.error("Failed to send signup confirmation email to client", e);
+		throw new Error("Failed to send signup confirmation email to client");
+	}
 }
 
 // 4. An email is sent to the tutor who the client chooses, notifying them of the new student, providing the student's information for review, and providing a link to the API where they can accept or reject the tutoring request.
@@ -231,7 +237,7 @@ export async function tutorAcceptStudent(tutor_id: number, student_id: number) {
 		throw new Error("Failed client agreement email");
 	}
 
-	// email the student_tutor informatino to the admin
+	// email the student_tutor information to the admin
 	try {
 		// 7. An email review is sent to the admin with the tutor and student's names and student_tutor information
 		await sendAdminTutorClientAcceptanceReviewEmail(data);

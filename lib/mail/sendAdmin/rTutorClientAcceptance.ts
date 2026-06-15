@@ -1,6 +1,5 @@
 /** @format */
 
-import { ClientFormValues, StudentClientFormValues, TutorClientFormValues } from "@/lib/validation/clientForm/clientFormSchema";
 import { sendEmail } from "..";
 import Mail from "nodemailer/lib/mailer";
 import { ClientAgreementEmailData } from "../sendClient/clientAgreement";
@@ -62,7 +61,7 @@ export default async function sendAdminTutorClientAcceptanceReviewEmail(data: Cl
 	const options: Mail.Options = {
 		from: `"Propel System" <${test ? process.env.TEST_SMTP_USER : process.env.SMTP_USER}>`,
 		to: process.env.ADMIN_EMAIL,
-		subject: `New Tutor Acceptance: ${data.student.gov_first_name} ${data.student.gov_last_name}`,
+		subject: `New Student-Tutor Pairing: ${data.student.gov_first_name} ${data.student.gov_last_name}`,
 		html: `
          <div style="font-family: sans-serif; max-width: 600px; margin: auto; color: #333; border: 1px solid #eee; border-radius: 10px; overflow: hidden;">
             <div style="background-color: #1eb9c2; color: white; padding: 20px; text-align: center;">

@@ -132,9 +132,7 @@ export default async function sendAdminClientSignupReviewEmail(data: ClientFormV
 		`;
 	});
 
-	const test = process.env.APP_ENV != "prod";
 	const options: Mail.Options = {
-		from: `"Propel System" <${test ? process.env.TEST_SMTP_USER : process.env.SMTP_USER}>`,
 		to: process.env.ADMIN_EMAIL,
 		subject: `New Client Signup: ${data.student.gov_first_name} ${data.student.gov_last_name}`,
 		html: `
@@ -149,7 +147,7 @@ export default async function sendAdminClientSignupReviewEmail(data: ClientFormV
             </div>
          </div>
       `,
-		attachments: [{ filename: `${data.student.gov_first_name}_${data.student.gov_last_name}-client_signup_form.json`, content: JSON.stringify(data, null, 2), contentType: "application/json" }],
+		attachments: [{ filename: `${data.student.gov_first_name}_${data.student.gov_last_name}-Client_Signup_Form.json`, content: JSON.stringify(data, null, 2), contentType: "application/json" }],
 	};
 
 	return sendEmail(options);

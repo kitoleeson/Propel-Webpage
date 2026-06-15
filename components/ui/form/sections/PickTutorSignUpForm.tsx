@@ -9,6 +9,8 @@ import { ClientFormValues } from "@/lib/validation/clientForm/clientFormSchema";
 import { FormInputCluster } from "../layout";
 import { FormDropdownInput, FormTextAreaInput, FormTextInput } from "../inputs";
 import { DBTypes } from "@/lib/db/types";
+import Link from "next/link";
+import { navLinks } from "../../base_page/nav_bar/links";
 
 const PickTutorSignUpForm = ({ tutors, subjects }: { tutors: DBTypes.Tutors[]; subjects: string[] }) => {
 	const [filteredTutors, setFilteredTutors] = useState<DBTypes.Tutors[]>(tutors);
@@ -45,8 +47,18 @@ const PickTutorSignUpForm = ({ tutors, subjects }: { tutors: DBTypes.Tutors[]; s
 			<p>
 				Propel Tutoring places a strong emphasis on allowing students to choose their own tutor. We believe that learning is most effective when students feel comfortable, respected, and genuinely connected to the person
 				supporting them. This model allows the student to find a tutor who will work best for themselves, empowering them to take an active role in their education and increasing engagement, motivation, and investment in their
-				sessions.
+				sessions. More information on each tutor can be found on{" "}
+				<Link
+					key={navLinks["team"].href}
+					href={navLinks["team"].href}
+					className="inline font-bold duration-300 text-primary hover:text-primary-hover bg-linear-to-r from-current to-current  bg-size-[0%_2px] bg-no-repeat bg-bottom hover:bg-size-[98%_2px] transition-[background-size] ease-out"
+				>
+					our team
+				</Link>{" "}
+				page.
 			</p>
+
+			<p>Please ensure that the student is present and contributing to their choice of tutor.</p>
 			<p>
 				We would love to help you find the perfect tutor for you. Please email us at{" "}
 				<a href="mailto:propeltutoringyeg@gmail.com" className="font-semibold text-primary hover:text-primary-hover">
@@ -54,7 +66,7 @@ const PickTutorSignUpForm = ({ tutors, subjects }: { tutors: DBTypes.Tutors[]; s
 				</a>{" "}
 				for any questions. Although only certain subjects are displayed in the dropdown filter below, Propel offers tutoring for all grades and all curriculums at the high school level and below.
 			</p>
-			<div className="w-full max-w-[97%] m-auto flex flex-col landscape:items-start portrait:items-center gap-12">
+			<div className="w-full max-w-[97%] m-auto mt-8 flex flex-col landscape:items-start portrait:items-center gap-12">
 				<FormDataListInput label="Filter by Subject" options={subjects} placeholder="Choose your subjects" onChange={updateAvailableTutors} />
 				<div className="w-full grow landscape:basis-2/3 relative">
 					{loading && (
@@ -80,7 +92,12 @@ const PickTutorSignUpForm = ({ tutors, subjects }: { tutors: DBTypes.Tutors[]; s
 					</div>
 				</div>
 			</div>
-			<div className="border-t-2 border-primary-hover mx-6 mt-6 py-3">
+			<div className="border-t-2 border-primary-hover mx-6 mt-6 pb-3 pt-6">
+				<p>
+					We cannot guarantee that either of your tutor options will ultimately be assigned to you. In some cases, tutors will reject an incoming student request because of extraneous circumstances or student-tutor incompatability
+					concerns. To minimize these concerns, please ensure your selection process takes into consideration the subjects which each tutor teaches, their location and availability, et cetera.
+				</p>
+				<p className="mt-5">You may receive private communication from a tutor, prior to receiving confirmaton of a tutor pairing, to gage compatabiity (likely regarding availability).</p>
 				<FormInputCluster>
 					<FormDropdownInput label="First Option" register={register("tutors.choices.0", { valueAsNumber: true })} options={tutors.map((tutor) => ({ label: tutor.display_name ?? "Unknown Tutor", value: tutor.tutor_id ?? -1 }))} />
 					<FormDropdownInput
