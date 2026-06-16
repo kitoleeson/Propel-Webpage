@@ -1,6 +1,6 @@
 /** @format */
 
-import { DBTypes } from "./types";
+import { DBTypes } from "../dbtypes";
 
 export const createBillingAccountsRepo = (sql: any, pool: any) => {
 	const get = async (billing_id: number, db: any = sql): Promise<DBTypes.BillingAccountsRow[]> => {

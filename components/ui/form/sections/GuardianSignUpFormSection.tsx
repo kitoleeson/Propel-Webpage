@@ -6,7 +6,7 @@ import { FormTextInput, FormPhoneInput, FormDropdownInput, FormRadioInput, FormC
 import type { ClientFormValues } from "@/lib/validation/clientForm/clientFormSchema";
 import type { PersonPlaceholder } from "@/lib/validation/clientForm/clientFormPersonPlaceholders";
 import { FormInputCluster } from "../layout";
-import { checkGuardianStatus } from "@/lib/db/actions";
+import { checkGuardianStatus } from "@/lib/db/actions/client_database";
 
 type Props = {
 	index: number;

@@ -1,6 +1,6 @@
 /** @format */
 
-import { SubjectFormValues } from "../validation/tutorForm/tutorFormSchema";
+import { SubjectFormValues } from "@/lib/validation/tutorForm/tutorFormSchema";
 
 const parse1030 = (subject: string, courses: string[]) => {
 	switch (courses.length) {

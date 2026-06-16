@@ -3,7 +3,7 @@
 import fs from "fs";
 import path from "path";
 import { sendEmail } from "@/lib/mail";
-import { DBTypes } from "@/lib/db/types";
+import { DBTypes } from "@/lib/db/dbtypes";
 
 export type ClientAgreementEmailData = {
 	student: DBTypes.StudentsRow;

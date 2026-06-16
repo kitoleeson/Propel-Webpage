@@ -1,7 +1,7 @@
 /** @format */
 
-import parseSubjects from "@/lib/db/subjects";
-import { DBTypes } from "@/lib/db/types";
+import parseSubjects from "@/lib/db/integration/subjects";
+import { DBTypes } from "@/lib/db/dbtypes";
 import { subjectPlaceholder, tutorPlaceholder } from "@/lib/validation/tutorForm/tutorFormSchema";
 import { withNeonTestBranch } from "@/tests/test-setup";
 

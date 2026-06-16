@@ -1,7 +1,7 @@
 /** @format */
 
 import { TutorFormValues } from "@/lib/validation/tutorForm/tutorFormSchema";
-import parseSubjects from "../../db/subjects";
+import parseSubjects from "@/lib/db/integration/subjects";
 import { sendEmail } from "..";
 import Mail from "nodemailer/lib/mailer";
 

@@ -4,16 +4,16 @@ import { Pool, neonConfig, types } from "@neondatabase/serverless";
 import ws from "ws";
 import SQL from "sql-template-strings";
 
-import { createTutorRepo } from "./tutors";
-import { createPendingTutorRepo } from "./pending_tutor";
-import { createGuardianRepo } from "./guardians";
-import { createStudentRepo } from "./student";
-import { createStudentGuardianRepo } from "./student_guardian";
-import { createBillingAccountsRepo } from "./billing_accounts";
-import { createStudentBillingRepo } from "./student_billing";
-import { createStudentTutorRepo } from "./student_tutor";
-import { createPendingStudentTutorRepo } from "./pending_student_tutor";
-import { createTutorSubjectsRepo } from "./tutor_subjects";
+import { createTutorRepo } from "./integration/tutors";
+import { createPendingTutorRepo } from "./integration/pending_tutor";
+import { createGuardianRepo } from "./integration/guardians";
+import { createStudentRepo } from "./integration/student";
+import { createStudentGuardianRepo } from "./integration/student_guardian";
+import { createBillingAccountsRepo } from "./integration/billing_accounts";
+import { createStudentBillingRepo } from "./integration/student_billing";
+import { createStudentTutorRepo } from "./integration/student_tutor";
+import { createPendingStudentTutorRepo } from "./integration/pending_student_tutor";
+import { createTutorSubjectsRepo } from "./integration/tutor_subjects";
 
 if (typeof window === "undefined") neonConfig.webSocketConstructor = ws;
 

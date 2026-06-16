@@ -1,7 +1,7 @@
 /** @format */
 
 import { NextRequest, NextResponse } from "next/server";
-import { approvePendingTutor } from "@/lib/db/actions";
+import { approvePendingTutor } from "@/lib/db/actions/client_database";
 
 export async function GET(req: NextRequest) {
 	const { searchParams } = new URL(req.url);

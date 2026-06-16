@@ -9,8 +9,8 @@ import { FormButtonInput, StudentSection, GuardianSection, FormInputCluster, For
 import { defaultStudent, defaultGuardian, formSchema, ClientFormValues } from "@/lib/validation/clientForm/clientFormSchema";
 import { placeholders } from "@/lib/validation/clientForm/clientFormPersonPlaceholders";
 import PickTutorSignUpForm from "@/components/ui/form/sections/PickTutorSignUpForm";
-import { DBTypes } from "@/lib/db/types";
-import { onboardClientWithFormData } from "@/lib/db/actions";
+import { DBTypes } from "@/lib/db/dbtypes";
+import { onboardClientWithFormData } from "@/lib/db/actions/workflows/onboard_client";
 
 function shuffle(array: any[]) {
 	const newArray = [...array];

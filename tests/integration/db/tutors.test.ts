@@ -1,6 +1,6 @@
 /** @format */
 
-import { DBTypes } from "@/lib/db/types";
+import { DBTypes } from "@/lib/db/dbtypes";
 import { SubjectFormValues, subjectPlaceholder, TutorFormValues, tutorPlaceholder } from "@/lib/validation/tutorForm/tutorFormSchema";
 import { withNeonTestBranch } from "@/tests/test-setup";
 

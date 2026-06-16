@@ -9,13 +9,13 @@ import Mail from "nodemailer/lib/mailer";
 withNeonTestBranch();
 
 let db: typeof import("@/lib/db").db;
-let onboardClientWithFormData: typeof import("@/lib/db/actions").onboardClientWithFormData;
+let onboardClientWithFormData: typeof import("@/lib/db/actions/workflows/onboard_client").onboardClientWithFormData;
 let emailSpy: import("vitest").MockInstance;
 
 describe("Action Repository Integration Tests", () => {
 	beforeAll(async () => {
 		({ db } = await import("@/lib/db"));
-		({ onboardClientWithFormData } = await import("@/lib/db/actions"));
+		({ onboardClientWithFormData } = await import("@/lib/db/actions/workflows/onboard_client"));
 		await db.pool.query("TRUNCATE TABLE tutors RESTART IDENTITY CASCADE");
 		await db.tutor.insert.insertWithSubjects(createMockTutorWithSubjects(1, { current_rate: 35 }));
 		await db.tutor.insert.insertWithSubjects(createMockTutorWithSubjects(2, { current_rate: 40 }));

@@ -1,6 +1,6 @@
 /** @format */
 
-import { DBTypes } from "@/lib/db/types";
+import { DBTypes } from "@/lib/db/dbtypes";
 import { withNeonTestBranch } from "@/tests/test-setup";
 
 withNeonTestBranch();

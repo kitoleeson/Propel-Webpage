@@ -1,6 +1,6 @@
 /** @format */
 
-import { DBTypes } from "./types";
+import { DBTypes } from "../dbtypes";
 
 export const createPendingStudentTutorRepo = (sql: any, pool: any) => {
 	const insert = (data: DBTypes.PendingStudentTutor, db: any = sql): Promise<DBTypes.PendingStudentTutorRow[]> => {

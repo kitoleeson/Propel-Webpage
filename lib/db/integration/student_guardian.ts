@@ -1,6 +1,6 @@
 /** @format */
 
-import { DBTypes } from "./types";
+import { DBTypes } from "../dbtypes";
 
 export const createStudentGuardianRepo = (sql: any, pool: any) => {
 	const get = async (student_id: number, guardian_id: number, db: any = sql): Promise<DBTypes.StudentGuardianRow[]> => {

@@ -1,8 +1,8 @@
 /** @format */
 
-import { TutorFormValues } from "../validation/tutorForm/tutorFormSchema";
+import { TutorFormValues } from "@/lib/validation/tutorForm/tutorFormSchema";
 import parseSubjects from "./subjects";
-import { DBTypes } from "./types";
+import { DBTypes } from "../dbtypes";
 
 export const createTutorRepo = (sql: any, pool: any) => {
 	const get = async (tutor_id: number, db: any = sql): Promise<DBTypes.TutorsRow[]> => {

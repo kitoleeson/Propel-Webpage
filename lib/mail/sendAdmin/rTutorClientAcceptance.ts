@@ -3,7 +3,7 @@
 import { sendEmail } from "..";
 import Mail from "nodemailer/lib/mailer";
 import { ClientAgreementEmailData } from "../sendClient/clientAgreement";
-import { DBTypes } from "@/lib/db/types";
+import { DBTypes } from "@/lib/db/dbtypes";
 
 export default async function sendAdminTutorClientAcceptanceReviewEmail(data: ClientAgreementEmailData & { tutor: DBTypes.Tutors }) {
 	const formatValue = (value?: string) => (value == undefined || value == null || value == "" ? "-" : value);
