@@ -1,5 +1,7 @@
 /** @format */
 
+"use server";
+
 import { ClientFormValues } from "@/lib/validation/clientForm/clientFormSchema";
 import { db, sql } from "../..";
 import { DBTypes } from "../../dbtypes";

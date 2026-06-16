@@ -61,14 +61,14 @@ const ClientSignUpForm = ({ tutors, subjects }: { tutors: DBTypes.Tutors[]; subj
 		if (typeof window !== "undefined") sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(allFormValues));
 	}, [allFormValues]);
 
-	const onSubmit: SubmitHandler<z.infer<typeof formSchema>> = (data) => {
+	const onSubmit: SubmitHandler<z.infer<typeof formSchema>> = async (data) => {
 		try {
 			if (data.student.biller === "Student") data.primary_biller_index = -1;
 			else data.guardians[data.primary_biller_index].is_primary_biller = true;
 			console.log("Form submitted with data:");
 			console.log(data);
 			sessionStorage.removeItem(SESSION_STORAGE_KEY);
-			onboardClientWithFormData(data);
+			await onboardClientWithFormData(data);
 		} catch (e) {
 			console.error("Submission failed", e);
 		}
