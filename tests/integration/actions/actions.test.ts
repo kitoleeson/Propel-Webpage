@@ -156,7 +156,7 @@ describe("Action Repository Integration Tests", () => {
 			expect(pending_student_tutors[1].had_session).toEqual(false);
 
 			// check admin email send
-			expect(emailSpy).toHaveBeenCalledTimes(2);
+			expect(emailSpy).toHaveBeenCalledTimes(3);
 			const adminArguments = emailSpy.mock.calls[0][0];
 			expect(adminArguments).toEqual({
 				to: "propeltutoringyeg@gmail.com",
@@ -181,6 +181,20 @@ describe("Action Repository Integration Tests", () => {
 			expect(clientArguments.text).toContain("here is what comes next:");
 			expect(clientArguments.text).toContain("3.");
 			expect(clientArguments.text).not.toContain("??");
+
+			// check tutor email send
+			const tutorArguments = emailSpy.mock.calls[2][0];
+			expect(tutorArguments).toEqual({
+				to: "jane1@example.ca",
+				html: expect.any(String),
+				subject: `New Student Request: Rocket Man`,
+			});
+			expect(tutorArguments.html).toContain("http://localhost:3000/api/acceptNewStudent?id=1");
+			expect(tutorArguments.html).toContain("http://localhost:3000/api/declineNewStudent?id=1");
+			expect(tutorArguments.html).toContain(">Rocket<");
+			expect(tutorArguments.html).toContain(">Man<");
+			expect(tutorArguments.html).toContain(">Math, Science<");
+			expect(tutorArguments.html).not.toContain("??");
 		});
 
 		/**

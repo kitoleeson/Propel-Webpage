@@ -31,7 +31,7 @@ export async function GET(req: NextRequest) {
 			},
 		);
 	} catch (error: any) {
-		console.error("Approval Error:", error);
+		console.error("Pending Tutor Approval Error:", error);
 		if (error.message === "PENDING_NOT_FOUND") return new NextResponse("Request not found or already processed.", { status: 404 });
 		return new NextResponse("Internal Server Error", { status: 500 });
 	}

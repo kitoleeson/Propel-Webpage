@@ -11,7 +11,15 @@ export const createPendingStudentTutorRepo = (sql: any, pool: any) => {
       `;
 	};
 
-	const remove = (student_id: number, tutor_id: number, db: any = sql): Promise<DBTypes.PendingStudentTutorRow[]> => {
+	const remove = (pending_student_tutor_id: number, db: any = sql): Promise<DBTypes.PendingStudentTutorRow[]> => {
+		return db`
+         DELETE FROM pending_student_tutor
+         WHERE pending_student_tutor_id = ${pending_student_tutor_id}
+			RETURNING *;
+      `;
+	};
+
+	const removeByStudentAndTutorId = (student_id: number, tutor_id: number, db: any = sql): Promise<DBTypes.PendingStudentTutorRow[]> => {
 		return db`
          DELETE FROM pending_student_tutor
          WHERE student_id = ${student_id} AND tutor_id = ${tutor_id}
@@ -27,21 +35,30 @@ export const createPendingStudentTutorRepo = (sql: any, pool: any) => {
 		return db`DELETE FROM pending_student_tutor WHERE tutor_id = ${tutor_id} RETURNING *;`;
 	};
 
-	const get = async (student_id: number, tutor_id: number, db: any = sql): Promise<DBTypes.PendingStudentTutorRow[]> => {
-		return db`SELECT * FROM pending_student_tutor WHERE student_id = ${student_id} AND tutor_id = ${tutor_id};`;
+	const get = async (pending_student_tutor_id: number, db: any = sql): Promise<DBTypes.PendingStudentTutorRow[]> => {
+		return db`SELECT * FROM pending_student_tutor WHERE pending_student_tutor_id = ${pending_student_tutor_id};`;
 	};
 
 	const getAll = async (db: any = sql): Promise<DBTypes.PendingStudentTutorRow[]> => {
 		return db`SELECT * FROM pending_student_tutor ORDER BY student_id, tutor_id;`;
 	};
 
+	const getByStudentAndTutorIds = async (student_id: number, tutor_id: number, db: any = sql): Promise<DBTypes.PendingStudentTutorRow[]> => {
+		return db`SELECT * FROM pending_student_tutor WHERE student_id = ${student_id} AND tutor_id = ${tutor_id};`;
+	};
+
+	const getByStudentId = async (student_id: number, db: any = sql): Promise<DBTypes.PendingStudentTutorRow[]> => {
+		return db`SELECT * FROM pending_student_tutor WHERE student_id = ${student_id};`;
+	};
+
 	return {
 		insert,
 		remove: {
 			remove,
+			byStudentAndTutorIds: removeByStudentAndTutorId,
 			byStudentId: removeByStudentId,
 			byTutorId: removeByTutorId,
 		},
-		get: { get, getAll },
+		get: { get, getAll, getByStudentId, getByStudentAndTutorIds },
 	};
 };

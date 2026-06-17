@@ -2,10 +2,10 @@
 
 import { sendEmail } from "..";
 import Mail from "nodemailer/lib/mailer";
-import { ClientAgreementEmailData } from "../sendClient/clientAgreement";
-import { DBTypes } from "@/lib/db/dbtypes";
+import { NewStudentRequestEmailData } from "../sendTutor/newStudentRequest";
 
-export default async function sendAdminTutorClientAcceptanceReviewEmail(data: ClientAgreementEmailData & { tutor: DBTypes.Tutors }) {
+// needs pending_student_tutor information and student information (could be found by pending_student_tutor information)
+export default async function sendTutorNewStudentRequestEmail(data: Omit<NewStudentRequestEmailData, "tutor">) {
 	const formatValue = (value?: string) => (value == undefined || value == null || value == "" ? "-" : value);
 
 	type TableRow = { label: string; value?: string };
@@ -13,26 +13,22 @@ export default async function sendAdminTutorClientAcceptanceReviewEmail(data: Cl
 
 	const sections: TableSection[] = [
 		{
-			title: "Student",
+			title: "Personal Information",
 			rows: [
-				{ label: "Name", value: data.student.gov_first_name + (data.student.pref_name ? `(${data.student.pref_name})` : "") + data.student.gov_last_name },
+				{ label: "First Name", value: data.student.gov_first_name },
+				{ label: "Last Name", value: data.student.gov_last_name },
+				{ label: "Preferred Name", value: data.student.pref_name },
+				{ label: "Email", value: data.student.email },
+				{ label: "Phone", value: data.student.phone },
+				{ label: "Preferred Communication", value: data.student.pref_communication },
+			],
+		},
+		{
+			title: "Student Information",
+			rows: [
 				{ label: "City", value: data.student.city },
 				{ label: "Grade", value: data.student.grade?.toString() },
-			],
-		},
-		{
-			title: "Tutor",
-			rows: [
-				{ label: "Name", value: data.tutor.pref_name + data.tutor.gov_last_name },
-				{ label: "New Accepting Students", value: data.tutor.accepting_students.toString() },
-			],
-		},
-		{
-			title: "Details",
-			rows: [
-				{ label: "Hourly Rate", value: data.student_tutor.hourly_rate.toString() },
-				{ label: "Subjects", value: data.student_tutor.subjects },
-				{ label: "Markup", value: data.student_tutor.markup.toString() },
+				{ label: "Subjects", value: data.pending_student_tutor.subjects },
 			],
 		},
 	];
@@ -57,14 +53,13 @@ export default async function sendAdminTutorClientAcceptanceReviewEmail(data: Cl
 		});
 	});
 
-	const test = process.env.APP_ENV != "prod";
 	const options: Mail.Options = {
 		to: process.env.ADMIN_EMAIL,
-		subject: `New Student-Tutor Pairing: ${data.student.gov_first_name} ${data.student.gov_last_name}`,
+		subject: `New Unpaired Student Request: ${data.student.gov_first_name} ${data.student.gov_last_name}`,
 		html: `
          <div style="font-family: sans-serif; max-width: 600px; margin: auto; color: #333; border: 1px solid #eee; border-radius: 10px; overflow: hidden;">
             <div style="background-color: #1eb9c2; color: white; padding: 20px; text-align: center;">
-               <h1 style="margin: 0; font-size: 20px;">Student Profile Review</h1>
+               <h1 style="margin: 0; font-size: 20px;">Student Information</h1>
             </div>
             <div style="padding: 20px;">
                <table style="width: 100%; border-collapse: collapse;">

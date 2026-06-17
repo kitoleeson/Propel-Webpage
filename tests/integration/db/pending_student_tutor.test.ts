@@ -106,20 +106,44 @@ describe("Pending Student Tutor Repository Integration Tests", () => {
 	describe("Get Operations", () => {
 		it("should get a pending_student_tutor pair by student and tutor IDs", async () => {
 			const { student, tutor, pending_student_tutor } = await createMockPair();
-			const result = await db.pending_student_tutor.get.get(student.student_id, tutor.tutor_id);
+			const result = await db.pending_student_tutor.get.getByStudentAndTutorIds(student.student_id, tutor.tutor_id);
 			expect(result.length).toEqual(1);
 			expect(result[0]).toEqual(pending_student_tutor);
 		});
 
-		it("should error when getting a pending_student_tutor pair with non-existant student ID", async () => {
+		it("should error when getting a pending_student_tutor pair by student and tutor IDs with non-existant student ID", async () => {
 			const { tutor } = await createMockPair();
-			const result = await db.pending_student_tutor.get.get(2, tutor.tutor_id);
+			const result = await db.pending_student_tutor.get.getByStudentAndTutorIds(2, tutor.tutor_id);
 			expect(result.length).toEqual(0);
 		});
 
-		it("should error when getting a pending_student_tutor pair with non-existant tutor ID", async () => {
+		it("should error when getting a pending_student_tutor pair by student and tutor IDs with non-existant tutor ID", async () => {
 			const { student } = await createMockPair();
-			const result = await db.pending_student_tutor.get.get(student.student_id, 2);
+			const result = await db.pending_student_tutor.get.getByStudentAndTutorIds(student.student_id, 2);
+			expect(result.length).toEqual(0);
+		});
+
+		it("should get a pending_student_tutor pair by pending_student_tutor ID", async () => {
+			const { pending_student_tutor } = await createMockPair();
+			const result = await db.pending_student_tutor.get.get(pending_student_tutor.pending_student_tutor_id);
+			expect(result.length).toEqual(1);
+			expect(result[0]).toEqual(pending_student_tutor);
+		});
+
+		it("should error when getting a pending_student_tutor pair by pending_student_tutor ID with non-existant pending_student_tutor ID", async () => {
+			const result = await db.pending_student_tutor.get.get(1);
+			expect(result.length).toEqual(0);
+		});
+
+		it("should get a pending_student_tutor pair by student ID", async () => {
+			const { student, pending_student_tutor } = await createMockPair();
+			const result = await db.pending_student_tutor.get.getByStudentId(student.student_id);
+			expect(result.length).toEqual(1);
+			expect(result[0]).toEqual(pending_student_tutor);
+		});
+
+		it("should error when getting a pending_student_tutor pair by student ID with non-existant student ID", async () => {
+			const result = await db.pending_student_tutor.get.getByStudentId(1);
 			expect(result.length).toEqual(0);
 		});
 
@@ -175,15 +199,29 @@ describe("Pending Student Tutor Repository Integration Tests", () => {
 	describe("Delete Operations", () => {
 		it("should remove a pending_student_tutor pair by student and tutor IDs", async () => {
 			const { student, tutor } = await createMockPair();
-			const result = await db.pending_student_tutor.remove.remove(student.student_id, tutor.tutor_id);
+			const result = await db.pending_student_tutor.remove.byStudentAndTutorIds(student.student_id, tutor.tutor_id);
 			expect((result as any).meta.rowCount).toEqual(1);
 
-			const getResult = await db.pending_student_tutor.get.get(student.student_id, tutor.tutor_id);
+			const getResult = await db.pending_student_tutor.get.getByStudentAndTutorIds(student.student_id, tutor.tutor_id);
 			expect(getResult.length).toEqual(0);
 		});
 
 		it("should error when trying to remove a non-existent pending_student_tutor pair", async () => {
-			const result = await db.pending_student_tutor.remove.remove(1, 1);
+			const result = await db.pending_student_tutor.remove.byStudentAndTutorIds(1, 1);
+			expect((result as any).meta.rowCount).toEqual(0);
+		});
+
+		it("should remove a pending_student_tutor pair by pending_student_tutor ID", async () => {
+			const { pending_student_tutor } = await createMockPair();
+			const result = await db.pending_student_tutor.remove.remove(pending_student_tutor.pending_student_tutor_id);
+			expect((result as any).meta.rowCount).toEqual(1);
+
+			const getResult = await db.pending_student_tutor.get.get(pending_student_tutor.pending_student_tutor_id);
+			expect(getResult.length).toEqual(0);
+		});
+
+		it("should error when trying to remove a non-existent pending_student_tutor pair", async () => {
+			const result = await db.pending_student_tutor.remove.remove(1);
 			expect((result as any).meta.rowCount).toEqual(0);
 		});
 
@@ -194,8 +232,8 @@ describe("Pending Student Tutor Repository Integration Tests", () => {
 
 			const result = await db.pending_student_tutor.remove.byStudentId(student.student_id);
 			expect((result as any).meta.rowCount).toEqual(2);
-			expect((await db.pending_student_tutor.get.get(student.student_id, tutor.tutor_id)).length).toEqual(0);
-			expect((await db.pending_student_tutor.get.get(student.student_id, tutor2[0].tutor_id)).length).toEqual(0);
+			expect((await db.pending_student_tutor.get.getByStudentAndTutorIds(student.student_id, tutor.tutor_id)).length).toEqual(0);
+			expect((await db.pending_student_tutor.get.getByStudentAndTutorIds(student.student_id, tutor2[0].tutor_id)).length).toEqual(0);
 		});
 
 		it("should error when trying to remove all pending_student_tutor pairs for a non-existent student ID", async () => {
@@ -210,8 +248,8 @@ describe("Pending Student Tutor Repository Integration Tests", () => {
 
 			const result = await db.pending_student_tutor.remove.byTutorId(tutor.tutor_id);
 			expect((result as any).meta.rowCount).toEqual(2);
-			expect((await db.pending_student_tutor.get.get(student.student_id, tutor.tutor_id)).length).toEqual(0);
-			expect((await db.pending_student_tutor.get.get(student2[0].student_id, tutor.tutor_id)).length).toEqual(0);
+			expect((await db.pending_student_tutor.get.getByStudentAndTutorIds(student.student_id, tutor.tutor_id)).length).toEqual(0);
+			expect((await db.pending_student_tutor.get.getByStudentAndTutorIds(student2[0].student_id, tutor.tutor_id)).length).toEqual(0);
 		});
 
 		it("should error when trying to remove all pending_student_tutor pairs for a non-existent tutor ID", async () => {

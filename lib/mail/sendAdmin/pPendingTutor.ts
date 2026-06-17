@@ -94,11 +94,10 @@ export default async function sendAdminPendingTutorApprovalEmail(pending_tutor_i
 
 	const test = process.env.APP_ENV != "prod";
 	const baseUrl = test ? "http://localhost:3000/api" : process.env.NEXT_PUBLIC_BASE_URL;
-	const approveUrl = `${baseUrl}/approve?id=${pending_tutor_id}`;
+	const approveUrl = `${baseUrl}/approvePendingTutor?id=${pending_tutor_id}`;
 	const insertion = data.tutor_id === -1;
 
 	const options: Mail.Options = {
-		from: `"Propel System" <${test ? process.env.TEST_SMTP_USER : process.env.SMTP_USER}>`,
 		to: process.env.ADMIN_EMAIL,
 		subject: `Pending Tutor Request: [${insertion ? "NEW" : "UPDATE"}] ${data.gov_first_name} ${data.gov_last_name}`,
 		html: `

@@ -4,6 +4,7 @@ import fs from "fs";
 import path from "path";
 import { sendEmail } from "@/lib/mail";
 import { DBTypes } from "@/lib/db/dbtypes";
+import Mail from "nodemailer/lib/mailer";
 
 export type ClientAgreementEmailData = {
 	student: DBTypes.StudentsRow;
@@ -40,13 +41,15 @@ export default async function sendClientClientAgreementEmail(data: ClientAgreeme
 		const bodyPath = path.resolve(process.cwd(), "assets/email_bodies/tutorAcceptanceAndClientAgreement.txt");
 		const body = fs.readFileSync(bodyPath, "utf8").replace("??StudentFirstName??", data.student.gov_first_name);
 
-		await sendEmail({
+		const options: Mail.Options = {
 			to: data.student.email,
 			cc: data.guardians.map((g) => g.email),
 			subject: `Propel Tutoring Agreement - ${studentName}`,
 			text: body,
 			attachments: [{ filename: `Propel-Agreement_${data.student.gov_first_name.replace(" ", "-")}_${data.student.gov_last_name.replace(" ", "-")}.pdf`, content: pdfBuffer, contentType: "application/pdf" }],
-		});
+		};
+
+		await sendEmail(options);
 
 		return true;
 	} catch (error) {

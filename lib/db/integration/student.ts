@@ -3,8 +3,8 @@
 import { DBTypes } from "../dbtypes";
 
 export const createStudentRepo = (sql: any, pool: any) => {
-	const get = async (id: number, db: any = sql): Promise<DBTypes.StudentsRow[]> => {
-		return db`SELECT * FROM students WHERE student_id = ${id};`;
+	const get = async (student_id: number, db: any = sql): Promise<DBTypes.StudentsRow[]> => {
+		return db`SELECT * FROM students WHERE student_id = ${student_id};`;
 	};
 
 	const getAll = async (db: any = sql): Promise<DBTypes.StudentsRow[]> => {
@@ -28,9 +28,9 @@ export const createStudentRepo = (sql: any, pool: any) => {
       `;
 	};
 
-	const removeById = (id: number, db: any = sql): Promise<DBTypes.StudentsRow[]> => {
+	const removeById = (student_id: number, db: any = sql): Promise<DBTypes.StudentsRow[]> => {
 		return db`
-         DELETE FROM students WHERE student_id = ${id};
+         DELETE FROM students WHERE student_id = ${student_id};
       `;
 	};
 
@@ -41,7 +41,7 @@ export const createStudentRepo = (sql: any, pool: any) => {
       `;
 	};
 
-	const update = (id: number, data: DBTypes.Students, db: any = sql): Promise<DBTypes.StudentsRow[]> => {
+	const update = (student_id: number, data: DBTypes.Students, db: any = sql): Promise<DBTypes.StudentsRow[]> => {
 		return db`
          UPDATE students
          SET
@@ -54,7 +54,7 @@ export const createStudentRepo = (sql: any, pool: any) => {
             phone = ${data.phone},
             pref_communication = ${data.pref_communication?.toLowerCase()},
             how_found_us = ${data.how_found_us?.toLowerCase()}
-         WHERE student_id = ${id}
+         WHERE student_id = ${student_id}
          RETURNING *;
       `;
 	};
