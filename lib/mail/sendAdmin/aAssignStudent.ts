@@ -5,7 +5,7 @@ import Mail from "nodemailer/lib/mailer";
 import { NewStudentRequestEmailData } from "../sendTutor/newStudentRequest";
 
 // needs pending_student_tutor information and student information (could be found by pending_student_tutor information)
-export default async function sendTutorNewStudentRequestEmail(data: Omit<NewStudentRequestEmailData, "tutor">) {
+export default async function sendAdminAssignStudentActionEmail(data: Omit<NewStudentRequestEmailData, "tutor">) {
 	const formatValue = (value?: string) => (value == undefined || value == null || value == "" ? "-" : value);
 
 	type TableRow = { label: string; value?: string };

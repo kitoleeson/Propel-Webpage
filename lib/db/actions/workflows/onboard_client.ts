@@ -5,7 +5,7 @@
 import { ClientFormValues } from "@/lib/validation/clientForm/clientFormSchema";
 import { db, sql } from "../..";
 import { DBTypes } from "../../dbtypes";
-import { sendAdminClientSignupReviewEmail, sendAdminTutorClientAcceptanceReviewEmail } from "@/lib/mail/sendAdmin";
+import { sendAdminAssignStudentActionEmail, sendAdminClientSignupReviewEmail, sendAdminTutorClientAcceptanceReviewEmail } from "@/lib/mail/sendAdmin";
 import { sendClientSignupConfirmationEmail } from "@/lib/mail/sendClient";
 import sendClientClientAgreementEmail, { ClientAgreementEmailData } from "@/lib/mail/sendClient/clientAgreement";
 import { sendTutorNewStudentRequestEmail } from "@/lib/mail/sendTutor";
@@ -211,8 +211,8 @@ export async function tutorDeclineStudent(pending_student_tutor_id: number) {
 		}
 	} else {
 		try {
-			// const data = await getNewStudentRequestEmailData(pending_pairs[0].pending_student_tutor_id);
-			// await sendTutorNewStudentRequestEmail(data);
+			const data = await getNewStudentRequestEmailData(pending_pairs[0].pending_student_tutor_id);
+			await sendAdminAssignStudentActionEmail(data);
 		} catch (e) {
 			console.error("Failed to send new student request to second choice tutor", e);
 			throw new Error("Failed to send new student request to second choice tutor");
