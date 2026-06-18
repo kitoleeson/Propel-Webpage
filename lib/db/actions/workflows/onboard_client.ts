@@ -27,9 +27,8 @@ export async function onboardClientWithFormData(data: ClientFormValues) {
 
 		// insert into guardians and student_guardian
 		for (let g of data.guardians) {
-			const guardianByEmail = (await db.guardian.get.getByEmail(g.email, tx))[0];
-			const exists = g.already_exists || guardianByEmail != null;
-			const guardian = exists ? guardianByEmail : (await db.guardian.insert(g as DBTypes.Guardians, tx))[0];
+			const guardianByEmail = g.already_exists && g.email_password ? (await db.guardian.get.getByEmail(g.email_password, tx))[0] : null;
+			const guardian = guardianByEmail ?? (await db.guardian.insert(g as DBTypes.Guardians, tx))[0];
 			await db.student_guardian.insert({ student_id: student.student_id, guardian_id: guardian.guardian_id, relationship_type: g.relationship, is_primary_biller: g.is_primary_biller }, tx);
 		}
 
@@ -82,8 +81,7 @@ export async function onboardClientWithFormData(data: ClientFormValues) {
 		await client.query("COMMIT");
 	} catch (e) {
 		await client.query("ROLLBACK");
-		console.error("Failed client intake database operation", e);
-		throw new Error("Failed client intake database operation");
+		throw e;
 	} finally {
 		client.release();
 	}
@@ -92,16 +90,14 @@ export async function onboardClientWithFormData(data: ClientFormValues) {
 	try {
 		await sendAdminClientSignupReviewEmail(data);
 	} catch (e) {
-		console.error("Failed to send client signup review email to admin", e);
-		throw new Error("Failed to send client signup review email to admin");
+		throw e;
 	}
 
 	// 3. An email is sent to the client with confirmation of signup and information about next steps
 	try {
 		await sendClientSignupConfirmationEmail(data);
 	} catch (e) {
-		console.error("Failed to send signup confirmation email to client", e);
-		throw new Error("Failed to send signup confirmation email to client");
+		throw e;
 	}
 
 	// 4. An email is sent to the tutor who the client chooses, notifying them of the new student, providing the student's information for review, and providing a link to the API where they can accept or reject the tutoring request.
@@ -109,7 +105,7 @@ export async function onboardClientWithFormData(data: ClientFormValues) {
 		const tutorData = await getNewStudentRequestEmailData(first_choice_pending_student_tutor_id ?? -1);
 		await sendTutorNewStudentRequestEmail(tutorData);
 	} catch (e) {
-		throw new Error("Failed to send new student request to first choice tutor");
+		throw e;
 	}
 }
 
@@ -129,8 +125,7 @@ export async function sendClientToAdminForManualMatching(data: NewStudentRequest
 	try {
 		await sendTutorNewStudentRequestEmail(data);
 	} catch (e) {
-		console.error("Failed to send new student request to second choice tutor", e);
-		throw new Error("Failed to send new student request to second choice tutor");
+		throw e;
 	}
 }
 
@@ -157,8 +152,7 @@ export async function tutorAcceptStudent(pending_student_tutor_id: number) {
 		await client.query("COMMIT");
 	} catch (e) {
 		await client.query("ROLLBACK");
-		console.error("Failed tutor accept student database operation", e);
-		throw new Error("Failed tutor accept student database operation");
+		throw e;
 	} finally {
 		client.release();
 	}
@@ -169,8 +163,7 @@ export async function tutorAcceptStudent(pending_student_tutor_id: number) {
 		data.tutor = (await db.tutor.get.get(data.student_tutor.tutor_id))[0];
 		data.guardians = await db.student_guardian.get.getGuardians(data.student_tutor.student_id);
 	} catch (e) {
-		console.error("Failed to get student, guardians, and tutor data", e);
-		throw new Error("Failed to get student, guardians, and tutor data");
+		throw e;
 	}
 
 	// email the client contract to the student and guardians
@@ -178,8 +171,7 @@ export async function tutorAcceptStudent(pending_student_tutor_id: number) {
 		// 6. An email confirmation is sent to the client with the tutor's rate and client agreement
 		await sendClientClientAgreementEmail(data);
 	} catch (e) {
-		console.error("Failed client agreement email", e);
-		throw new Error("Failed client agreement email");
+		throw e;
 	}
 
 	// email the student_tutor information to the admin
@@ -187,8 +179,7 @@ export async function tutorAcceptStudent(pending_student_tutor_id: number) {
 		// 7. An email review is sent to the admin with the tutor and student's names and student_tutor information
 		await sendAdminTutorClientAcceptanceReviewEmail(data);
 	} catch (e) {
-		console.error("Failed to send tutor client acceptance review email to admin", e);
-		throw new Error("Failed to send tutor client acceptance review email to admin");
+		throw e;
 	}
 
 	return { student_first: data.student.gov_first_name, student_last: data.student.gov_last_name };
@@ -206,16 +197,14 @@ export async function tutorDeclineStudent(pending_student_tutor_id: number) {
 			const data = await getNewStudentRequestEmailData(pending_pairs[0].pending_student_tutor_id);
 			await sendTutorNewStudentRequestEmail(data);
 		} catch (e) {
-			console.error("Failed to send new student request to second choice tutor", e);
-			throw new Error("Failed to send new student request to second choice tutor");
+			throw e;
 		}
 	} else {
 		try {
 			const data = await getNewStudentRequestEmailData(pending_pairs[0].pending_student_tutor_id);
 			await sendAdminAssignStudentActionEmail(data);
 		} catch (e) {
-			console.error("Failed to send new student request to second choice tutor", e);
-			throw new Error("Failed to send new student request to second choice tutor");
+			throw e;
 		}
 	}
 

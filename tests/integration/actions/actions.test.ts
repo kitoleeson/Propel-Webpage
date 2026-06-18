@@ -44,6 +44,7 @@ describe("Action Repository Integration Tests", () => {
          pending_student_tutor
          RESTART IDENTITY CASCADE
       `);
+		emailSpy.mockClear();
 	});
 
 	afterAll(() => {
@@ -90,13 +91,13 @@ describe("Action Repository Integration Tests", () => {
 		...overrides,
 	});
 
-	const createMockClientFormValues = async (studentOverrides = {}, guardianOverrides = {}): Promise<ClientFormValues> => {
+	const createMockClientFormValues = (studentOverrides = {}, guardianOverrides = [{}]): ClientFormValues => {
 		const student: StudentClientFormValues = createMockStudent(1, studentOverrides);
-		const guardian: GuardianClientFormValues = createMockGuardian(1, guardianOverrides);
+		const guardians: GuardianClientFormValues[] = guardianOverrides.map((overrides, i) => createMockGuardian(i + 1, overrides));
 		const tutors: TutorClientFormValues = { choices: [1, 2], subjects: "Math, Science", notes: "Test notes" };
 		return {
 			student: student,
-			guardians: [guardian],
+			guardians: guardians,
 			tutors: tutors,
 			primary_biller_index: 0,
 			comments: "Test comments",
@@ -105,7 +106,115 @@ describe("Action Repository Integration Tests", () => {
 
 	describe("Insert & Find Operations", () => {
 		it("should onboard a new student", async () => {
-			const data = await createMockClientFormValues();
+			const data = createMockClientFormValues();
+			await onboardClientWithFormData(data);
+
+			// --------------- CHECK DATABASE INPUTS ---------------
+			// check student
+			const students = await db.student.get.getAll();
+			expect(students.length).toEqual(1);
+			expect(students[0].student_id).toEqual(1);
+			expect(students[0].gov_first_name).toEqual("Rocket");
+			expect(students[0].email).toEqual("rocket1.man@mars.ca");
+
+			// check guardian
+			const guardians = await db.guardian.get.getAll();
+			expect(guardians.length).toEqual(1);
+			expect(guardians[0].guardian_id).toEqual(1);
+			expect(guardians[0].gov_first_name).toEqual("Rosanna");
+			expect(guardians[0].email).toEqual("rosanna1@africa.ca");
+
+			// check student_guardian
+			const student_guardians = await db.student_guardian.get.getAll();
+			expect(student_guardians.length).toEqual(1);
+			expect(student_guardians[0].student_id).toEqual(1);
+			expect(student_guardians[0].guardian_id).toEqual(1);
+			expect(student_guardians[0].is_primary_biller).toEqual(true);
+
+			// check billing_accounts
+			const billing_accounts = await db.billing_account.get.getAll();
+			expect(billing_accounts.length).toEqual(1);
+			expect(billing_accounts[0].billing_id).toEqual(1);
+			expect(billing_accounts[0].display_name).toEqual(guardians[0].pref_name);
+			expect(billing_accounts[0].first_invoice).toEqual(true);
+
+			// check student_billing
+			const student_billings = await db.student_billing.get.getAll();
+			expect(student_billings.length).toEqual(1);
+			expect(student_billings[0].student_id).toEqual(1);
+			expect(student_billings[0].billing_id).toEqual(1);
+
+			// check pending_student_tutor
+			const pending_student_tutors = await db.pending_student_tutor.get.getAll();
+			expect(pending_student_tutors.length).toEqual(2);
+			expect(pending_student_tutors[0].student_id).toEqual(1);
+			expect(pending_student_tutors[0].tutor_id).toEqual(1);
+			expect(pending_student_tutors[0].hourly_rate).toEqual(35);
+			expect(pending_student_tutors[0].had_session).toEqual(false);
+			expect(pending_student_tutors[1].student_id).toEqual(1);
+			expect(pending_student_tutors[1].tutor_id).toEqual(2);
+			expect(pending_student_tutors[1].hourly_rate).toEqual(40);
+			expect(pending_student_tutors[1].had_session).toEqual(false);
+
+			// check admin email send
+			expect(emailSpy).toHaveBeenCalledTimes(3);
+			const adminArguments = emailSpy.mock.calls[0][0];
+			expect(adminArguments).toEqual({
+				to: "propeltutoringyeg@gmail.com",
+				html: expect.any(String),
+				subject: `New Client Signup: Rocket Man`,
+				attachments: [{ filename: `Rocket_Man-Client_Signup_Form.json`, content: JSON.stringify(data, null, 2), contentType: "application/json" }],
+			});
+			expect(adminArguments.html).toContain(">Rocket<");
+			expect(adminArguments.html).toContain(">Man<");
+			expect(adminArguments.html).toContain(">rosanna1@africa.ca<");
+			expect(adminArguments.html).not.toContain("??");
+
+			// check client email send
+			const clientArguments = emailSpy.mock.calls[1][0];
+			expect(clientArguments).toEqual({
+				to: "rocket1.man@mars.ca",
+				cc: ["rosanna1@africa.ca"],
+				text: expect.any(String),
+				subject: `Propel Tutoring Signup Confirmation - Rocket Man`,
+			});
+			expect(clientArguments.text).toContain("Hi Rocket,");
+			expect(clientArguments.text).toContain("here is what comes next:");
+			expect(clientArguments.text).toContain("3.");
+			expect(clientArguments.text).not.toContain("??");
+
+			// check tutor email send
+			const tutorArguments = emailSpy.mock.calls[2][0];
+			expect(tutorArguments).toEqual({
+				to: "jane1@example.ca",
+				html: expect.any(String),
+				subject: `New Student Request: Rocket Man`,
+			});
+			expect(tutorArguments.html).toContain("http://localhost:3000/api/acceptNewStudent?id=1");
+			expect(tutorArguments.html).toContain("http://localhost:3000/api/declineNewStudent?id=1");
+			expect(tutorArguments.html).toContain(">Rocket<");
+			expect(tutorArguments.html).toContain(">Man<");
+			expect(tutorArguments.html).toContain(">Math, Science<");
+			expect(tutorArguments.html).not.toContain("??");
+		});
+
+		it("should error if existing guardian is inputted as new", async () => {
+			await db.guardian.insert(createMockGuardian());
+
+			const data = createMockClientFormValues();
+			await expect(onboardClientWithFormData(data)).rejects.toThrow(/duplicate key value violates unique constraint.*guardians_email_key/);
+		});
+
+		it("should error if existing student is inputted as new", async () => {
+			await db.student.insert(createMockStudent());
+
+			const data = createMockClientFormValues();
+			await expect(onboardClientWithFormData(data)).rejects.toThrow(/duplicate key value violates unique constraint.*students_email_key/);
+		});
+
+		it("should onboard a new student with an existing guardian", async () => {
+			const guardian = (await db.guardian.insert(createMockGuardian()))[0];
+			const data = createMockClientFormValues({}, [{ already_exists: true, email: guardian.email, email_password: guardian.email }]);
 			await onboardClientWithFormData(data);
 
 			// CHECK DATABASE INPUTS
@@ -200,13 +309,10 @@ describe("Action Repository Integration Tests", () => {
 		/**
 		 * ADD BEFORE TESTS
 		 * at least 2 tutors (BEFORE ALL, DONT TRUNCATE)
-		 * a few guardians to use as existing and for unique keys
-		 * a few students to check against unique keys
 		 */
 
 		/**
 		 * THINGS TO TEST
-		 * all new information
 		 * existing guardians (if inputted as new)
 		 * existing guardians (if inputted as existing)
 		 * students and guardians with non-unique emails and phone numbers -- send an error back to form to say "already have an account?"

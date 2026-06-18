@@ -14,7 +14,7 @@ export const createGuardianRepo = (sql: any, pool: any) => {
 	const getByEmail = async (email: string, db: any = sql): Promise<(DBTypes.GuardiansRow & { relationship_type: "Other" | "Mother" | "Father" | "Parent" | "Legal Guardian" })[]> => {
 		return db`
          SELECT g.*, sg.relationship_type
-			FROM guardians g JOIN student_guardian sg ON g.guardian_id = sg.guardian_id
+			FROM guardians g LEFT JOIN student_guardian sg ON g.guardian_id = sg.guardian_id
          WHERE email = ${email};
       `;
 	};

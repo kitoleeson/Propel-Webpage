@@ -119,7 +119,6 @@ const GuardianSection = ({ index, placeholder, optional }: Props) => {
 					register={register(`guardians.${index}.relationship`)}
 					options={["Mother", "Father", "Parent", "Legal Guardian", "Other"]}
 					error={errors.guardians?.[index]?.relationship?.message}
-					disabled={existingGuardian}
 				/>
 			</FormInputCluster>
 
