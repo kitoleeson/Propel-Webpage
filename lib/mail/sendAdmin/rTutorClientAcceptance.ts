@@ -15,7 +15,7 @@ export default async function sendAdminTutorClientAcceptanceReviewEmail(data: Cl
 		{
 			title: "Student",
 			rows: [
-				{ label: "Name", value: data.student.gov_first_name + (data.student.pref_name ? `(${data.student.pref_name})` : "") + data.student.gov_last_name },
+				{ label: "Name", value: data.student.gov_first_name + (data.student.pref_name ? ` (${data.student.pref_name}) ` : " ") + data.student.gov_last_name },
 				{ label: "City", value: data.student.city },
 				{ label: "Grade", value: data.student.grade?.toString() },
 			],
@@ -23,7 +23,7 @@ export default async function sendAdminTutorClientAcceptanceReviewEmail(data: Cl
 		{
 			title: "Tutor",
 			rows: [
-				{ label: "Name", value: data.tutor.pref_name + data.tutor.gov_last_name },
+				{ label: "Name", value: (data.tutor.pref_name ?? data.tutor.gov_first_name) + " " + data.tutor.gov_last_name },
 				{ label: "New Accepting Students", value: data.tutor.accepting_students.toString() },
 			],
 		},
@@ -57,7 +57,6 @@ export default async function sendAdminTutorClientAcceptanceReviewEmail(data: Cl
 		});
 	});
 
-	const test = process.env.APP_ENV != "prod";
 	const options: Mail.Options = {
 		to: process.env.ADMIN_EMAIL,
 		subject: `New Student-Tutor Pairing: ${data.student.gov_first_name} ${data.student.gov_last_name}`,

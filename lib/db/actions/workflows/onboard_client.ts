@@ -10,6 +10,7 @@ import { sendClientSignupConfirmationEmail } from "@/lib/mail/sendClient";
 import sendClientClientAgreementEmail, { ClientAgreementEmailData } from "@/lib/mail/sendClient/clientAgreement";
 import { sendTutorNewStudentRequestEmail } from "@/lib/mail/sendTutor";
 import { NewStudentRequestEmailData } from "@/lib/mail/sendTutor/newStudentRequest";
+import { AdminAssignStudentEmailData } from "@/lib/mail/sendAdmin/aAssignStudent";
 
 export async function onboardClientWithFormData(data: ClientFormValues) {
 	// 1. Client fills out the form and submits it, including personal information, billing information, and tutor preferences (top 2 choices).
@@ -192,20 +193,17 @@ export async function tutorDeclineStudent(pending_student_tutor_id: number) {
 	await db.pending_student_tutor.remove.remove(pending_student_tutor.pending_student_tutor_id);
 
 	const pending_pairs = await db.pending_student_tutor.get.getByStudentId(pending_student_tutor.student_id);
-	if (pending_pairs.length) {
-		try {
+
+	try {
+		if (pending_pairs.length) {
 			const data = await getNewStudentRequestEmailData(pending_pairs[0].pending_student_tutor_id);
 			await sendTutorNewStudentRequestEmail(data);
-		} catch (e) {
-			throw e;
-		}
-	} else {
-		try {
-			const data = await getNewStudentRequestEmailData(pending_pairs[0].pending_student_tutor_id);
+		} else {
+			const data: AdminAssignStudentEmailData = { student: (await db.student.get.get(pending_student_tutor.student_id))[0], subjects: pending_student_tutor.subjects };
 			await sendAdminAssignStudentActionEmail(data);
-		} catch (e) {
-			throw e;
 		}
+	} catch (e) {
+		throw e;
 	}
 
 	const student = (await db.student.get.get(pending_student_tutor.student_id))[0];

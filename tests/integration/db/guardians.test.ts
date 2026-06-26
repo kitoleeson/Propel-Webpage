@@ -1,7 +1,6 @@
 /** @format */
 
 import { DBTypes } from "@/lib/db/dbtypes";
-import { tutorPlaceholder } from "@/lib/validation/tutorForm/tutorFormSchema";
 import { withNeonTestBranch } from "@/tests/test-setup";
 
 withNeonTestBranch();
