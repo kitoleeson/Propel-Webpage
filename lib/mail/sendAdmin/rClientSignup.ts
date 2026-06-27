@@ -41,6 +41,7 @@ export default async function sendAdminClientSignupReviewEmail(data: ClientFormV
 		fields: {
 			first_choice: "First Choice",
 			second_choice: "Second Choice",
+			timeandlocation: "Ideal Time and Location",
 			notes: "Notes",
 		},
 	};

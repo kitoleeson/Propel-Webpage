@@ -21,9 +21,7 @@ export default async function sendTutorNewStudentRequestEmail(data: NewStudentRe
 		{
 			title: "Personal Information",
 			rows: [
-				{ label: "First Name", value: data.student.gov_first_name },
-				{ label: "Last Name", value: data.student.gov_last_name },
-				{ label: "Preferred Name", value: data.student.pref_name },
+				{ label: "Name", value: `${data.student.gov_first_name} ${data.student.pref_name ? `(${data.student.pref_name})` : ""} ${data.student.gov_last_name}` },
 				{ label: "Email", value: data.student.email },
 				{ label: "Phone", value: data.student.phone },
 				{ label: "Preferred Communication", value: data.student.pref_communication },
@@ -35,6 +33,7 @@ export default async function sendTutorNewStudentRequestEmail(data: NewStudentRe
 				{ label: "City", value: data.student.city },
 				{ label: "Grade", value: data.student.grade?.toString() },
 				{ label: "Subjects", value: data.pending_student_tutor.subjects },
+				{ label: "Ideal Time and Location", value: data.pending_student_tutor.timeandlocation },
 			],
 		},
 	];
@@ -65,7 +64,7 @@ export default async function sendTutorNewStudentRequestEmail(data: NewStudentRe
 	const declineUrl = `${baseUrl}/declineNewStudent?id=${data.pending_student_tutor.pending_student_tutor_id}`;
 	const options: Mail.Options = {
 		to: data.tutor.email,
-		subject: `New Student Request: ${data.student.gov_first_name} ${data.student.gov_last_name}`,
+		subject: `New Student Request: ${data.student.pref_name ?? data.student.gov_first_name} ${data.student.gov_last_name}`,
 		html: `
          <p>Hi ${data.tutor.gov_first_name},</p>
          <br/>

@@ -29,6 +29,7 @@ const tutorsSchema = z
 	.object({
 		choices: z.array(z.number().int()).length(2),
 		subjects: z.string().min(1),
+		timeandlocation: z.string().min(1),
 		notes: z.string().optional(),
 	})
 	.superRefine((data, ctx) => {

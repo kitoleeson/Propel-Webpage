@@ -111,9 +111,16 @@ const PickTutorSignUpForm = ({ tutors, subjects }: { tutors: DBTypes.Tutors[]; s
 					<FormTextInput label="What subjects are you looking for tutoring in?" register={register("tutors.subjects")} placeholder="Math 10 AP, Chemistry 20 AP" error={errors.tutors?.subjects?.message} />
 				</FormInputCluster>
 				<FormInputCluster>
+					<FormTextInput
+						label="What days, times, and locations work best for you?"
+						register={register("tutors.timeandlocation")}
+						placeholder="Wednesdays after 4pm or weekends before 2pm, at the University of Alberta campus"
+						error={errors.tutors?.timeandlocation?.message}
+					/>
+				</FormInputCluster>
+				<FormInputCluster>
 					<FormTextAreaInput
-						label="We generally recommend working with a single tutor for all subjects. This allows for a more personalized and consistent learning experience. However, we can also accomodate different tutors for different subjects, if
-					preferred for any reason. Please indicate whether you would like tutoring from more than one tutor, and the details regarding your preferences (optional):"
+						label="We generally recommend working with a single tutor for all subjects. This allows for a more personalized and consistent learning experience. However, we can also accomodate different tutors for different subjects, if preferred for any reason. Please indicate whether you would like tutoring from more than one tutor, and the details regarding your preferences (optional):"
 						register={register("tutors.notes")}
 						error={errors.tutors?.notes?.message}
 					/>

@@ -74,6 +74,7 @@ export async function onboardClientWithFormData(data: ClientFormValues) {
 				markup: 5,
 				travel_fee: 0,
 				had_session: false,
+				timeandlocation: data.tutors.timeandlocation,
 			};
 			const pending_tutor = (await db.pending_student_tutor.insert(student_tutor_data, tx))[0];
 			first_choice_pending_student_tutor_id = first_choice_pending_student_tutor_id ?? pending_tutor.pending_student_tutor_id;
@@ -199,7 +200,7 @@ export async function tutorDeclineStudent(pending_student_tutor_id: number) {
 			const data = await getNewStudentRequestEmailData(pending_pairs[0].pending_student_tutor_id);
 			await sendTutorNewStudentRequestEmail(data);
 		} else {
-			const data: AdminAssignStudentEmailData = { student: (await db.student.get.get(pending_student_tutor.student_id))[0], subjects: pending_student_tutor.subjects };
+			const data: AdminAssignStudentEmailData = { student: (await db.student.get.get(pending_student_tutor.student_id))[0], subjects: pending_student_tutor.subjects, timeandlocation: pending_student_tutor.timeandlocation };
 			await sendAdminAssignStudentActionEmail(data);
 		}
 	} catch (e) {

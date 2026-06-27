@@ -100,7 +100,7 @@ describe("Action Repository Integration Tests", () => {
 	const createMockClientFormValues = (studentOverrides = {}, guardianOverrides = [{}]): ClientFormValues => {
 		const student: StudentClientFormValues = createMockStudent(1, studentOverrides);
 		const guardians: GuardianClientFormValues[] = guardianOverrides.map((overrides, i) => createMockGuardian(i + 1, overrides));
-		const tutors: TutorClientFormValues = { choices: [1, 2], subjects: "Math, Science", notes: "Test notes" };
+		const tutors: TutorClientFormValues = { choices: [1, 2], subjects: "Math, Science", notes: "Test notes", timeandlocation: "Weekdays after 5pm" };
 		return {
 			student: student,
 			guardians: guardians,
@@ -183,9 +183,9 @@ describe("Action Repository Integration Tests", () => {
 				to: "rocket1.man@mars.ca",
 				cc: ["rosanna1@africa.ca"],
 				text: expect.any(String),
-				subject: `Propel Tutoring Signup Confirmation - Rocket Man`,
+				subject: `Propel Tutoring Signup Confirmation - RM Man`,
 			});
-			expect(clientArguments.text).toContain("Hi Rocket,");
+			expect(clientArguments.text).toContain("Hi RM,");
 			expect(clientArguments.text).toContain("here is what comes next:");
 			expect(clientArguments.text).toContain("3.");
 			expect(clientArguments.text).not.toContain("??");
@@ -195,13 +195,13 @@ describe("Action Repository Integration Tests", () => {
 			expect(tutorArguments).toEqual({
 				to: "jane1@example.ca",
 				html: expect.any(String),
-				subject: `New Student Request: Rocket Man`,
+				subject: `New Student Request: RM Man`,
 			});
 			expect(tutorArguments.html).toContain("http://localhost:3000/api/acceptNewStudent?id=1");
 			expect(tutorArguments.html).toContain("http://localhost:3000/api/declineNewStudent?id=1");
-			expect(tutorArguments.html).toContain(">Rocket<");
-			expect(tutorArguments.html).toContain(">Man<");
+			expect(tutorArguments.html).toContain(">Rocket (RM) Man<");
 			expect(tutorArguments.html).toContain(">Math, Science<");
+			expect(tutorArguments.html).toContain(">Weekdays after 5pm<");
 			expect(tutorArguments.html).not.toContain("??");
 		});
 
@@ -278,9 +278,9 @@ describe("Action Repository Integration Tests", () => {
 				to: "rocket1.man@mars.ca",
 				cc: ["rosanna1@africa.ca"],
 				text: expect.any(String),
-				subject: `Propel Tutoring Signup Confirmation - Rocket Man`,
+				subject: `Propel Tutoring Signup Confirmation - RM Man`,
 			});
-			expect(clientArguments.text).toContain("Hi Rocket,");
+			expect(clientArguments.text).toContain("Hi RM,");
 			expect(clientArguments.text).toContain("here is what comes next:");
 			expect(clientArguments.text).toContain("3.");
 			expect(clientArguments.text).not.toContain("??");
@@ -290,13 +290,13 @@ describe("Action Repository Integration Tests", () => {
 			expect(tutorArguments).toEqual({
 				to: "jane1@example.ca",
 				html: expect.any(String),
-				subject: `New Student Request: Rocket Man`,
+				subject: `New Student Request: RM Man`,
 			});
 			expect(tutorArguments.html).toContain("http://localhost:3000/api/acceptNewStudent?id=1");
 			expect(tutorArguments.html).toContain("http://localhost:3000/api/declineNewStudent?id=1");
-			expect(tutorArguments.html).toContain(">Rocket<");
-			expect(tutorArguments.html).toContain(">Man<");
+			expect(tutorArguments.html).toContain(">Rocket (RM) Man<");
 			expect(tutorArguments.html).toContain(">Math, Science<");
+			expect(tutorArguments.html).toContain(">Weekdays after 5pm<");
 			expect(tutorArguments.html).not.toContain("??");
 		});
 
@@ -378,9 +378,9 @@ describe("Action Repository Integration Tests", () => {
 				to: "rocket1.man@mars.ca",
 				cc: ["rosanna1@africa.ca", "rosanna2@africa.ca"],
 				text: expect.any(String),
-				subject: `Propel Tutoring Signup Confirmation - Rocket Man`,
+				subject: `Propel Tutoring Signup Confirmation - RM Man`,
 			});
-			expect(clientArguments.text).toContain("Hi Rocket,");
+			expect(clientArguments.text).toContain("Hi RM,");
 			expect(clientArguments.text).toContain("here is what comes next:");
 			expect(clientArguments.text).toContain("3.");
 			expect(clientArguments.text).not.toContain("??");
@@ -390,13 +390,13 @@ describe("Action Repository Integration Tests", () => {
 			expect(tutorArguments).toEqual({
 				to: "jane1@example.ca",
 				html: expect.any(String),
-				subject: `New Student Request: Rocket Man`,
+				subject: `New Student Request: RM Man`,
 			});
 			expect(tutorArguments.html).toContain("http://localhost:3000/api/acceptNewStudent?id=1");
 			expect(tutorArguments.html).toContain("http://localhost:3000/api/declineNewStudent?id=1");
-			expect(tutorArguments.html).toContain(">Rocket<");
-			expect(tutorArguments.html).toContain(">Man<");
+			expect(tutorArguments.html).toContain(">Rocket (RM) Man<");
 			expect(tutorArguments.html).toContain(">Math, Science<");
+			expect(tutorArguments.html).toContain(">Weekdays after 5pm<");
 			expect(tutorArguments.html).not.toContain("??");
 		});
 
@@ -479,9 +479,9 @@ describe("Action Repository Integration Tests", () => {
 				to: "rocket1.man@mars.ca",
 				cc: ["rosanna1@africa.ca", "rosanna2@africa.ca"],
 				text: expect.any(String),
-				subject: `Propel Tutoring Signup Confirmation - Rocket Man`,
+				subject: `Propel Tutoring Signup Confirmation - RM Man`,
 			});
-			expect(clientArguments.text).toContain("Hi Rocket,");
+			expect(clientArguments.text).toContain("Hi RM,");
 			expect(clientArguments.text).toContain("here is what comes next:");
 			expect(clientArguments.text).toContain("3.");
 			expect(clientArguments.text).not.toContain("??");
@@ -491,13 +491,13 @@ describe("Action Repository Integration Tests", () => {
 			expect(tutorArguments).toEqual({
 				to: "jane1@example.ca",
 				html: expect.any(String),
-				subject: `New Student Request: Rocket Man`,
+				subject: `New Student Request: RM Man`,
 			});
 			expect(tutorArguments.html).toContain("http://localhost:3000/api/acceptNewStudent?id=1");
 			expect(tutorArguments.html).toContain("http://localhost:3000/api/declineNewStudent?id=1");
-			expect(tutorArguments.html).toContain(">Rocket<");
-			expect(tutorArguments.html).toContain(">Man<");
+			expect(tutorArguments.html).toContain(">Rocket (RM) Man<");
 			expect(tutorArguments.html).toContain(">Math, Science<");
+			expect(tutorArguments.html).toContain(">Weekdays after 5pm<");
 			expect(tutorArguments.html).not.toContain("??");
 		});
 
@@ -584,9 +584,9 @@ describe("Action Repository Integration Tests", () => {
 				to: "rocket1.man@mars.ca",
 				cc: ["rosanna1@africa.ca", "rosanna2@africa.ca"],
 				text: expect.any(String),
-				subject: `Propel Tutoring Signup Confirmation - Rocket Man`,
+				subject: `Propel Tutoring Signup Confirmation - RM Man`,
 			});
-			expect(clientArguments.text).toContain("Hi Rocket,");
+			expect(clientArguments.text).toContain("Hi RM,");
 			expect(clientArguments.text).toContain("here is what comes next:");
 			expect(clientArguments.text).toContain("3.");
 			expect(clientArguments.text).not.toContain("??");
@@ -596,13 +596,13 @@ describe("Action Repository Integration Tests", () => {
 			expect(tutorArguments).toEqual({
 				to: "jane1@example.ca",
 				html: expect.any(String),
-				subject: `New Student Request: Rocket Man`,
+				subject: `New Student Request: RM Man`,
 			});
 			expect(tutorArguments.html).toContain("http://localhost:3000/api/acceptNewStudent?id=1");
 			expect(tutorArguments.html).toContain("http://localhost:3000/api/declineNewStudent?id=1");
-			expect(tutorArguments.html).toContain(">Rocket<");
-			expect(tutorArguments.html).toContain(">Man<");
+			expect(tutorArguments.html).toContain(">Rocket (RM) Man<");
 			expect(tutorArguments.html).toContain(">Math, Science<");
+			expect(tutorArguments.html).toContain(">Weekdays after 5pm<");
 			expect(tutorArguments.html).not.toContain("??");
 		});
 
@@ -668,13 +668,13 @@ describe("Action Repository Integration Tests", () => {
 				to: "rocket1.man@mars.ca",
 				cc: ["rosanna1@africa.ca"],
 				text: expect.any(String),
-				subject: `Propel Tutoring Tutor Pair and Agreement - Rocket Man`,
+				subject: `Propel Tutoring Tutor Pair and Agreement - RM Man`,
 				attachments: [{ filename: "Propel-Agreement_Rocket-Man.pdf", content: clientAgreement, contentType: "application/pdf" }],
 			});
 			expect(clientArguments.text).toContain("Hi RM,");
 			expect(clientArguments.text).toContain("excited to begin");
 			expect(clientArguments.text).toContain(
-				"You will be working with Jane Catherine, a Chemical Sciences student at the University of Johannesburg. Their current hourly rate is $37.5 per hour, which will not change for as long as you work together. You will be hearing from Jane Catherine shortly to set up a first session.",
+				"You will be working with Janie, a Chemical Sciences student at the University of Johannesburg. Their current hourly rate is $37.5 per hour, which will not change for as long as you work together. You will be hearing from Janie shortly to set up a first session.",
 			);
 			expect(clientArguments.text).not.toContain("??");
 
@@ -738,13 +738,13 @@ describe("Action Repository Integration Tests", () => {
 			expect(tutorArguments).toEqual({
 				to: "jane2@example.ca",
 				html: expect.any(String),
-				subject: `New Student Request: Rocket Man`,
+				subject: `New Student Request: RM Man`,
 			});
 			expect(tutorArguments.html).toContain("http://localhost:3000/api/acceptNewStudent?id=2");
 			expect(tutorArguments.html).toContain("http://localhost:3000/api/declineNewStudent?id=2");
-			expect(tutorArguments.html).toContain(">Rocket<");
-			expect(tutorArguments.html).toContain(">Man<");
+			expect(tutorArguments.html).toContain(">Rocket (RM) Man<");
 			expect(tutorArguments.html).toContain(">Math, Science<");
+			expect(tutorArguments.html).toContain(">Weekdays after 5pm<");
 			expect(tutorArguments.html).not.toContain("??");
 		});
 
@@ -792,13 +792,13 @@ describe("Action Repository Integration Tests", () => {
 			expect(tutorArguments).toEqual({
 				to: "jane2@example.ca",
 				html: expect.any(String),
-				subject: `New Student Request: Rocket Man`,
+				subject: `New Student Request: RM Man`,
 			});
 			expect(tutorArguments.html).toContain("http://localhost:3000/api/acceptNewStudent?id=2");
 			expect(tutorArguments.html).toContain("http://localhost:3000/api/declineNewStudent?id=2");
-			expect(tutorArguments.html).toContain(">Rocket<");
-			expect(tutorArguments.html).toContain(">Man<");
+			expect(tutorArguments.html).toContain(">Rocket (RM) Man<");
 			expect(tutorArguments.html).toContain(">Math, Science<");
+			expect(tutorArguments.html).toContain(">Weekdays after 5pm<");
 			expect(tutorArguments.html).not.toContain("??");
 
 			// check client agreement email send
@@ -809,13 +809,13 @@ describe("Action Repository Integration Tests", () => {
 				to: "rocket1.man@mars.ca",
 				cc: ["rosanna1@africa.ca"],
 				text: expect.any(String),
-				subject: `Propel Tutoring Tutor Pair and Agreement - Rocket Man`,
+				subject: `Propel Tutoring Tutor Pair and Agreement - RM Man`,
 				attachments: [{ filename: "Propel-Agreement_Rocket-Man.pdf", content: clientAgreement, contentType: "application/pdf" }],
 			});
 			expect(clientArguments.text).toContain("Hi RM,");
 			expect(clientArguments.text).toContain("excited to begin");
 			expect(clientArguments.text).toContain(
-				"You will be working with Jane Catherine, a Chemical Sciences student at the University of Johannesburg. Their current hourly rate is $40 per hour, which will not change for as long as you work together. You will be hearing from Jane Catherine shortly to set up a first session.",
+				"You will be working with Janie, a Chemical Sciences student at the University of Johannesburg. Their current hourly rate is $40 per hour, which will not change for as long as you work together. You will be hearing from Janie shortly to set up a first session.",
 			);
 			expect(clientArguments.text).not.toContain("??");
 
@@ -878,13 +878,13 @@ describe("Action Repository Integration Tests", () => {
 			expect(tutorArguments).toEqual({
 				to: "jane2@example.ca",
 				html: expect.any(String),
-				subject: `New Student Request: Rocket Man`,
+				subject: `New Student Request: RM Man`,
 			});
 			expect(tutorArguments.html).toContain("http://localhost:3000/api/acceptNewStudent?id=2");
 			expect(tutorArguments.html).toContain("http://localhost:3000/api/declineNewStudent?id=2");
-			expect(tutorArguments.html).toContain(">Rocket<");
-			expect(tutorArguments.html).toContain(">Man<");
+			expect(tutorArguments.html).toContain(">Rocket (RM) Man<");
 			expect(tutorArguments.html).toContain(">Math, Science<");
+			expect(tutorArguments.html).toContain(">Weekdays after 5pm<");
 			expect(tutorArguments.html).not.toContain("??");
 
 			// check admin assignment email send

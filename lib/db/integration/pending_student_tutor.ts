@@ -5,8 +5,8 @@ import { DBTypes } from "../dbtypes";
 export const createPendingStudentTutorRepo = (sql: any, pool: any) => {
 	const insert = (data: DBTypes.PendingStudentTutor, db: any = sql): Promise<DBTypes.PendingStudentTutorRow[]> => {
 		return db`
-         INSERT INTO pending_student_tutor (student_id, tutor_id, usual_duration, hourly_rate, subjects, markup, travel_fee, had_session)
-         VALUES (${data.student_id}, ${data.tutor_id}, ${data.usual_duration}, ${data.hourly_rate}, ${data.subjects}, ${data.markup}, ${data.travel_fee}, ${data.had_session})
+         INSERT INTO pending_student_tutor (student_id, tutor_id, usual_duration, hourly_rate, subjects, markup, travel_fee, had_session, timeandlocation)
+         VALUES (${data.student_id}, ${data.tutor_id}, ${data.usual_duration}, ${data.hourly_rate}, ${data.subjects}, ${data.markup}, ${data.travel_fee}, ${data.had_session}, ${data.timeandlocation})
          RETURNING *;
       `;
 	};

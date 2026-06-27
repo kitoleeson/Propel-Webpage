@@ -74,6 +74,7 @@ export namespace DBTypes {
 		markup: number;
 		travel_fee: number;
 		had_session: boolean;
+		timeandlocation: string;
 	};
 	export type PendingStudentTutorRow = CompleteRecord<PendingStudentTutor, "pending_student_tutor_id">;
 

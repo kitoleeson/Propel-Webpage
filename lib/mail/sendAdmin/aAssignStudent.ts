@@ -7,6 +7,7 @@ import { DBTypes } from "@/lib/db/dbtypes";
 export type AdminAssignStudentEmailData = {
 	student: DBTypes.StudentsRow;
 	subjects: string;
+	timeandlocation: string;
 };
 
 // needs pending_student_tutor information and student information (could be found by pending_student_tutor information)
@@ -32,6 +33,7 @@ export default async function sendAdminAssignStudentActionEmail(data: AdminAssig
 				{ label: "City", value: data.student.city },
 				{ label: "Grade", value: data.student.grade?.toString() },
 				{ label: "Subjects", value: data.subjects },
+				{ label: "Ideal Time and Location", value: data.timeandlocation },
 			],
 		},
 	];

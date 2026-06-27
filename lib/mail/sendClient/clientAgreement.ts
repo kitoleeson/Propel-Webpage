@@ -14,12 +14,10 @@ export type ClientAgreementEmailData = {
 };
 
 export default async function sendClientClientAgreementEmail(data: ClientAgreementEmailData) {
-	const studentName = `${data.student.gov_first_name} ${data.student.gov_last_name}`;
-
 	const anIfy = (s: string) => ("aeiou".includes(s[0].toLowerCase()) ? "an " + s : "a " + s);
 
 	// const templatePath = path.resolve(process.cwd(), "assets/templates/clientAgreement.tex");
-	// const template = fs.readFileSync(templatePath, "utf8").replaceAll("??StudentName??", studentName).replaceAll("??LogoBase64??", "https://propeltutoring.ca/images/logos/teal.png");
+	// const template = fs.readFileSync(templatePath, "utf8").replaceAll("??StudentName??", data.student.gov_first_name + " " + data.student.gov_last_name).replaceAll("??LogoBase64??", "https://propeltutoring.ca/images/logos/teal.png");
 
 	try {
 		// const formData = new FormData();
@@ -46,7 +44,7 @@ export default async function sendClientClientAgreementEmail(data: ClientAgreeme
 		const body = fs
 			.readFileSync(bodyPath, "utf8")
 			.replaceAll("??StudentFirstName??", data.student.pref_name ?? data.student.gov_first_name)
-			.replaceAll("??TutorFirstName??", data.tutor.gov_first_name)
+			.replaceAll("??TutorFirstName??", data.tutor.pref_name ?? data.tutor.gov_first_name)
 			.replaceAll("??TutorFieldOfStudy??", data.tutor.field_of_study ? anIfy(data.tutor.field_of_study) : "a")
 			.replaceAll("??TutorUni??", data.tutor.current_uni ?? "University of Alberta")
 			.replaceAll("??TutorRate??", data.tutor.current_rate.toString());
@@ -54,7 +52,7 @@ export default async function sendClientClientAgreementEmail(data: ClientAgreeme
 		const options: Mail.Options = {
 			to: data.student.email,
 			cc: data.guardians.map((g) => g.email),
-			subject: `Propel Tutoring Tutor Pair and Agreement - ${studentName}`,
+			subject: `Propel Tutoring Tutor Pair and Agreement - ${data.student.pref_name ?? data.student.gov_first_name} ${data.student.gov_last_name}`,
 			text: body,
 			attachments: [{ filename: `Propel-Agreement_${data.student.gov_first_name.replace(/\s+/g, "-")}-${data.student.gov_last_name.replace(/\s+/g, "-")}.pdf`, content: pdfBuffer, contentType: "application/pdf" }],
 		};
