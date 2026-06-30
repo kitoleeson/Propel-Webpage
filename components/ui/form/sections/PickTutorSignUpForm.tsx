@@ -75,7 +75,7 @@ const PickTutorSignUpForm = ({ tutors, subjects }: { tutors: DBTypes.Tutors[]; s
 						</div>
 					)}
 					<div className={`flex flex-col space-y-6 divide-y divide-slate-400 transition-opacity duration-200 ${loading ? "opacity-30 pointer-events-none" : "opacity-100"}`}>
-						{!loading && filteredTutors.length === 0 && <p className="text-sm text-gray-500">No tutors match all selected subjects.</p>}
+						{!loading && filteredTutors.length === 0 && <p className="text-sm text-gray-500">No accepting tutors match all selected subjects.</p>}
 						{filteredTutors.map((tutor) => (
 							<div key={tutor.tutor_id} className="pb-4 flex flex-col sm:flex-row items-center justify-between w-full">
 								<div className="space-y-2 w-full">

@@ -11,7 +11,7 @@ const SUBJECT_CATEGORIES: Record<string, string[]> = {
 	chemistry: ["Chemistry 20 (AP)", "Chemistry 30 (AP)"],
 	biology: ["Biology 20 (AP)", "Biology 30 (AP)"],
 	computer_science: ["Computer Science 10 (AP)", "Computer Science 20 (AP)", "Computer Science 30 (AP)"],
-	social_studies: ["Social 10 (AP)", "Social 20 (AP)", "Social 30 (AP)"],
+	social_studies: ["Social Studies 10 (AP)", "Social Studies 20 (AP)", "Social Studies 30 (AP)"],
 	english: ["English 10 (AP)", "English 20 (AP)", "English 30 (AP)"],
 	languages: ["French 10-30", "Spanish 10-30", "German 10-30"],
 };

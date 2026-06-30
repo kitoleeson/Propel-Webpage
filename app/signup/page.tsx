@@ -10,9 +10,6 @@ const SignupPage = async () => {
 
 	return (
 		<BasePage title={"Start Tutoring\nToday!"}>
-			<p>
-				<i>NOTE: This form is not yet operational. To sign up, please email propeltutoringyeg@gmail.com.</i>
-			</p>
 			<ClientSignUpForm tutors={tutors} subjects={subjects} />
 		</BasePage>
 	);
