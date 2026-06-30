@@ -1,7 +1,7 @@
 /** @format */
 
-import { NavLink } from "@/lib/validation/components";
 import Link from "next/link";
+import { NavLink } from "./base_page/nav_bar/links";
 
 const LinkUnderline = ({ link, showActive = true, className }: { link: NavLink; showActive?: boolean; className?: string }) => {
 	return (

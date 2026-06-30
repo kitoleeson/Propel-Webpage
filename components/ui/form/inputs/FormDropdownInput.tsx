@@ -10,11 +10,15 @@ const FormDropdownInput = (props: FormDropdownInputProps) => {
 				<option value="" disabled>
 					{props.placeholder || "Select an option"}
 				</option>
-				{props.options.map((option) => (
-					<option key={option} value={option}>
-						{option}
-					</option>
-				))}
+				{props.options.map((option) => {
+					const value = typeof option === "string" ? option : option.value;
+					const label = typeof option === "string" ? option : option.label;
+					return (
+						<option key={value} value={value}>
+							{label}
+						</option>
+					);
+				})}
 			</select>
 			{props.error && <p className="text-red-500">{props.error}</p>}
 		</div>

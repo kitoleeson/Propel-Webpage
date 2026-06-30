@@ -1,6 +1,7 @@
 /** @format */
 
 // Based on https://neon.com/blog/neon-testing-a-vitest-library-for-your-integration-tests
+// and https://github.com/starmode-base/neon-testing?tab=readme-ov-file
 
 import { makeNeonTesting } from "neon-testing";
 import * as dotenv from "dotenv";

@@ -21,3 +21,5 @@ jobs:
           NEON_API_KEY: ${{ secrets.NEON_API_KEY }}
           NEON_PROJECT_ID: ${{ vars.NEON_PROJECT_ID }}
           DATABASE_URL: ${{ secrets.DATABASE_URL_DEV }}
+          APP_ENV: ${{ vars.APP_ENV }}
+          ADMIN_EMAIL: ${{ vars.ADMIN_EMAIL }}

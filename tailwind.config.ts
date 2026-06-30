@@ -10,6 +10,8 @@ const config: Config = {
 			colors: {
 				primary: "var(--colour-primary)",
 				"primary-hover": "var(--colour-primary-hover)",
+				"primary-faded-hover": "var(--colour-primary-faded-hover)",
+				"primary-faded": "var(--colour-primary-faded)",
 				accent: "var(--colour-accent)",
 				background: "var(--colour-background)",
 				text: "var(--colour-text)",
