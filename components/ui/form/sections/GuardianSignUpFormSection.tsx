@@ -22,7 +22,7 @@ const GuardianSection = ({ index, placeholder, optional }: Props) => {
 		getValues,
 		clearErrors,
 		setError,
-		formState: { errors },
+		formState: { errors, isSubmitting },
 	} = useFormContext<ClientFormValues>();
 
 	const existingGuardian = watch(`guardians.${index}.already_exists`);
@@ -57,7 +57,7 @@ const GuardianSection = ({ index, placeholder, optional }: Props) => {
 	};
 
 	return (
-		<div>
+		<fieldset disabled={isSubmitting} className="group disabled:opacity-75 transition-opacity duration-200">
 			<h1>
 				Guardian Information{index > 0 && ` ${index + 1}`}
 				{optional && " (Optional)"}
@@ -119,6 +119,7 @@ const GuardianSection = ({ index, placeholder, optional }: Props) => {
 					register={register(`guardians.${index}.relationship`)}
 					options={["Mother", "Father", "Parent", "Legal Guardian", "Other"]}
 					error={errors.guardians?.[index]?.relationship?.message}
+					disabled={existingGuardian}
 				/>
 			</FormInputCluster>
 
@@ -140,7 +141,7 @@ const GuardianSection = ({ index, placeholder, optional }: Props) => {
 					disabled={existingGuardian}
 				/>
 			</FormInputCluster>
-		</div>
+		</fieldset>
 	);
 };
 

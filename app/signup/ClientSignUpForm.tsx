@@ -5,12 +5,13 @@ import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormProvider, SubmitHandler, useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
-import { FormButtonInput, StudentSection, GuardianSection, FormInputCluster, FormTextAreaInput } from "@/components/ui/form";
+import { FormButtonInput, StudentSection, GuardianSection, FormInputCluster, FormTextAreaInput, FormSubmitInput } from "@/components/ui/form";
 import { defaultStudent, defaultGuardian, formSchema, ClientFormValues } from "@/lib/validation/clientForm/clientFormSchema";
 import { placeholders } from "@/lib/validation/clientForm/clientFormPersonPlaceholders";
 import PickTutorSignUpForm from "@/components/ui/form/sections/PickTutorSignUpForm";
 import { DBTypes } from "@/lib/db/dbtypes";
 import { onboardClientWithFormData } from "@/lib/db/actions/workflows/onboard_client";
+import { useRouter } from "next/navigation";
 
 function shuffle(array: any[]) {
 	const newArray = [...array];
@@ -43,12 +44,13 @@ const ClientSignUpForm = ({ tutors, subjects }: { tutors: DBTypes.Tutors[]; subj
 
 	const methods = useForm<ClientFormValues>({ resolver: zodResolver(formSchema), defaultValues: getPreviousValues() || { student: defaultStudent, guardians: [defaultGuardian], primary_biller_index: 0 } });
 	const {
-		formState: { errors },
+		formState: { errors, isSubmitting, isSubmitSuccessful },
 		handleSubmit,
 		watch,
 		register,
 		control,
 		setValue,
+		setError,
 	} = methods;
 
 	const { fields, append, remove } = useFieldArray({ control, name: "guardians" });
@@ -58,8 +60,21 @@ const ClientSignUpForm = ({ tutors, subjects }: { tutors: DBTypes.Tutors[]; subj
 
 	const allFormValues = watch();
 	useEffect(() => {
-		if (typeof window !== "undefined") sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(allFormValues));
-	}, [allFormValues]);
+		if (isSubmitSuccessful) return;
+		if (typeof window !== "undefined") {
+			const cacheData = { ...allFormValues };
+			if (cacheData.guardians) {
+				cacheData.guardians = cacheData.guardians.map((guardian) => ({
+					...guardian,
+					already_exists: false,
+					email_password: undefined as any,
+				}));
+			}
+			sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(cacheData));
+		}
+	}, [allFormValues, isSubmitSuccessful]);
+
+	const router = useRouter();
 
 	const onSubmit: SubmitHandler<z.infer<typeof formSchema>> = async (data) => {
 		try {
@@ -67,8 +82,25 @@ const ClientSignUpForm = ({ tutors, subjects }: { tutors: DBTypes.Tutors[]; subj
 			else data.guardians[data.primary_biller_index].is_primary_biller = true;
 			console.log("Form submitted with data:");
 			console.log(data);
-			sessionStorage.removeItem(SESSION_STORAGE_KEY);
-			await onboardClientWithFormData(data);
+
+			const response = await onboardClientWithFormData(data);
+			console.log(response);
+			if (response.success) {
+				sessionStorage.removeItem(SESSION_STORAGE_KEY);
+				router.push("/signup/success");
+				return;
+			}
+
+			if (response.globalError) alert(response.globalError);
+			if (response.errors) {
+				response.errors.forEach((error, index) => setError(error.field as any, { type: "manual", message: error.message }, { shouldFocus: index === 0 }));
+				const firstErrorField = response.errors[0].field;
+				const element = document.querySelector(`[name="${firstErrorField}"]`);
+				if (element) {
+					element.scrollIntoView({ behavior: "smooth", block: "center" });
+					(element as HTMLElement).focus({ preventScroll: true });
+				}
+			}
 		} catch (e) {
 			console.error("Submission failed", e);
 		}
@@ -109,24 +141,30 @@ const ClientSignUpForm = ({ tutors, subjects }: { tutors: DBTypes.Tutors[]; subj
 									{!studentBilling && (
 										<div className="mt-6 flex flex-col gap-1 flex-1">
 											<label key={index} className="flex flex-1 items-center gap-2 border border-gray-300 rounded-md px-3 py-1 text-center">
-												<input type="radio" value={index} checked={watch("primary_biller_index") === index} onChange={() => setValue("primary_biller_index", index)} />
+												<input type="radio" value={index} checked={watch("primary_biller_index") === index} disabled={isSubmitting} onChange={() => setValue("primary_biller_index", index)} />
 												{"Is Primary Biller"}
 											</label>
 											{errors.primary_biller_index?.message && <p className="text-red-500">{errors.primary_biller_index?.message}</p>}
 										</div>
 									)}
-									<FormButtonInput label="Remove Guardian" onClick={() => removeGuardian(index)} format="self-stretch text-red-500 flex-1" />
+									<FormButtonInput label="Remove Guardian" onClick={() => removeGuardian(index)} disabled={isSubmitting} format="self-stretch text-red-500 flex-1" />
 								</FormInputCluster>
 							)}
 						</div>
 					))}
-					<FormButtonInput label="Add New Guardian" onClick={addGuardian} divFormat="mt-14" format="w-full" />
+					<FormButtonInput label="Add New Guardian" onClick={addGuardian} disabled={isSubmitting} divFormat="mt-14" format="w-full" />
 				</div>
 				<PickTutorSignUpForm tutors={tutors} subjects={subjects} />
 				<FormInputCluster>
-					<FormTextAreaInput label="Any other specific requests, concerns, or extra comments/information you would like us to know (optional):" rows={3} register={register("comments")} error={errors.comments?.message} />
+					<FormTextAreaInput
+						label="Any other specific requests, concerns, or extra comments/information you would like us to know (optional):"
+						register={register("comments")}
+						rows={3}
+						disabled={isSubmitting}
+						error={errors.comments?.message}
+					/>
 				</FormInputCluster>
-				<FormButtonInput label="Sign Up" onClick={handleSubmit(onSubmit)} format="self-stretch text-primary font-bold text-primary" />
+				<FormSubmitInput label="Sign Up" type="submit" pending={isSubmitting} dots format="self-stretch text-primary font-bold text-primary" />
 			</form>
 		</FormProvider>
 	);
@@ -135,23 +173,10 @@ const ClientSignUpForm = ({ tutors, subjects }: { tutors: DBTypes.Tutors[]; subj
 export default ClientSignUpForm;
 
 /**
- * TO DO:
- * - check if guardian exists during sign up
- * - add choose tutor step as next page of form, or as part of this form if it doesn't make it too long
- * - connect to database:
- * 	- add student
- * 	- add guardians
- * 	- link guardians to student
- * - send email to admin with form responses
- * - send email to client with agreement contract
- */
-
-/**
  * THINGS TO UI TEST:
  * - add and remove guardians
  * - persistent form values
  * - submission and database inputting
  * - primary biller accuracy
  * - autofill existing guardian
- *
  */

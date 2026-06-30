@@ -23,6 +23,10 @@ if (!url) throw new Error("Database URL is not defined");
 const pool = new Pool({ connectionString: url });
 types.setTypeParser(1700, (value) => parseFloat(value));
 
+pool.on("error", (error: any, client: any) => {
+	console.error("Unexpected error on idle database client:", error.message);
+});
+
 export const sql = (strings_or_client: any, ...values: any[]) => {
 	const transaction: boolean = strings_or_client && typeof strings_or_client.query === "function";
 

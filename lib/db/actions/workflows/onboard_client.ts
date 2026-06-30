@@ -13,9 +13,6 @@ import { NewStudentRequestEmailData } from "@/lib/mail/sendTutor/newStudentReque
 import { AdminAssignStudentEmailData } from "@/lib/mail/sendAdmin/aAssignStudent";
 
 export async function onboardClientWithFormData(data: ClientFormValues) {
-	// 1. Client fills out the form and submits it, including personal information, billing information, and tutor preferences (top 2 choices).
-	// 2. The form data is sent to the server, where it is processed and stored in the database under the "students", "guardians", "student_guardian", "billing_accounts", "student_billing", and "pending_student_tutors" tables.
-
 	let first_choice_pending_student_tutor_id;
 
 	const client = await db.pool.connect();
@@ -50,7 +47,7 @@ export async function onboardClientWithFormData(data: ClientFormValues) {
 				: (
 						await db.billing_account.insert(
 							{
-								display_name: `${student.pref_name ?? student.gov_first_name} ${student.gov_last_name}`,
+								display_name: student.pref_name ?? student.gov_first_name,
 								email: student.email ?? "",
 								first_invoice: true,
 								student_id: student.student_id,
@@ -81,54 +78,65 @@ export async function onboardClientWithFormData(data: ClientFormValues) {
 		}
 
 		await client.query("COMMIT");
-	} catch (e) {
+	} catch (e: any) {
 		await client.query("ROLLBACK");
-		throw e;
+
+		// handle unique key violation
+		if (e.code === "23505") {
+			const detail = e.detail || "";
+			if (e.table === "students") {
+				if (detail.includes("email")) return { success: false, errors: [{ field: "student.email", message: "This email is already linked to a registered student." }] };
+				if (detail.includes("phone")) return { success: false, errors: [{ field: "student.phone", message: "This phone number is already linked to a registered student." }] };
+			}
+
+			if (e.table === "guardians") {
+				if (detail.includes("email")) {
+					const match = detail.match(/\((.*?)\)=\((.*?)\)/);
+					const failedEmail = match ? match[2] : "";
+					const idx = data.guardians.findIndex((g) => g.email === failedEmail);
+					return { success: false, errors: [{ field: `guardians.${idx !== -1 ? idx : 0}.email`, message: "This email is already linked to a registered guardian." }] };
+				}
+				if (detail.includes("phone")) {
+					const match = detail.match(/\((.*?)\)=\((.*?)\)/);
+					const failedPhone = match ? match[2] : "";
+					const idx = data.guardians.findIndex((g) => g.phone === failedPhone);
+					return { success: false, errors: [{ field: `guardians.${idx !== -1 ? idx : 0}.phone`, message: "This phone number is already linked to a registered guardian." }] };
+				}
+			}
+		}
+
+		return { success: false, globalError: e };
 	} finally {
 		client.release();
 	}
 
-	// 3. An email is sent to the admin with a summary of the client's information for review.
 	try {
 		await sendAdminClientSignupReviewEmail(data);
 	} catch (e) {
 		throw e;
 	}
 
-	// 3. An email is sent to the client with confirmation of signup and information about next steps
 	try {
 		await sendClientSignupConfirmationEmail(data);
 	} catch (e) {
 		throw e;
 	}
 
-	// 4. An email is sent to the tutor who the client chooses, notifying them of the new student, providing the student's information for review, and providing a link to the API where they can accept or reject the tutoring request.
 	try {
 		const tutorData = await getNewStudentRequestEmailData(first_choice_pending_student_tutor_id ?? -1);
 		await sendTutorNewStudentRequestEmail(tutorData);
 	} catch (e) {
 		throw e;
 	}
-}
 
-// 4. An email is sent to the tutor who the client chooses, notifying them of the new student, providing the student's information for review, and providing a link to the API where they can accept or reject the tutoring request.
-// 	The tutor will reach out the student to decide whether the relationship will work, then either accept or reject the request.
-// 	If they accept, the "student_tutor" table is updated to reflect the match.
-// 	If they reject, the student's second choice tutor is notified. If they also reject, the admin is notified to manually assign a tutor.
+	return { success: true };
+}
 
 export async function getNewStudentRequestEmailData(pending_student_tutor_id: number): Promise<NewStudentRequestEmailData> {
 	const pending_student_tutor = (await db.pending_student_tutor.get.get(pending_student_tutor_id))[0];
 	const student = (await db.student.get.get(pending_student_tutor.student_id))[0];
 	const tutor = (await db.tutor.get.get(pending_student_tutor.tutor_id))[0];
 	return { pending_student_tutor, student, tutor };
-}
-
-export async function sendClientToAdminForManualMatching(data: NewStudentRequestEmailData) {
-	try {
-		await sendTutorNewStudentRequestEmail(data);
-	} catch (e) {
-		throw e;
-	}
 }
 
 export async function tutorAcceptStudent(pending_student_tutor_id: number) {
@@ -143,7 +151,6 @@ export async function tutorAcceptStudent(pending_student_tutor_id: number) {
 	const client = await db.pool.connect();
 	const tx = sql(client);
 	try {
-		// 5. Once a tutor accepts the student, the pending_student_tutor row is inserted into the student_tutor database
 		await client.query("BEGIN");
 
 		data.student_tutor = (await db.pending_student_tutor.get.get(pending_student_tutor_id, tx))[0];
@@ -170,7 +177,6 @@ export async function tutorAcceptStudent(pending_student_tutor_id: number) {
 
 	// email the client contract to the student and guardians
 	try {
-		// 6. An email confirmation is sent to the client with the tutor's rate and client agreement
 		await sendClientClientAgreementEmail(data);
 	} catch (e) {
 		throw e;
@@ -178,7 +184,6 @@ export async function tutorAcceptStudent(pending_student_tutor_id: number) {
 
 	// email the student_tutor information to the admin
 	try {
-		// 7. An email review is sent to the admin with the tutor and student's names and student_tutor information
 		await sendAdminTutorClientAcceptanceReviewEmail(data);
 	} catch (e) {
 		throw e;

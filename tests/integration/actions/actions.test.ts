@@ -606,18 +606,281 @@ describe("Action Repository Integration Tests", () => {
 			expect(tutorArguments.html).not.toContain("??");
 		});
 
+		it("should onboard a new student primary biller with a guardian", async () => {
+			const data = createMockClientFormValues({ biller: "Student" });
+			await onboardClientWithFormData(data);
+
+			// --------------- CHECK DATABASE INPUTS ---------------
+			// check student
+			const students = await db.student.get.getAll();
+			expect(students.length).toEqual(1);
+			expect(students[0].student_id).toEqual(1);
+			expect(students[0].gov_first_name).toEqual("Rocket");
+			expect(students[0].email).toEqual("rocket1.man@mars.ca");
+
+			// check guardian
+			const guardians = await db.guardian.get.getAll();
+			expect(guardians.length).toEqual(1);
+			expect(guardians[0].guardian_id).toEqual(1);
+			expect(guardians[0].gov_first_name).toEqual("Rosanna");
+			expect(guardians[0].email).toEqual("rosanna1@africa.ca");
+
+			// check student_guardian
+			const student_guardians = await db.student_guardian.get.getAll();
+			expect(student_guardians.length).toEqual(1);
+			expect(student_guardians[0].student_id).toEqual(1);
+			expect(student_guardians[0].guardian_id).toEqual(1);
+			expect(student_guardians[0].is_primary_biller).toEqual(true);
+
+			// check billing_accounts
+			const billing_accounts = await db.billing_account.get.getAll();
+			expect(billing_accounts.length).toEqual(1);
+			expect(billing_accounts[0].billing_id).toEqual(1);
+			expect(billing_accounts[0].student_id).toEqual(1);
+			expect(billing_accounts[0].display_name).toEqual(students[0].pref_name);
+			expect(billing_accounts[0].first_invoice).toEqual(true);
+
+			// check student_billing
+			const student_billings = await db.student_billing.get.getAll();
+			expect(student_billings.length).toEqual(1);
+			expect(student_billings[0].student_id).toEqual(1);
+			expect(student_billings[0].billing_id).toEqual(1);
+
+			// check pending_student_tutor
+			const pending_student_tutors = await db.pending_student_tutor.get.getAll();
+			expect(pending_student_tutors.length).toEqual(2);
+			expect(pending_student_tutors[0].student_id).toEqual(1);
+			expect(pending_student_tutors[0].tutor_id).toEqual(1);
+			expect(pending_student_tutors[0].hourly_rate).toEqual(37.5);
+			expect(pending_student_tutors[0].had_session).toEqual(false);
+			expect(pending_student_tutors[1].student_id).toEqual(1);
+			expect(pending_student_tutors[1].tutor_id).toEqual(2);
+			expect(pending_student_tutors[1].hourly_rate).toEqual(40);
+			expect(pending_student_tutors[1].had_session).toEqual(false);
+
+			// check admin email send
+			expect(emailSpy).toHaveBeenCalledTimes(3);
+			const adminArguments = emailSpy.mock.calls[0][0];
+			expect(adminArguments).toEqual({
+				to: "propeltutoringyeg@gmail.com",
+				html: expect.any(String),
+				subject: `New Client Signup: Rocket Man`,
+				attachments: [{ filename: `Rocket_Man-Client_Signup_Form.json`, content: JSON.stringify(data, null, 2), contentType: "application/json" }],
+			});
+			expect(adminArguments.html).toContain(">Rocket<");
+			expect(adminArguments.html).toContain(">Man<");
+			expect(adminArguments.html).toContain(">rosanna1@africa.ca<");
+			expect(adminArguments.html).not.toContain("??");
+
+			// check client email send
+			const clientArguments = emailSpy.mock.calls[1][0];
+			expect(clientArguments).toEqual({
+				to: "rocket1.man@mars.ca",
+				cc: ["rosanna1@africa.ca"],
+				text: expect.any(String),
+				subject: `Propel Tutoring Signup Confirmation - RM Man`,
+			});
+			expect(clientArguments.text).toContain("Hi RM,");
+			expect(clientArguments.text).toContain("here is what comes next:");
+			expect(clientArguments.text).toContain("3.");
+			expect(clientArguments.text).not.toContain("??");
+
+			// check tutor email send
+			const tutorArguments = emailSpy.mock.calls[2][0];
+			expect(tutorArguments).toEqual({
+				to: "jane1@example.ca",
+				html: expect.any(String),
+				subject: `New Student Request: RM Man`,
+			});
+			expect(tutorArguments.html).toContain("http://localhost:3000/api/acceptNewStudent?id=1");
+			expect(tutorArguments.html).toContain("http://localhost:3000/api/declineNewStudent?id=1");
+			expect(tutorArguments.html).toContain(">Rocket (RM) Man<");
+			expect(tutorArguments.html).toContain(">Math, Science<");
+			expect(tutorArguments.html).toContain(">Weekdays after 5pm<");
+			expect(tutorArguments.html).not.toContain("??");
+		});
+
+		it("should onboard a new student primary biller no guardians", async () => {
+			const data = createMockClientFormValues({ biller: "Student" }, []);
+			await onboardClientWithFormData(data);
+
+			// --------------- CHECK DATABASE INPUTS ---------------
+			// check student
+			const students = await db.student.get.getAll();
+			expect(students.length).toEqual(1);
+			expect(students[0].student_id).toEqual(1);
+			expect(students[0].gov_first_name).toEqual("Rocket");
+			expect(students[0].email).toEqual("rocket1.man@mars.ca");
+
+			// check guardian
+			const guardians = await db.guardian.get.getAll();
+			expect(guardians.length).toEqual(0);
+
+			// check student_guardian
+			const student_guardians = await db.student_guardian.get.getAll();
+			expect(student_guardians.length).toEqual(0);
+
+			// check billing_accounts
+			const billing_accounts = await db.billing_account.get.getAll();
+			expect(billing_accounts.length).toEqual(1);
+			expect(billing_accounts[0].billing_id).toEqual(1);
+			expect(billing_accounts[0].student_id).toEqual(1);
+			expect(billing_accounts[0].display_name).toEqual(students[0].pref_name);
+			expect(billing_accounts[0].first_invoice).toEqual(true);
+
+			// check student_billing
+			const student_billings = await db.student_billing.get.getAll();
+			expect(student_billings.length).toEqual(1);
+			expect(student_billings[0].student_id).toEqual(1);
+			expect(student_billings[0].billing_id).toEqual(1);
+
+			// check pending_student_tutor
+			const pending_student_tutors = await db.pending_student_tutor.get.getAll();
+			expect(pending_student_tutors.length).toEqual(2);
+			expect(pending_student_tutors[0].student_id).toEqual(1);
+			expect(pending_student_tutors[0].tutor_id).toEqual(1);
+			expect(pending_student_tutors[0].hourly_rate).toEqual(37.5);
+			expect(pending_student_tutors[0].had_session).toEqual(false);
+			expect(pending_student_tutors[1].student_id).toEqual(1);
+			expect(pending_student_tutors[1].tutor_id).toEqual(2);
+			expect(pending_student_tutors[1].hourly_rate).toEqual(40);
+			expect(pending_student_tutors[1].had_session).toEqual(false);
+
+			// check admin email send
+			expect(emailSpy).toHaveBeenCalledTimes(3);
+			const adminArguments = emailSpy.mock.calls[0][0];
+			expect(adminArguments).toEqual({
+				to: "propeltutoringyeg@gmail.com",
+				html: expect.any(String),
+				subject: `New Client Signup: Rocket Man`,
+				attachments: [{ filename: `Rocket_Man-Client_Signup_Form.json`, content: JSON.stringify(data, null, 2), contentType: "application/json" }],
+			});
+			expect(adminArguments.html).toContain(">Rocket<");
+			expect(adminArguments.html).toContain(">Man<");
+			expect(adminArguments.html).not.toContain("??");
+
+			// check client email send
+			const clientArguments = emailSpy.mock.calls[1][0];
+			expect(clientArguments).toEqual({
+				to: "rocket1.man@mars.ca",
+				cc: [],
+				text: expect.any(String),
+				subject: `Propel Tutoring Signup Confirmation - RM Man`,
+			});
+			expect(clientArguments.text).toContain("Hi RM,");
+			expect(clientArguments.text).toContain("here is what comes next:");
+			expect(clientArguments.text).toContain("3.");
+			expect(clientArguments.text).not.toContain("??");
+
+			// check tutor email send
+			const tutorArguments = emailSpy.mock.calls[2][0];
+			expect(tutorArguments).toEqual({
+				to: "jane1@example.ca",
+				html: expect.any(String),
+				subject: `New Student Request: RM Man`,
+			});
+			expect(tutorArguments.html).toContain("http://localhost:3000/api/acceptNewStudent?id=1");
+			expect(tutorArguments.html).toContain("http://localhost:3000/api/declineNewStudent?id=1");
+			expect(tutorArguments.html).toContain(">Rocket (RM) Man<");
+			expect(tutorArguments.html).toContain(">Math, Science<");
+			expect(tutorArguments.html).toContain(">Weekdays after 5pm<");
+			expect(tutorArguments.html).not.toContain("??");
+		});
+
 		it("should error if existing guardian is inputted as new", async () => {
 			await db.guardian.insert(createMockGuardian());
 
 			const data = createMockClientFormValues();
-			await expect(onboardClientWithFormData(data)).rejects.toThrow(/duplicate key value violates unique constraint.*guardians_email_key/);
+			const result = await onboardClientWithFormData(data);
+			expect(result).toEqual({
+				success: false,
+				errors: [
+					{
+						field: "guardians.0.email",
+						message: "This email is already linked to a registered guardian.",
+					},
+				],
+			});
+		});
+
+		it("should error if guardian enters duplicate email", async () => {
+			await db.guardian.insert(createMockGuardian(1, { email: "guardian@test.ca", phone: "(111) 111-1111" }));
+
+			const data = createMockClientFormValues({}, [{ email: "guardian@test.ca", phone: "(222) 222-2222" }]);
+			const result = await onboardClientWithFormData(data);
+			expect(result).toEqual({
+				success: false,
+				errors: [
+					{
+						field: "guardians.0.email",
+						message: "This email is already linked to a registered guardian.",
+					},
+				],
+			});
+		});
+
+		it("should error if guardian enters duplicate phone number", async () => {
+			await db.guardian.insert(createMockGuardian(1, { email: "guardian1@test.ca", phone: "(123) 456-7890" }));
+
+			const data = createMockClientFormValues({}, [{ email: "guardian2@test.ca", phone: "(123) 456-7890" }]);
+			const result = await onboardClientWithFormData(data);
+			expect(result).toEqual({
+				success: false,
+				errors: [
+					{
+						field: "guardians.0.phone",
+						message: "This phone number is already linked to a registered guardian.",
+					},
+				],
+			});
 		});
 
 		it("should error if existing student is inputted as new", async () => {
 			await db.student.insert(createMockStudent());
 
 			const data = createMockClientFormValues();
-			await expect(onboardClientWithFormData(data)).rejects.toThrow(/duplicate key value violates unique constraint.*students_email_key/);
+			const result = await onboardClientWithFormData(data);
+			expect(result).toEqual({
+				success: false,
+				errors: [
+					{
+						field: "student.email",
+						message: "This email is already linked to a registered student.",
+					},
+				],
+			});
+		});
+
+		it("should error if student enters duplicate email", async () => {
+			await db.student.insert(createMockStudent(1, { email: "student@test.ca", phone: "(111) 111-1111" }));
+
+			const data = createMockClientFormValues({ email: "student@test.ca", phone: "(222) 222-2222" });
+			const result = await onboardClientWithFormData(data);
+			expect(result).toEqual({
+				success: false,
+				errors: [
+					{
+						field: "student.email",
+						message: "This email is already linked to a registered student.",
+					},
+				],
+			});
+		});
+
+		it("should error if student enters duplicate phone number", async () => {
+			await db.student.insert(createMockStudent(1, { email: "student1@test.ca", phone: "(123) 456-7890" }));
+
+			const data = createMockClientFormValues({ email: "student2@test.ca", phone: "(123) 456-7890" });
+			const result = await onboardClientWithFormData(data);
+			expect(result).toEqual({
+				success: false,
+				errors: [
+					{
+						field: "student.phone",
+						message: "This phone number is already linked to a registered student.",
+					},
+				],
+			});
 		});
 
 		it("should onboard a new student with a new guardian and be accepted by the first tutor", async () => {
@@ -902,7 +1165,6 @@ describe("Action Repository Integration Tests", () => {
 
 		/**
 		 * THINGS TO TEST
-		 * students and guardians with non-unique emails and phone numbers -- send an error back to form to say "already have an account?"
 		 * student biller and guardian biller
 		 */
 	});

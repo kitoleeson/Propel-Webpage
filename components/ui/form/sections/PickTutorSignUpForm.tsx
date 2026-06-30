@@ -18,7 +18,7 @@ const PickTutorSignUpForm = ({ tutors, subjects }: { tutors: DBTypes.Tutors[]; s
 
 	const {
 		register,
-		formState: { errors },
+		formState: { errors, isSubmitting },
 	} = useFormContext<ClientFormValues>();
 
 	const updateAvailableTutors = async (selectedSubjects: string[]) => {
@@ -42,7 +42,7 @@ const PickTutorSignUpForm = ({ tutors, subjects }: { tutors: DBTypes.Tutors[]; s
 	};
 
 	return (
-		<div className="border-2 border-primary-hover rounded-md p-6 space-y-5">
+		<fieldset disabled={isSubmitting} className="group disabled:opacity-75 transition-opacity duration-200 border-2 border-primary-hover rounded-md p-6 space-y-5">
 			<h1>Choose Your Tutor</h1>
 			<p>
 				Propel Tutoring places a strong emphasis on allowing students to choose their own tutor. We believe that learning is most effective when students feel comfortable, respected, and genuinely connected to the person
@@ -114,7 +114,7 @@ const PickTutorSignUpForm = ({ tutors, subjects }: { tutors: DBTypes.Tutors[]; s
 					<FormTextInput
 						label="What days, times, and locations work best for you?"
 						register={register("tutors.timeandlocation")}
-						placeholder="Wednesdays after 4pm or weekends before 2pm, at the University of Alberta campus"
+						placeholder="Wednesdays after 4pm or weekends before 2pm, at the University of Alberta campus or online"
 						error={errors.tutors?.timeandlocation?.message}
 					/>
 				</FormInputCluster>
@@ -126,7 +126,7 @@ const PickTutorSignUpForm = ({ tutors, subjects }: { tutors: DBTypes.Tutors[]; s
 					/>
 				</FormInputCluster>
 			</div>
-		</div>
+		</fieldset>
 	);
 };
 

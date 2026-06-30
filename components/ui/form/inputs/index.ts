@@ -67,6 +67,7 @@ type FormSubmitInputProps = FormBaseInputProps & {
 	register?: never;
 	loadingLabel?: string;
 	pending?: boolean;
+	dots?: boolean;
 };
 
 type FormTextAreaInputProps = FormRegisterableProps & {
