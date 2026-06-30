@@ -131,3 +131,5 @@ const PickTutorSignUpForm = ({ tutors, subjects }: { tutors: DBTypes.Tutors[]; s
 };
 
 export default PickTutorSignUpForm;
+
+// section can sometimes be too wide for phone screen. fix later
