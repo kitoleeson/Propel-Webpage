@@ -6,6 +6,7 @@ function setup() {
 	canvas = createCanvas(650, 650);
 	noLoop(); // important for consistent high-res exports
 	drawSketch();
+	console.log(generateSvgLogo());
 
 	// hook up the download button
 	const btn = document.getElementById("download-btn");
@@ -36,12 +37,13 @@ function drawSketch() {
 	// ellipse(width / 2, height / 2, size * 1.3);
 
 	const bounds = (a, b) => (Math.PI / 6) * (3 + 8 * a + 14 * b);
-	for (let k = 0; k < Math.PI * 14; k += 0.005) {
-		// for (let t = bounds(0, k); t < bounds(1, k); t += 0.005) {
-		const point = logoPoint(k);
-		ellipse(point.x, point.y, 4);
-		// }
-	}
+	// for (let k = 0; k < Math.PI * 14; k += 0.005) {
+	for (let k = 0; k < 6; k++)
+		for (let t = bounds(0, k); t < bounds(1, k); t += 0.005) {
+			const point = logoPoint(t);
+			ellipse(point.x, point.y, 4);
+		}
+	// }
 }
 
 function draw() {}
@@ -62,4 +64,36 @@ function saveHighRes() {
 	pixelDensity(currentDensity);
 	redraw();
 	drawSketch();
+}
+
+function generateSvgLogo(size = 200, className = "") {
+	const logoPoint = (theta) => {
+		const radius = Math.pow(Math.cos((3 / 7) * theta), 2); // r = cos^2(3/7 * theta)
+		return {
+			x: size / 2 + radius * size * 0.8 * Math.cos(theta),
+			y: size / 2 + radius * size * 0.8 * Math.sin(theta),
+		};
+	};
+
+	const bounds = (a, b) => (Math.PI / 6) * (3 + 8 * a + 14 * b);
+	let pathData = "";
+
+	for (let k = 0; k < 6; k++) {
+		const startT = bounds(0, k);
+		const endT = bounds(1, k);
+
+		const startPoint = logoPoint(startT);
+		pathData += ` M ${startPoint.x.toFixed(2)} ${startPoint.y.toFixed(2)}`;
+
+		for (let t = startT + 0.005; t < endT; t += 0.005) {
+			const point = logoPoint(t);
+			pathData += ` L ${point.x.toFixed(2)} ${point.y.toFixed(2)}`;
+		}
+	}
+
+	const svgString = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${size} ${size}" width="100%" height="100%" class="${className}">
+  <path d="${pathData}" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+</svg>`;
+
+	return svgString;
 }

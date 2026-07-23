@@ -8,91 +8,88 @@ const personBase = z.object({
 	pref_name: z.string().optional(),
 	email: z.string().email("Invalid email address"),
 	phone: z.string().min(1, "Phone number is required"),
-	pref_communication: z
-		.enum(["Email", "Text Message"])
-		.optional()
-		.refine((val) => val !== undefined, { message: "Required" }),
+	pref_communication: z.enum(["Email", "Text Message"]),
 });
 
 const studentSchema = personBase.extend({
-	grade: z
-		.number()
-		.int()
-		.min(1, "Grade is required")
-		.max(12, "Grade must be between 1 and 12")
-		.optional()
-		.refine((val) => val !== undefined, { message: "Required" }),
+	grade: z.number().int().min(1, "Grade is required").max(12, "Grade must be between 1 and 12"),
 	city: z.string().min(1, "City is required"),
-	how_found_us: z
-		.enum(["Teacher", "Family Member", "Word of Mouth", "Advertisement", "Web Search", "Other"])
-		.optional()
-		.refine((val) => val !== undefined, { message: "Required" }),
-	biller: z
-		.enum(["Student", "Guardian"])
-		.optional()
-		.refine((val) => val !== undefined, { message: "Required" }),
+	how_found_us: z.enum(["Teacher", "Word of Mouth", "Advertisement", "Web Search", "Other"]),
+	biller: z.enum(["Student", "Guardian"]),
 });
 
 const guardianSchema = personBase.extend({
-	relationship: z
-		.enum(["Mother", "Father", "Parent", "Legal Guardian", "Other"])
-		.optional()
-		.refine((val) => val !== undefined, { message: "Required" }),
+	relationship: z.enum(["Mother", "Father", "Parent", "Legal Guardian", "Other"]),
 	is_primary_biller: z.boolean(),
-	already_exists: z.boolean().optional(),
-	id: z.number().int().optional(),
-	email_password: z.string().email("Invalid email address").optional(),
+	already_exists: z.boolean(),
+	email_password: z.string().optional(),
 });
 
+const tutorsSchema = z
+	.object({
+		choices: z.array(z.number().int()).length(2),
+		subjects: z.string().min(1),
+		timeandlocation: z.string().min(1),
+		notes: z.string().optional(),
+	})
+	.superRefine((data, ctx) => {
+		if (data.choices[0] === data.choices[1]) {
+			ctx.addIssue({
+				code: z.ZodIssueCode.custom,
+				message: "Tutor options must be different",
+				path: ["choices", 1],
+			});
+		}
+	});
+
 // export const defaultStudent: ClientFormValues["student"] = {
-// 	gov_first_name: "test",
-// 	gov_last_name: "student",
-// 	pref_name: "tessy",
-// 	email: "tessy@test.ca",
-// 	phone: "1234567890",
+// 	gov_first_name: "Student",
+// 	gov_last_name: "Test",
+// 	pref_name: "Tess",
+// 	email: "tess@student.ca",
+// 	phone: "(123) 456-7890",
 // 	pref_communication: "Email",
 // 	grade: 12,
-// 	city: "edmonton",
+// 	city: "Edmonton",
 // 	how_found_us: "Word of Mouth",
 // 	biller: "Guardian",
 // };
 
 // export const defaultGuardian: ClientFormValues["guardians"][0] = {
-// 	gov_first_name: "test",
-// 	gov_last_name: "guardian",
-// 	pref_name: "tessa",
-// 	email: "tessa@test.ca",
-// 	phone: "1234567890",
+// 	gov_first_name: "Guardian",
+// 	gov_last_name: "Test",
+// 	pref_name: "",
+// 	email: "guardian@test.ca",
+// 	phone: "(123) 456-7890",
 // 	pref_communication: "Text Message",
 // 	relationship: "Mother",
 // 	is_primary_biller: false,
+// 	already_exists: false,
 // };
 
-export const defaultStudent: ClientFormValues["student"] = {
+export const defaultStudent: StudentClientFormValues = {
 	gov_first_name: "",
 	gov_last_name: "",
 	pref_name: "",
 	email: "",
 	phone: "",
-	pref_communication: undefined,
-	grade: undefined,
+	pref_communication: undefined as any,
+	grade: undefined as any,
 	city: "",
-	how_found_us: undefined,
-	biller: undefined,
+	how_found_us: undefined as any,
+	biller: undefined as any,
 };
 
-export const defaultGuardian: ClientFormValues["guardians"][0] = {
+export const defaultGuardian: GuardianClientFormValues = {
 	gov_first_name: "",
 	gov_last_name: "",
 	pref_name: "",
 	email: "",
 	phone: "",
-	pref_communication: undefined,
-	relationship: undefined,
+	pref_communication: undefined as any,
+	relationship: undefined as any,
 	is_primary_biller: false,
 	already_exists: false,
-	id: undefined,
-	email_password: "",
 };
 
 export const formSchema = z
@@ -100,6 +97,8 @@ export const formSchema = z
 		student: studentSchema,
 		guardians: z.array(guardianSchema),
 		primary_biller_index: z.number().min(-1),
+		tutors: tutorsSchema,
+		comments: z.string().optional(),
 	})
 	.superRefine((data, ctx) => {
 		const guardianBilling = data.student.biller === "Guardian";
@@ -121,6 +120,7 @@ export const formSchema = z
 		}
 	});
 
+export type StudentClientFormValues = z.infer<typeof studentSchema>;
+export type GuardianClientFormValues = z.infer<typeof guardianSchema>;
+export type TutorClientFormValues = z.infer<typeof tutorsSchema>;
 export type ClientFormValues = z.infer<typeof formSchema>;
-export type StudentFormValues = z.infer<typeof studentSchema>;
-export type GuardianFormValues = z.infer<typeof guardianSchema>;

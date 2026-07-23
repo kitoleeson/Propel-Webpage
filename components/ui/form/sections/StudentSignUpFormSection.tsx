@@ -14,11 +14,11 @@ type Props = {
 const StudentSection = ({ placeholder }: Props) => {
 	const {
 		register,
-		formState: { errors },
+		formState: { errors, isSubmitting },
 	} = useFormContext<ClientFormValues>();
 
 	return (
-		<>
+		<fieldset disabled={isSubmitting} className="group disabled:opacity-75 transition-opacity duration-200">
 			<h1>Student Information</h1>
 
 			<FormInputCluster>
@@ -39,15 +39,10 @@ const StudentSection = ({ placeholder }: Props) => {
 			</FormInputCluster>
 
 			<FormInputCluster>
-				<FormDropdownInput
-					label="How Did You Find Us?"
-					register={register("student.how_found_us")}
-					options={["Teacher", "Family Member", "Word of Mouth", "Advertisement", "Web Search", "Other"]}
-					error={errors.student?.how_found_us?.message}
-				/>
+				<FormDropdownInput label="How Did You Find Us?" register={register("student.how_found_us")} options={["Teacher", "Word of Mouth", "Advertisement", "Web Search", "Other"]} error={errors.student?.how_found_us?.message} />
 				<FormRadioInput label="Who will be paying for tutoring sessions?" register={register("student.biller")} options={["Student", "Guardian"]} error={errors.student?.biller?.message} />
 			</FormInputCluster>
-		</>
+		</fieldset>
 	);
 };
 

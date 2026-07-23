@@ -13,5 +13,6 @@ export default defineConfig({
 		include: ["tests/integration/**/*.test.ts", "tests/end_to_end/**/*.test.ts"],
 		globals: true,
 		setupFiles: ["tests/test-setup.ts"],
+		maxWorkers: 8,
 	},
 });

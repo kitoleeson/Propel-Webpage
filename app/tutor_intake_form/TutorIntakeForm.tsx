@@ -8,7 +8,7 @@ import { z } from "zod";
 import { defaultTutor, TutorFormValues, tutorSchema, tutorPlaceholder } from "@/lib/validation/tutorForm/tutorFormSchema";
 import { FormInputCluster, FormPhoneInput, FormDropdownInput, FormTextInput, FormNumberInput, FormDateInput } from "@/components/ui/form";
 import FormCheckboxInput from "@/components/ui/form/inputs/FormCheckboxInput";
-import { submitTutorForApproval } from "@/lib/db/actions";
+import { submitTutorForApproval } from "@/lib/db/actions/client_database";
 import { useEffect } from "react";
 import FormSubmitInput from "@/components/ui/form/inputs/FormSubmitInput";
 import FormTextAreaInput from "@/components/ui/form/inputs/FormTextAreaInput";
@@ -183,7 +183,7 @@ const TutorIntakeForm = () => {
 					<FormCheckboxInput
 						label="What computer science do you teach?"
 						register={register("subjects.computer_science")}
-						options={["Comp Sci 10", "Comp Sci 20 (AP)", "Comp Sci 30 (AP)"]}
+						options={["Computer Science 10 (AP)", "Computer Science 20 (AP)", "Computer Science 30 (AP)"]}
 						error={errors.subjects?.computer_science?.message}
 					/>
 				</FormInputCluster>

@@ -1,0 +1,12 @@
+Hi ??StudentFirstName??,
+
+Welcome to Propel Tutoring! We are very excited to begin working with you. 
+
+You will be working with ??TutorFirstName??, ??TutorFieldOfStudy?? student at the ??TutorUni??. Their current hourly rate is $??TutorRate?? per hour, which will not change for as long as you work together. You will be hearing from ??TutorFirstName?? shortly to set up a first session.
+
+You will find our Client Agreement attached to this email. Please read through it sign it, digitally or physically, and send a PDF version back to this email (propeltutoringyeg@gmail.com). We must receive your signed agreement prior to your first tutoring session. If we have not received it by the time of your first session, the session will be postponed. The Client Agreement must be signed by the participating student, as well as a legal guardian if the student is over 18 years of age.
+
+Please feel free to reach out if you have any questions or concerns. We are here to help!
+We appreciate your trust and support, and are excited to see the progress this semester will bring!
+
+Propel Tutoring
