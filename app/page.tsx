@@ -10,6 +10,7 @@ import HighlightCardStrictGrid from "@/components/ui/highlight_card/HighlightCar
 import Image from "next/image";
 import Link from "next/link";
 import { navLinks } from "@/components/ui/base_page/nav_bar/links";
+import { Analytics } from "@vercel/analytics/next";
 
 export default function Home() {
 	return (
@@ -75,6 +76,7 @@ export default function Home() {
 					</h1>
 				</Link>
 			</main>
+			<Analytics />
 		</>
 	);
 }
