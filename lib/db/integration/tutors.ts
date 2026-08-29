@@ -3,6 +3,7 @@
 import { TutorFormValues } from "@/lib/validation/tutorForm/tutorFormSchema";
 import parseSubjects from "./subjects";
 import { DBTypes } from "../dbtypes";
+import SQL from "sql-template-strings";
 
 export const createTutorRepo = (sql: any, pool: any) => {
 	const get = async (tutor_id: number, db: any = sql): Promise<DBTypes.TutorsRow[]> => {
@@ -29,37 +30,37 @@ export const createTutorRepo = (sql: any, pool: any) => {
 
 	const find = async (gov_first_name: string, gov_last_name: string, db: any = sql): Promise<number | null> => {
 		const rows = await db`
-         SELECT tutor_id
-         FROM tutors
-         WHERE gov_first_name ILIKE ${gov_first_name} AND gov_last_name ILIKE ${gov_last_name};
-      `;
+			SELECT tutor_id
+			FROM tutors
+			WHERE gov_first_name ILIKE ${gov_first_name} AND gov_last_name ILIKE ${gov_last_name};
+		`;
 		return rows[0]?.tutor_id ?? null;
 	};
 
 	const insert = (data: DBTypes.Tutors, db: any = sql): Promise<DBTypes.TutorsRow[]> => {
 		return db`
-         INSERT INTO tutors (
-            gov_first_name, gov_last_name, pref_name, email, phone,
-            date_hired, prior_experience, current_rate, accepting_students,
-            emerg_contact_name, emerg_contact_phone, emerg_contact_relationship,
-            availability, in_person, city, location,
-            subjects,
-            current_uni, current_degree, field_of_study, year_of_study, current_fav_class, academic_interests,
-            bio, hobbies,
-            high_school, high_school_city, fav_high_school_class, ap_ib_credentials
-         )
-         VALUES (
-            ${data.gov_first_name}, ${data.gov_last_name}, ${data.pref_name || null}, ${data.email}, ${data.phone},
-            ${data.date_hired.toISOString().split("T")[0]}, ${data.prior_experience}, ${data.current_rate}, ${data.accepting_students},
-            ${data.emerg_contact_name}, ${data.emerg_contact_phone}, ${data.emerg_contact_relationship || null},
-            ${data.availability || null}, ${data.in_person}, ${data.city || null}, ${data.location || null},
-            ${data.subjects},
-            ${data.current_uni || null}, ${data.current_degree || null}, ${data.field_of_study || null}, ${data.year_of_study || null}, ${data.current_fav_class || null}, ${data.academic_interests || null},
-            ${data.bio || null}, ${data.hobbies || null},
-            ${data.high_school || null}, ${data.high_school_city || null}, ${data.fav_high_school_class || null}, ${data.ap_ib_credentials || null}
-         )
-         RETURNING *;
-      `;
+			INSERT INTO tutors (
+				gov_first_name, gov_last_name, pref_name, email, phone,
+				date_hired, prior_experience, current_rate, accepting_students,
+				emerg_contact_name, emerg_contact_phone, emerg_contact_relationship,
+				availability, in_person, city, location,
+				subjects,
+				current_uni, current_degree, field_of_study, year_of_study, current_fav_class, academic_interests,
+				bio, hobbies,
+				high_school, high_school_city, fav_high_school_class, ap_ib_credentials
+			)
+			VALUES (
+				${data.gov_first_name}, ${data.gov_last_name}, ${data.pref_name || null}, ${data.email}, ${data.phone},
+				${data.date_hired.toISOString().split("T")[0]}, ${data.prior_experience}, ${data.current_rate}, ${data.accepting_students},
+				${data.emerg_contact_name}, ${data.emerg_contact_phone}, ${data.emerg_contact_relationship || null},
+				${data.availability || null}, ${data.in_person}, ${data.city || null}, ${data.location || null},
+				${data.subjects},
+				${data.current_uni || null}, ${data.current_degree || null}, ${data.field_of_study || null}, ${data.year_of_study || null}, ${data.current_fav_class || null}, ${data.academic_interests || null},
+				${data.bio || null}, ${data.hobbies || null},
+				${data.high_school || null}, ${data.high_school_city || null}, ${data.fav_high_school_class || null}, ${data.ap_ib_credentials || null}
+			)
+			RETURNING *;
+		`;
 	};
 
 	const insertWithSubjects = async (data: TutorFormValues, db: any = sql): Promise<DBTypes.TutorsRow[]> => {
@@ -86,78 +87,100 @@ export const createTutorRepo = (sql: any, pool: any) => {
 
 	const removeById = (tutor_id: number, db: any = sql): Promise<DBTypes.TutorsRow[]> => {
 		return db`
-         DELETE FROM tutors WHERE tutor_id = ${tutor_id} RETURNING *;
-      `;
+			DELETE FROM tutors WHERE tutor_id = ${tutor_id} RETURNING *;
+		`;
 	};
 
 	const removeByName = (gov_first_name: string, gov_last_name: string, db: any = sql): Promise<DBTypes.TutorsRow[]> => {
 		return db`
-         DELETE FROM tutors
-         WHERE gov_first_name = ${gov_first_name} AND gov_last_name = ${gov_last_name}
-			RETURNING *;
-      `;
+			DELETE FROM tutors
+			WHERE gov_first_name = ${gov_first_name} AND gov_last_name = ${gov_last_name}
+				RETURNING *;
+		`;
 	};
 
 	const update = (tutor_id: number, data: DBTypes.Tutors, db: any = sql): Promise<DBTypes.TutorsRow[]> => {
 		return db`
-         UPDATE tutors
-         SET
-            gov_first_name = ${data.gov_first_name},
-            gov_last_name = ${data.gov_last_name},
-            pref_name = ${data.pref_name || null},
-            email = ${data.email},
-            phone = ${data.phone},
+			UPDATE tutors
+			SET
+				gov_first_name = ${data.gov_first_name},
+				gov_last_name = ${data.gov_last_name},
+				pref_name = ${data.pref_name || null},
+				email = ${data.email},
+				phone = ${data.phone},
 
-            date_hired = ${data.date_hired.toISOString().split("T")[0]},
-            prior_experience = ${data.prior_experience},
-            current_rate = ${data.current_rate},
-            accepting_students = ${data.accepting_students},
+				date_hired = ${data.date_hired.toISOString().split("T")[0]},
+				prior_experience = ${data.prior_experience},
+				current_rate = ${data.current_rate},
+				accepting_students = ${data.accepting_students},
 
-            emerg_contact_name = ${data.emerg_contact_name},
-            emerg_contact_phone = ${data.emerg_contact_phone},
-            emerg_contact_relationship = ${data.emerg_contact_relationship || null},
+				emerg_contact_name = ${data.emerg_contact_name},
+				emerg_contact_phone = ${data.emerg_contact_phone},
+				emerg_contact_relationship = ${data.emerg_contact_relationship || null},
 
-            availability = ${data.availability || null},
-            in_person = ${data.in_person},
-            city = ${data.city || null},
-            location = ${data.location || null},
+				availability = ${data.availability || null},
+				in_person = ${data.in_person},
+				city = ${data.city || null},
+				location = ${data.location || null},
 
-            subjects = ${data.subjects},
+				subjects = ${data.subjects},
 
-            current_uni = ${data.current_uni || null},
-            current_degree = ${data.current_degree || null},
-            field_of_study = ${data.field_of_study || null},
-            year_of_study = ${data.year_of_study || null},
-            current_fav_class = ${data.current_fav_class || null},
-            academic_interests = ${data.academic_interests || null},
+				current_uni = ${data.current_uni || null},
+				current_degree = ${data.current_degree || null},
+				field_of_study = ${data.field_of_study || null},
+				year_of_study = ${data.year_of_study || null},
+				current_fav_class = ${data.current_fav_class || null},
+				academic_interests = ${data.academic_interests || null},
 
-            bio = ${data.bio || null},
-            hobbies = ${data.hobbies || null},
+				bio = ${data.bio || null},
+				hobbies = ${data.hobbies || null},
 
-            high_school = ${data.high_school || null},
-            high_school_city = ${data.high_school_city || null},
-            fav_high_school_class = ${data.fav_high_school_class || null},
-            ap_ib_credentials = ${data.ap_ib_credentials || null}
-         WHERE tutor_id = ${tutor_id}
-         RETURNING *;
-      `;
+				high_school = ${data.high_school || null},
+				high_school_city = ${data.high_school_city || null},
+				fav_high_school_class = ${data.fav_high_school_class || null},
+				ap_ib_credentials = ${data.ap_ib_credentials || null}
+			WHERE tutor_id = ${tutor_id}
+			RETURNING *;
+		`;
+	};
+
+	const updatePartial = (tutor_id: number, data: Partial<DBTypes.Tutors>, db: any = sql): Promise<DBTypes.TutorsRow[]> => {
+		const payload: Record<string, any> = { ...data };
+
+		if (data.date_hired) {
+			const d = new Date(data.date_hired);
+			if (!isNaN(d.getTime())) payload.date_hired = d.toISOString().split("T")[0];
+		}
+
+		const filteredEntries = Object.entries(payload).filter(([_, value]) => value !== undefined);
+		if (filteredEntries.length === 0) return db`SELECT * FROM tutors WHERE tutor_id = ${tutor_id};`;
+
+		// build query
+		const query = SQL`UPDATE tutors SET `;
+		filteredEntries.forEach(([key, value], index) => {
+			query.append(key).append(SQL` = ${value}`);
+			if (index < filteredEntries.length - 1) query.append(SQL`, `);
+		});
+		query.append(SQL` WHERE tutor_id = ${tutor_id} RETURNING *;`);
+
+		return db(query);
 	};
 
 	const addSubjects = (tutor_id: number, subjects: string[], db: any = sql): Promise<DBTypes.TutorSubjects[]> => {
 		const ids = Array(subjects.length).fill(tutor_id);
 		return db`
-         INSERT INTO tutor_subjects (tutor_id, subject)
-         SELECT * FROM UNNEST(${ids}::int[], ${subjects}::text[])
-         ON CONFLICT (tutor_id, subject) DO NOTHING;
-      `;
+			INSERT INTO tutor_subjects (tutor_id, subject)
+			SELECT * FROM UNNEST(${ids}::int[], ${subjects}::text[])
+			ON CONFLICT (tutor_id, subject) DO NOTHING;
+		`;
 	};
 
 	const deleteSubjects = (id: number, db: any = sql): Promise<DBTypes.TutorSubjects[]> => {
 		return db`
-         DELETE FROM tutor_subjects
-         WHERE tutor_id = ${id}
-			RETURNING *;
-      `;
+			DELETE FROM tutor_subjects
+			WHERE tutor_id = ${id}
+				RETURNING *;
+		`;
 	};
 
 	const updateWithSubjects = async (data: TutorFormValues, db: any = sql): Promise<DBTypes.TutorsRow[]> => {
@@ -211,6 +234,7 @@ export const createTutorRepo = (sql: any, pool: any) => {
 		},
 		update: {
 			update,
+			updatePartial,
 			updateWithSubjects,
 			decrementAcceptingStudents,
 		},

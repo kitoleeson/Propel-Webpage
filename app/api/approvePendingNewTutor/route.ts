@@ -1,7 +1,7 @@
 /** @format */
 
 import { NextRequest, NextResponse } from "next/server";
-import { approvePendingTutor } from "@/lib/db/actions/client_database";
+import { approvePendingNewTutor } from "@/lib/db/actions/client_database";
 
 export async function GET(req: NextRequest) {
 	const { searchParams } = new URL(req.url);
@@ -10,7 +10,7 @@ export async function GET(req: NextRequest) {
 	if (!id) return NextResponse.json({ error: "Missing ID" }, { status: 400 });
 
 	try {
-		const { gov_first, gov_last, insertion } = await approvePendingTutor(id);
+		const { gov_first, gov_last, insertion } = await approvePendingNewTutor(id);
 		const action = insertion ? "insertion" : "update";
 		return new NextResponse(
 			`

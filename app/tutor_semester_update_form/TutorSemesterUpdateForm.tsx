@@ -6,15 +6,14 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import { defaultTutor, TutorFormValues, tutorSchema, tutorPlaceholder } from "@/lib/validation/tutorForm/tutorFormSchema";
-import { FormInputCluster, FormPhoneInput, FormDropdownInput, FormTextInput, FormNumberInput, FormDateInput } from "@/components/ui/form";
-import FormCheckboxInput from "@/components/ui/form/inputs/FormCheckboxInput";
-import { submitNewTutorForApproval } from "@/lib/db/actions/client_database";
+import { FormInputCluster, FormDropdownInput, FormTextInput, FormNumberInput } from "@/components/ui/form";
+import { getTutorInfoFromName, submitTutorSemesterUpdateForApproval } from "@/lib/db/actions/client_database";
 import { useEffect } from "react";
 import FormSubmitInput from "@/components/ui/form/inputs/FormSubmitInput";
 import FormTextAreaInput from "@/components/ui/form/inputs/FormTextAreaInput";
 import FormHeader from "@/components/ui/form/layout/FormHeader";
 
-const TutorIntakeForm = () => {
+const TutorSemesterUpdateForm = () => {
 	const methods = useForm<TutorFormValues>({
 		resolver: zodResolver(tutorSchema),
 		defaultValues: defaultTutor,
@@ -27,16 +26,59 @@ const TutorIntakeForm = () => {
 		watch,
 		setError,
 		clearErrors,
+		setValue,
+		getValues,
 	} = methods;
 
 	useEffect(() => {
 		if (isDirty) clearErrors("root");
 	}, [watch("gov_first_name"), watch("gov_last_name"), isDirty, clearErrors]);
 
+	const autofillTutor = async () => {
+		const firstname = getValues("gov_first_name");
+		const lastname = getValues("gov_last_name");
+		if (!firstname || !lastname) return clearFields();
+
+		const response = await getTutorInfoFromName(firstname, lastname);
+		if (response.success && response.data) {
+			const data = response.data;
+			setValue("in_person", data.in_person);
+			setValue("city", data.city || "");
+			setValue("location", data.location);
+			setValue("current_uni", data.current_uni || "");
+			setValue("current_degree", data.current_degree || "Bachelor's Degree");
+			setValue("field_of_study", data.field_of_study || "");
+			setValue("high_school", data.high_school || "");
+			setValue("high_school_city", data.high_school_city || "");
+			setValue("fav_high_school_class", data.fav_high_school_class || "");
+			setValue("ap_ib_credentials", data.ap_ib_credentials || "N/A");
+			setValue("academic_interests", data.academic_interests || "");
+			setValue("bio", data.bio || "");
+			setValue("hobbies", data.hobbies || "");
+		}
+	};
+
+	const clearFields = () => {
+		setValue("in_person", undefined as any);
+		setValue("city", "");
+		setValue("location", "");
+		setValue("year_of_study", undefined as any);
+		setValue("current_uni", "");
+		setValue("current_degree", undefined as any);
+		setValue("field_of_study", "");
+		setValue("high_school", "");
+		setValue("high_school_city", "");
+		setValue("fav_high_school_class", "");
+		setValue("ap_ib_credentials", undefined as any);
+		setValue("academic_interests", "");
+		setValue("bio", "");
+		setValue("hobbies", "");
+	};
+
 	const onSubmit: SubmitHandler<z.infer<typeof tutorSchema>> = async (data) => {
 		try {
 			clearErrors("root");
-			await submitNewTutorForApproval(data);
+			await submitTutorSemesterUpdateForApproval(data);
 		} catch (err: any) {
 			if (err.message == "NEXT_REDIRECT") throw err;
 
@@ -60,64 +102,19 @@ const TutorIntakeForm = () => {
 				<FormHeader text="Personal Information" />
 				<p>This is how clients and other tutors will call and contact you. Please enter your government first and last name, and the email and phone number that you wish to be contacted on.</p>
 
-				{/* <FormInputCluster className="mt-3!">
-						<FormDropdownInput
-							label="Choose Your Profile"
-							options={process.env.TUTORS?.split(", ").map((tutor) => tutor.trim())}
-							placeholder="Select a profile"
-						/>
-					</FormInputCluster> */}
-
 				<FormInputCluster className="mt-3!">
-					<FormTextInput label="Government First Name" register={register("gov_first_name")} placeholder={tutorPlaceholder.gov_first_name} error={errors.gov_first_name?.message} />
-					<FormTextInput label="Government Last Name" register={register("gov_last_name")} placeholder={tutorPlaceholder.gov_last_name} error={errors.gov_last_name?.message} />
-					<FormTextInput label="Preferred Name (if applicable)" register={register("pref_name")} placeholder={tutorPlaceholder.pref_name} error={errors.pref_name?.message} />
-				</FormInputCluster>
-
-				<FormInputCluster className="mt-3!">
-					<FormTextInput label="Email" type="email" register={register("email")} placeholder={tutorPlaceholder.email} error={errors.email?.message} />
-					<FormPhoneInput label="Phone" register={register("phone")} placeholder={tutorPlaceholder.phone} error={errors.phone?.message} />
-				</FormInputCluster>
-
-				<FormHeader text="Emergency Contact Information" />
-				<p>Your emergency contact information will not be shared with the public.</p>
-
-				<FormInputCluster className="mt-3!">
-					<FormTextInput label="Emergency Contact Full Name" register={register("emerg_contact_name")} placeholder={tutorPlaceholder.emerg_contact_name} error={errors.emerg_contact_name?.message} />
-					<FormPhoneInput label="Emergency Contact Phone Number" register={register("emerg_contact_phone")} placeholder={tutorPlaceholder.emerg_contact_phone} error={errors.emerg_contact_phone?.message} />
-					<FormTextInput
-						label="Emergency Contact Relationship to Tutor"
-						register={register("emerg_contact_relationship")}
-						placeholder={tutorPlaceholder.emerg_contact_relationship}
-						error={errors.emerg_contact_relationship?.message}
-					/>
+					<FormTextInput label="Government First Name" register={register("gov_first_name", { onBlur: autofillTutor })} placeholder={tutorPlaceholder.gov_first_name} error={errors.gov_first_name?.message} />
+					<FormTextInput label="Government Last Name" register={register("gov_last_name", { onBlur: autofillTutor })} placeholder={tutorPlaceholder.gov_last_name} error={errors.gov_last_name?.message} />
 				</FormInputCluster>
 
 				<FormHeader text="Tutoring Information" />
-
-				<FormInputCluster className="mt-3!">
-					<FormDateInput label="Date Hired" register={register("date_hired", { valueAsDate: true })} error={errors.date_hired?.message} />
-					<FormNumberInput
-						label="What is your current agreed-upon rate?"
-						register={register("current_rate", { valueAsNumber: true })}
-						placeholder={tutorPlaceholder.current_rate?.toString()}
-						min={25}
-						step={2.5}
-						error={errors.current_rate?.message}
-					/>
-				</FormInputCluster>
-
+				<p>
+					This question assumes that you have already reached out to all non-graduated students you were tutoring last semester, and have a sense of if they would like to continue with their tutoring this semester. All students
+					who wish to continue with your tutoring services should not be included in this count.
+				</p>
 				<FormInputCluster className="mt-3!">
 					<FormNumberInput
-						label="Full years of tutoring experience before Propel?"
-						register={register("prior_experience", { valueAsNumber: true })}
-						placeholder={tutorPlaceholder.prior_experience?.toString()}
-						error={errors.prior_experience?.message}
-						step={1}
-						min={0}
-					/>
-					<FormNumberInput
-						label="How many (more) students do you want to tutor right now?"
+						label="How many (more) students do you want to take on this semester?"
 						register={register("accepting_students", { valueAsNumber: true })}
 						placeholder={tutorPlaceholder.accepting_students?.toString()}
 						error={errors.accepting_students?.message}
@@ -144,65 +141,6 @@ const TutorIntakeForm = () => {
 
 				<FormInputCluster className="mt-3!">
 					<FormTextInput label="Location" register={register("location")} placeholder={tutorPlaceholder.location} error={errors.location?.message} />
-				</FormInputCluster>
-
-				<FormHeader text="Teaching Information" />
-				<p>Please check all subjects which you feel comfortable tutoring and want to tutor. This can also always be changed.</p>
-				{errors.subjects?.message && <p className="text-red-500">{errors.subjects?.message}</p>}
-
-				<FormInputCluster className="mt-3!">
-					<FormCheckboxInput label="What mathematics do you teach?" register={register("subjects.math")} options={["Math 10 (AP)", "Math 20 (AP)", "Math 30 (AP)"]} error={errors.subjects?.math?.message} />
-				</FormInputCluster>
-
-				<FormInputCluster className="mt-3!">
-					<FormCheckboxInput
-						label="What calculus and statistics do you teach?"
-						register={register("subjects.advanced_math")}
-						options={["Math 31 (AP)", "Math 35 (AP)", "Stats 35 (AP)"]}
-						error={errors.subjects?.advanced_math?.message}
-					/>
-				</FormInputCluster>
-
-				<FormInputCluster className="mt-3!">
-					<FormCheckboxInput label="What science do you teach?" register={register("subjects.science")} options={["Science 10", "Science 20", "Science 30"]} error={errors.subjects?.science?.message} />
-				</FormInputCluster>
-
-				<FormInputCluster className="mt-3!">
-					<FormCheckboxInput label="What physics do you teach?" register={register("subjects.physics")} options={["Physics 20 (AP)", "Physics 30 (AP)", "Physics C (AP)"]} error={errors.subjects?.physics?.message} />
-				</FormInputCluster>
-
-				<FormInputCluster className="mt-3!">
-					<FormCheckboxInput label="What chemistry do you teach?" register={register("subjects.chemistry")} options={["Chemistry 20 (AP)", "Chemistry 30 (AP)"]} error={errors.subjects?.chemistry?.message} />
-				</FormInputCluster>
-
-				<FormInputCluster className="mt-3!">
-					<FormCheckboxInput label="What biology do you teach?" register={register("subjects.biology")} options={["Biology 20 (AP)", "Biology 30 (AP)"]} error={errors.subjects?.biology?.message} />
-				</FormInputCluster>
-
-				<FormInputCluster className="mt-3!">
-					<FormCheckboxInput
-						label="What computer science do you teach?"
-						register={register("subjects.computer_science")}
-						options={["Computer Science 10 (AP)", "Computer Science 20 (AP)", "Computer Science 30 (AP)"]}
-						error={errors.subjects?.computer_science?.message}
-					/>
-				</FormInputCluster>
-
-				<FormInputCluster className="mt-3!">
-					<FormCheckboxInput
-						label="What social studies do you teach?"
-						register={register("subjects.social_studies")}
-						options={["Social 10 (AP)", "Social 20 (AP)", "Social 30 (AP)"]}
-						error={errors.subjects?.social_studies?.message}
-					/>
-				</FormInputCluster>
-
-				<FormInputCluster className="mt-3!">
-					<FormCheckboxInput label="What english do you teach?" register={register("subjects.english")} options={["English 10 (AP)", "English 20 (AP)", "English 30 (AP)"]} error={errors.subjects?.english?.message} />
-				</FormInputCluster>
-
-				<FormInputCluster className="mt-3!">
-					<FormCheckboxInput label="What languages do you teach?" register={register("subjects.languages")} options={["French 10-30", "Spanish 10-30", "German 10-30"]} error={errors.subjects?.english?.message} />
 				</FormInputCluster>
 
 				<FormHeader text="Academic Information" />
@@ -270,4 +208,4 @@ const TutorIntakeForm = () => {
 	);
 };
 
-export default TutorIntakeForm;
+export default TutorSemesterUpdateForm;

@@ -80,6 +80,47 @@ export const tutorSchema = z
 		}
 	});
 
+export const tutorSemesterUpdateSchema = z
+	.object({
+		gov_first_name: z.string().min(1, "First name is required"),
+		gov_last_name: z.string().min(1, "Last name is required"),
+
+		accepting_students: z.number().int().min(0, "Number of desired additional students must be a non-negative number"),
+
+		availability: z.string().min(1, "Availability is required"),
+		in_person: z.enum(["In-Person Only", "Online Only", "Hybrid"]),
+		city: z.string().min(1, { message: "City is required" }),
+		location: z.string().optional(),
+
+		current_uni: z.string().min(1, "Current university is required"),
+		current_degree: z.enum(["Bachelor's Degree", "Master's Degree", "Associate's Degree", "Doctorate", "Vocational Certificate", "Other"]),
+		field_of_study: z.string().min(1, "Current field of study is required"),
+		year_of_study: z
+			.number()
+			.int()
+			.min(-1)
+			.refine((val) => val != 0, { message: "Year of study cannot be zero" }),
+		current_fav_class: z.string().min(1, "Current favorite class is required"),
+		academic_interests: z.string().min(1, "Academic interests are required"),
+
+		bio: z.string().min(1, "Bio is required"),
+		hobbies: z.string().min(1, "Hobbies are required"),
+
+		high_school: z.string().min(1, "High school is required"),
+		high_school_city: z.string().min(1, "High school city is required"),
+		fav_high_school_class: z.string().min(1, "Favorite high school class is required"),
+		ap_ib_credentials: z.enum(["AP Scholar", "AP Scholar with Honours", "AP Scholar with Distinction", "IB Certificate", "IB Diploma", "N/A"]),
+	})
+	.superRefine((data, ctx) => {
+		if (data.in_person != "Online Only" && (!data.location || data.location?.length < 1)) {
+			ctx.addIssue({
+				code: z.ZodIssueCode.custom,
+				message: "Location is required if in-person tutoring is offered",
+				path: ["location"],
+			});
+		}
+	});
+
 export const defaultTutor: TutorFormValues = testing
 	? {
 			gov_first_name: "Test",
@@ -258,3 +299,4 @@ const allSubjectPlaceholder: SubjectFormValues = {
 
 export type TutorFormValues = z.infer<typeof tutorSchema>;
 export type SubjectFormValues = z.infer<typeof subjectSchema>;
+export type TutorSemesterUpdateFormValues = z.infer<typeof tutorSemesterUpdateSchema>;
