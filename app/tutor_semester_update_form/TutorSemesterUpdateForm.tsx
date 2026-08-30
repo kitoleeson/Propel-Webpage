@@ -3,19 +3,18 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
-import { z } from "zod";
-import { defaultTutor, TutorFormValues, tutorSchema, tutorPlaceholder } from "@/lib/validation/tutorForm/tutorFormSchema";
+import { FieldErrors, FormProvider, SubmitHandler, useForm } from "react-hook-form";
+import { defaultTutor, tutorPlaceholder, TutorSemesterUpdateFormValues, tutorSemesterUpdateSchema } from "@/lib/validation/tutorForm/tutorFormSchema";
 import { FormInputCluster, FormDropdownInput, FormTextInput, FormNumberInput } from "@/components/ui/form";
-import { getTutorInfoFromName, submitTutorSemesterUpdateForApproval } from "@/lib/db/actions/client_database";
+import { getTutorInfoFromName, submitTutorSemesterUpdateForApproval } from "@/lib/db/actions/workflows/tutor_forms";
 import { useEffect } from "react";
 import FormSubmitInput from "@/components/ui/form/inputs/FormSubmitInput";
 import FormTextAreaInput from "@/components/ui/form/inputs/FormTextAreaInput";
 import FormHeader from "@/components/ui/form/layout/FormHeader";
 
 const TutorSemesterUpdateForm = () => {
-	const methods = useForm<TutorFormValues>({
-		resolver: zodResolver(tutorSchema),
+	const methods = useForm<TutorSemesterUpdateFormValues>({
+		resolver: zodResolver(tutorSemesterUpdateSchema),
 		defaultValues: defaultTutor,
 	});
 
@@ -75,7 +74,7 @@ const TutorSemesterUpdateForm = () => {
 		setValue("hobbies", "");
 	};
 
-	const onSubmit: SubmitHandler<z.infer<typeof tutorSchema>> = async (data) => {
+	const onSubmit: SubmitHandler<TutorSemesterUpdateFormValues> = async (data) => {
 		try {
 			clearErrors("root");
 			await submitTutorSemesterUpdateForApproval(data);
@@ -93,12 +92,16 @@ const TutorSemesterUpdateForm = () => {
 		console.log(data);
 	};
 
+	const onError = (errors: FieldErrors<FormData>) => {
+		console.log("Zod Validation Errors:", errors);
+	};
+
 	const isHighSchool = watch("year_of_study") === -1;
 	const uniIdentifier = isHighSchool ? "Prospective" : "Current";
 
 	return (
 		<FormProvider {...methods}>
-			<form onSubmit={handleSubmit(onSubmit)}>
+			<form onSubmit={handleSubmit(onSubmit, onError)}>
 				<FormHeader text="Personal Information" />
 				<p>This is how clients and other tutors will call and contact you. Please enter your government first and last name, and the email and phone number that you wish to be contacted on.</p>
 
@@ -186,7 +189,7 @@ const TutorSemesterUpdateForm = () => {
 
 				<h2 className="landscape:mt-4 portrait:mt-7">General</h2>
 				<FormInputCluster className="mt-3!">
-					<FormTextInput label="Favourite Class This Semester" register={register("current_fav_class")} placeholder={tutorPlaceholder.current_fav_class} error={errors.current_fav_class?.message} />
+					<FormTextInput label="Class You Are Most Excited For This Semester" register={register("current_fav_class")} placeholder={tutorPlaceholder.current_fav_class} error={errors.current_fav_class?.message} />
 					<FormTextInput label="Academic Interests" register={register("academic_interests")} placeholder={tutorPlaceholder.academic_interests} error={errors.academic_interests?.message} />
 				</FormInputCluster>
 

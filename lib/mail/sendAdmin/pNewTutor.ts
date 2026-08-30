@@ -118,7 +118,9 @@ export default async function sendAdminPendingNewTutorApprovalEmail(pending_tuto
             </div>
          </div>
       `,
-		attachments: [{ filename: `${data.gov_first_name}_${data.gov_last_name}-pending_tutor_entry-${pending_tutor_id}.json`, content: JSON.stringify(data, null, 2), contentType: "application/json" }],
+		attachments: [
+			{ filename: `${data.gov_first_name.replaceAll(" ", "_")}_${data.gov_last_name.replaceAll(" ", "_")}-pending_tutor_entry-${pending_tutor_id}.json`, content: JSON.stringify(data, null, 2), contentType: "application/json" },
+		],
 	};
 
 	return sendEmail(options);

@@ -152,7 +152,7 @@ export const createTutorRepo = (sql: any, pool: any) => {
 			if (!isNaN(d.getTime())) payload.date_hired = d.toISOString().split("T")[0];
 		}
 
-		const filteredEntries = Object.entries(payload).filter(([_, value]) => value !== undefined);
+		const filteredEntries = Object.entries(payload).filter(([_, value]) => value !== null);
 		if (filteredEntries.length === 0) return db`SELECT * FROM tutors WHERE tutor_id = ${tutor_id};`;
 
 		// build query

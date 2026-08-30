@@ -271,6 +271,33 @@ export const tutorPlaceholder: TutorFormValues = {
 	ap_ib_credentials: undefined as any,
 };
 
+export const tutorUpdatePlaceholder: TutorSemesterUpdateFormValues = {
+	gov_first_name: "Jane Catherine",
+	gov_last_name: "Ngila",
+
+	accepting_students: 2,
+
+	availability: "Tuesdays and Thursdays after 11am, Saturdays after 2pm",
+	in_person: undefined as any,
+	city: "Ithiani",
+	location: "Kenyatta University Campus, Kensington, or Kitui County",
+
+	current_uni: "University of Johannesburg",
+	current_degree: undefined as any,
+	field_of_study: "Chemical Sciences",
+	year_of_study: 5,
+	current_fav_class: "Nanotechnology in Water Purification",
+	academic_interests: "Analytical-environmental chemistry, nanotechnology, chemical resins and filters, and water resource management",
+
+	bio: "As a young girl in rural Kenya, I knew I wanted to solve problems to make a difference in my community. I love chemistry because it is precise, yet it can be incredibly creative - it's a creative tool to take something messy and make it pure. My greatest joy comes from knowing that a student I mentored is now leading their own lab, or that a community has a slightly safer glass of water because of a filter I helped design. I'm a scientist, but more than that, I am a woman who believes we have the power to heal our environment, one molecule at a time.",
+	hobbies: "Mentorship, community advocacy, academic management, and maxing out my h-index",
+
+	high_school: "Lugulu Girls School",
+	high_school_city: "Bungoma County",
+	fav_high_school_class: "Applied Chemistry 20",
+	ap_ib_credentials: undefined as any,
+};
+
 export const subjectPlaceholder: SubjectFormValues = {
 	math: ["Math 10 (AP)", "Math 20 (AP)", "Math 30 (AP)"],
 	advanced_math: ["Math 31 (AP)", "Math 35 (AP)", "Stats 35 (AP)"],
@@ -284,7 +311,7 @@ export const subjectPlaceholder: SubjectFormValues = {
 	languages: [],
 };
 
-const allSubjectPlaceholder: SubjectFormValues = {
+export const allSubjectPlaceholder: SubjectFormValues = {
 	math: ["Math 10 (AP)", "Math 20 (AP)", "Math 30 (AP)"],
 	advanced_math: ["Math 31 (AP)", "Math 35 (AP)", "Stats 35 (AP)"],
 	science: ["Science 10", "Science 20", "Science 30"],
