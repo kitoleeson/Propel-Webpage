@@ -18,7 +18,7 @@ export const createPendingTutorRepo = (sql: any, pool: any) => {
          ) VALUES (
             ${data.tutor_id},
             ${data.gov_first_name}, ${data.gov_last_name}, ${data.pref_name}, ${data.email}, ${data.phone},
-            ${data.date_hired.toISOString().split("T")[0]}, ${data.prior_experience}, 
+            ${data.date_hired ? data.date_hired.toISOString().split("T")[0] : new Date().toISOString().split("T")[0]}, ${data.prior_experience}, 
             ${data.current_rate}, ${data.accepting_students},
             ${data.emerg_contact_name}, ${data.emerg_contact_phone}, ${data.emerg_contact_relationship},
             ${data.availability}, ${data.in_person}, ${data.city}, ${data.location},

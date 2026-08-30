@@ -80,6 +80,47 @@ export const tutorSchema = z
 		}
 	});
 
+export const tutorSemesterUpdateSchema = z
+	.object({
+		gov_first_name: z.string().min(1, "First name is required"),
+		gov_last_name: z.string().min(1, "Last name is required"),
+
+		accepting_students: z.number().int().min(0, "Number of desired additional students must be a non-negative number"),
+
+		availability: z.string().min(1, "Availability is required"),
+		in_person: z.enum(["In-Person Only", "Online Only", "Hybrid"]),
+		city: z.string().min(1, { message: "City is required" }),
+		location: z.string().optional(),
+
+		current_uni: z.string().min(1, "Current university is required"),
+		current_degree: z.enum(["Bachelor's Degree", "Master's Degree", "Associate's Degree", "Doctorate", "Vocational Certificate", "Other"]),
+		field_of_study: z.string().min(1, "Current field of study is required"),
+		year_of_study: z
+			.number()
+			.int()
+			.min(-1)
+			.refine((val) => val != 0, { message: "Year of study cannot be zero" }),
+		current_fav_class: z.string().min(1, "Current favorite class is required"),
+		academic_interests: z.string().min(1, "Academic interests are required"),
+
+		bio: z.string().min(1, "Bio is required"),
+		hobbies: z.string().min(1, "Hobbies are required"),
+
+		high_school: z.string().min(1, "High school is required"),
+		high_school_city: z.string().min(1, "High school city is required"),
+		fav_high_school_class: z.string().min(1, "Favorite high school class is required"),
+		ap_ib_credentials: z.enum(["AP Scholar", "AP Scholar with Honours", "AP Scholar with Distinction", "IB Certificate", "IB Diploma", "N/A"]),
+	})
+	.superRefine((data, ctx) => {
+		if (data.in_person != "Online Only" && (!data.location || data.location?.length < 1)) {
+			ctx.addIssue({
+				code: z.ZodIssueCode.custom,
+				message: "Location is required if in-person tutoring is offered",
+				path: ["location"],
+			});
+		}
+	});
+
 export const defaultTutor: TutorFormValues = testing
 	? {
 			gov_first_name: "Test",
@@ -230,6 +271,33 @@ export const tutorPlaceholder: TutorFormValues = {
 	ap_ib_credentials: undefined as any,
 };
 
+export const tutorUpdatePlaceholder: TutorSemesterUpdateFormValues = {
+	gov_first_name: "Jane Catherine",
+	gov_last_name: "Ngila",
+
+	accepting_students: 2,
+
+	availability: "Tuesdays and Thursdays after 11am, Saturdays after 2pm",
+	in_person: undefined as any,
+	city: "Ithiani",
+	location: "Kenyatta University Campus, Kensington, or Kitui County",
+
+	current_uni: "University of Johannesburg",
+	current_degree: undefined as any,
+	field_of_study: "Chemical Sciences",
+	year_of_study: 5,
+	current_fav_class: "Nanotechnology in Water Purification",
+	academic_interests: "Analytical-environmental chemistry, nanotechnology, chemical resins and filters, and water resource management",
+
+	bio: "As a young girl in rural Kenya, I knew I wanted to solve problems to make a difference in my community. I love chemistry because it is precise, yet it can be incredibly creative - it's a creative tool to take something messy and make it pure. My greatest joy comes from knowing that a student I mentored is now leading their own lab, or that a community has a slightly safer glass of water because of a filter I helped design. I'm a scientist, but more than that, I am a woman who believes we have the power to heal our environment, one molecule at a time.",
+	hobbies: "Mentorship, community advocacy, academic management, and maxing out my h-index",
+
+	high_school: "Lugulu Girls School",
+	high_school_city: "Bungoma County",
+	fav_high_school_class: "Applied Chemistry 20",
+	ap_ib_credentials: undefined as any,
+};
+
 export const subjectPlaceholder: SubjectFormValues = {
 	math: ["Math 10 (AP)", "Math 20 (AP)", "Math 30 (AP)"],
 	advanced_math: ["Math 31 (AP)", "Math 35 (AP)", "Stats 35 (AP)"],
@@ -243,7 +311,7 @@ export const subjectPlaceholder: SubjectFormValues = {
 	languages: [],
 };
 
-const allSubjectPlaceholder: SubjectFormValues = {
+export const allSubjectPlaceholder: SubjectFormValues = {
 	math: ["Math 10 (AP)", "Math 20 (AP)", "Math 30 (AP)"],
 	advanced_math: ["Math 31 (AP)", "Math 35 (AP)", "Stats 35 (AP)"],
 	science: ["Science 10", "Science 20", "Science 30"],
@@ -258,3 +326,4 @@ const allSubjectPlaceholder: SubjectFormValues = {
 
 export type TutorFormValues = z.infer<typeof tutorSchema>;
 export type SubjectFormValues = z.infer<typeof subjectSchema>;
+export type TutorSemesterUpdateFormValues = z.infer<typeof tutorSemesterUpdateSchema>;

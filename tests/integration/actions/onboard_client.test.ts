@@ -15,7 +15,7 @@ let tutorAcceptStudent: typeof import("@/lib/db/actions/workflows/onboard_client
 let tutorDeclineStudent: typeof import("@/lib/db/actions/workflows/onboard_client").tutorDeclineStudent;
 let emailSpy: import("vitest").MockInstance;
 
-describe("Action Repository Integration Tests", () => {
+describe("Onboard Client Integration Tests", () => {
 	beforeAll(async () => {
 		vi.resetModules();
 		({ db } = await import("@/lib/db"));
@@ -882,7 +882,9 @@ describe("Action Repository Integration Tests", () => {
 				],
 			});
 		});
+	});
 
+	describe("Tutor Accepting Operations", () => {
 		it("should onboard a new student with a new guardian and be accepted by the first tutor", async () => {
 			const data = createMockClientFormValues();
 			await onboardClientWithFormData(data);
@@ -1162,10 +1164,5 @@ describe("Action Repository Integration Tests", () => {
 			expect(adminArguments.html).toContain(">12<");
 			expect(adminArguments.html).not.toContain("??");
 		});
-
-		/**
-		 * THINGS TO TEST
-		 * student biller and guardian biller
-		 */
 	});
 });

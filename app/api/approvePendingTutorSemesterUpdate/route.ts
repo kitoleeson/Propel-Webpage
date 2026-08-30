@@ -1,7 +1,7 @@
 /** @format */
 
 import { NextRequest } from "next/server";
-import { tutorAcceptStudent } from "@/lib/db/actions/workflows/onboard_client";
+import { approvePendingTutorSemesterUpdate } from "@/lib/db/actions/workflows/tutor_forms";
 import { handleRouteError, renderHtmlResponse } from "../utils";
 
 export async function GET(req: NextRequest) {
@@ -11,12 +11,12 @@ export async function GET(req: NextRequest) {
 	if (!id || isNaN(id)) return renderHtmlResponse({ title: "Invalid Request", message: "Missing or invalid request ID.", isError: true });
 
 	try {
-		const { student_first, student_last } = await tutorAcceptStudent(id);
+		const { gov_first, gov_last } = await approvePendingTutorSemesterUpdate(id);
 		return renderHtmlResponse({
-			title: "Acceptance Complete",
-			message: `Successfully accepted new student:<br/><span style="color: #1eb9c2; font-weight: bold;">${student_first} ${student_last}</span>.`,
+			title: "Approval Complete",
+			message: `Successfully processed the <strong>update</strong> for <br/><span style="color: #1eb9c2; font-weight: bold;">${gov_first} ${gov_last}</span>.`,
 		});
 	} catch (error: any) {
-		return handleRouteError(error, "New Student Acceptance");
+		return handleRouteError(error, "Pending Tutor Semester Update Approval");
 	}
 }
