@@ -4,11 +4,10 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
-import { z } from "zod";
 import { defaultTutor, TutorFormValues, tutorSchema, tutorPlaceholder } from "@/lib/validation/tutorForm/tutorFormSchema";
 import { FormInputCluster, FormPhoneInput, FormDropdownInput, FormTextInput, FormNumberInput, FormDateInput } from "@/components/ui/form";
 import FormCheckboxInput from "@/components/ui/form/inputs/FormCheckboxInput";
-import { submitTutorForApproval } from "@/lib/db/actions/client_database";
+import { submitNewTutorForApproval } from "@/lib/db/actions/workflows/tutor_forms";
 import { useEffect } from "react";
 import FormSubmitInput from "@/components/ui/form/inputs/FormSubmitInput";
 import FormTextAreaInput from "@/components/ui/form/inputs/FormTextAreaInput";
@@ -33,10 +32,10 @@ const TutorIntakeForm = () => {
 		if (isDirty) clearErrors("root");
 	}, [watch("gov_first_name"), watch("gov_last_name"), isDirty, clearErrors]);
 
-	const onSubmit: SubmitHandler<z.infer<typeof tutorSchema>> = async (data) => {
+	const onSubmit: SubmitHandler<TutorFormValues> = async (data) => {
 		try {
 			clearErrors("root");
-			await submitTutorForApproval(data);
+			await submitNewTutorForApproval(data);
 		} catch (err: any) {
 			if (err.message == "NEXT_REDIRECT") throw err;
 

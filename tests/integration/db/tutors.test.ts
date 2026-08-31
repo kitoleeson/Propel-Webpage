@@ -262,6 +262,30 @@ describe("Tutor Repository Integration Tests", () => {
 			await expect(db.tutor.update.update(1, createMockTutor({ email: `jane1@example.ca`, phone: `(222) 456-7890` }))).rejects.toThrow(/duplicate key value violates unique constraint.*phone/);
 		});
 
+		it("should update tutor preferred name successfully with partial data", async () => {
+			const mockData = createMockTutor();
+			const inserted = await db.tutor.insert.insert(mockData);
+			const id = inserted[0].tutor_id;
+			expect(inserted[0].pref_name).toBe("Janie");
+
+			const updatedData = { pref_name: "Jane" };
+			const updated = await db.tutor.update.updatePartial(id, updatedData);
+
+			expect(updated[0].pref_name).toBe("Jane");
+			expect(updated[0].gov_first_name).toBe("Jane Catherine");
+			expect(updated[0].gov_last_name).toBe("Ngila");
+		});
+
+		it("should error update on duplicate email with partial data", async () => {
+			for (let i = 1; i <= 2; i++) await db.tutor.insert.insert(createMockTutor({ email: `jane${i}@example.ca`, phone: `(${i}${i}${i}) 456-7890` }));
+			await expect(db.tutor.update.updatePartial(1, { email: `jane2@example.ca`, phone: `(111) 456-7890` })).rejects.toThrow(/duplicate key value violates unique constraint.*email/);
+		});
+
+		it("should error update on duplicate phone with partial data", async () => {
+			for (let i = 1; i <= 2; i++) await db.tutor.insert.insert(createMockTutor({ email: `jane${i}@example.ca`, phone: `(${i}${i}${i}) 456-7890` }));
+			await expect(db.tutor.update.updatePartial(1, { email: `jane1@example.ca`, phone: `(222) 456-7890` })).rejects.toThrow(/duplicate key value violates unique constraint.*phone/);
+		});
+
 		it("should update tutor and their subjects", async () => {
 			const inserted = (await db.tutor.insert.insertWithSubjects(createMockTutorWithSubjects()))[0];
 			expect(inserted.gov_first_name).toEqual("Jane Catherine");
