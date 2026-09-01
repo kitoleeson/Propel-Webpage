@@ -47,7 +47,6 @@ export async function submitNewTutorForApproval(data: TutorFormValues) {
 	redirect("/");
 }
 
-// TODO: send errors back to the api page and display for admin
 export async function approvePendingNewTutor(pending_tutor_id: number) {
 	const client = await db.pool.connect();
 	const tx = sql(client);
@@ -66,6 +65,10 @@ export async function approvePendingNewTutor(pending_tutor_id: number) {
 		await db.pending_tutor.remove(pending_tutor_id, tx);
 
 		await client.query("COMMIT");
+
+		revalidatePath("/team");
+		revalidatePath("/signup");
+
 		return { gov_first: pendingTutor.gov_first_name, gov_last: pendingTutor.gov_last_name, insertion: pendingTutor.tutor_id === -1 };
 	} catch (e) {
 		await client.query("ROLLBACK");
@@ -91,7 +94,6 @@ export async function submitTutorSemesterUpdateForApproval(data: TutorSemesterUp
 	redirect("/");
 }
 
-// TODO: send errors back to the api page and display for admin
 export async function approvePendingTutorSemesterUpdate(pending_tutor_id: number) {
 	const client = await db.pool.connect();
 	const tx = sql(client);
@@ -106,10 +108,14 @@ export async function approvePendingTutorSemesterUpdate(pending_tutor_id: number
 
 		const { pending_tutor_id: _pId, tutor_id: _tId, created_at: _cA, subjects_json: _sJSON, ...updateData } = pendingTutor;
 
-		await db.tutor.update.updatePartial(pendingTutor.tutor_id, updateData);
+		await db.tutor.update.updatePartial(pendingTutor.tutor_id, updateData, tx);
 		await db.pending_tutor.remove(pending_tutor_id, tx);
 
 		await client.query("COMMIT");
+
+		revalidatePath("/team");
+		revalidatePath("/signup");
+
 		return { gov_first: pendingTutor.gov_first_name, gov_last: pendingTutor.gov_last_name };
 	} catch (e) {
 		await client.query("ROLLBACK");
