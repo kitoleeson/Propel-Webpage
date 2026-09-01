@@ -4,6 +4,7 @@ import { allSubjectPlaceholder, subjectPlaceholder, TutorFormValues, tutorPlaceh
 import { withNeonTestBranch } from "@/tests/test-setup";
 import Mail from "nodemailer/lib/mailer";
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 
 withNeonTestBranch();
 
@@ -188,9 +189,9 @@ describe("Tutor Input Forms Integration Tests", () => {
 			expect(adminArguments.html).toContain(">jane1@example.ca<");
 			expect(adminArguments.html).not.toContain("??");
 
-			// check redirect
-			expect(redirect).toHaveBeenCalledOnce();
-			expect(redirect).toHaveBeenCalledWith("/");
+			// check redirect and revalidation
+			expect(redirect).toHaveBeenCalledExactlyOnceWith("/");
+			expect(revalidatePath).toHaveBeenCalledExactlyOnceWith("/");
 
 			// --------------- ADMIN APPROVAL ---------------
 			await approvePendingNewTutor(1);
@@ -208,6 +209,11 @@ describe("Tutor Input Forms Integration Tests", () => {
 			// check tutor_subjects
 			const post_tutor_subjects = await db.tutor_subjects.get.getAll();
 			expect(post_tutor_subjects.length).toEqual(14);
+
+			// check revalidation
+			expect(revalidatePath).toHaveBeenCalledTimes(3);
+			expect(revalidatePath).toHaveBeenCalledWith("/team");
+			expect(revalidatePath).toHaveBeenCalledWith("/signup");
 		});
 
 		it("should submit an existing tutor for admin approval and be accepted by admin", async () => {
@@ -249,9 +255,9 @@ describe("Tutor Input Forms Integration Tests", () => {
 			expect(adminArguments.html).toContain(">jane1@example.ca<");
 			expect(adminArguments.html).not.toContain("??");
 
-			// check redirect
-			expect(redirect).toHaveBeenCalledOnce();
-			expect(redirect).toHaveBeenCalledWith("/");
+			// check redirect and revalidation
+			expect(redirect).toHaveBeenCalledExactlyOnceWith("/");
+			expect(revalidatePath).toHaveBeenCalledExactlyOnceWith("/");
 
 			// --------------- ADMIN APPROVAL ---------------
 			await approvePendingNewTutor(1);
@@ -270,6 +276,11 @@ describe("Tutor Input Forms Integration Tests", () => {
 			// check tutor_subjects
 			const post_tutor_subjects = await db.tutor_subjects.get.getAll();
 			expect(post_tutor_subjects.length).toEqual(14);
+
+			// check revalidation
+			expect(revalidatePath).toHaveBeenCalledTimes(3);
+			expect(revalidatePath).toHaveBeenCalledWith("/team");
+			expect(revalidatePath).toHaveBeenCalledWith("/signup");
 		});
 
 		it("should error admin approval on duplicate email", async () => {
@@ -309,9 +320,9 @@ describe("Tutor Input Forms Integration Tests", () => {
 			expect(adminArguments.html).toContain(">jane1@example.ca<");
 			expect(adminArguments.html).not.toContain("??");
 
-			// check redirect
-			expect(redirect).toHaveBeenCalledOnce();
-			expect(redirect).toHaveBeenCalledWith("/");
+			// check redirect and revalidation
+			expect(redirect).toHaveBeenCalledExactlyOnceWith("/");
+			expect(revalidatePath).toHaveBeenCalledExactlyOnceWith("/");
 
 			// --------------- ADMIN APPROVAL ---------------
 			await expect(approvePendingNewTutor(1)).rejects.toThrow(/duplicate key value violates unique constraint "tutors_email_key/);
@@ -329,6 +340,8 @@ describe("Tutor Input Forms Integration Tests", () => {
 			// check tutor_subjects
 			const post_tutor_subjects = await db.tutor_subjects.get.getAll();
 			expect(post_tutor_subjects.length).toEqual(27);
+			expect(redirect).toHaveBeenCalledExactlyOnceWith("/");
+			expect(revalidatePath).toHaveBeenCalledExactlyOnceWith("/");
 		});
 
 		it("should error admin approval on duplicate phone number", async () => {
@@ -368,9 +381,11 @@ describe("Tutor Input Forms Integration Tests", () => {
 			expect(adminArguments.html).toContain(">jane0@example.ca<");
 			expect(adminArguments.html).not.toContain("??");
 
-			// check redirect
+			// check redirect and revalidation
 			expect(redirect).toHaveBeenCalledOnce();
 			expect(redirect).toHaveBeenCalledWith("/");
+			expect(revalidatePath).toHaveBeenCalledOnce();
+			expect(revalidatePath).toHaveBeenCalledWith("/");
 
 			// --------------- ADMIN APPROVAL ---------------
 			await expect(approvePendingNewTutor(1)).rejects.toThrow(/duplicate key value violates unique constraint "tutors_phone_key/);
@@ -388,6 +403,9 @@ describe("Tutor Input Forms Integration Tests", () => {
 			// check tutor_subjects
 			const post_tutor_subjects = await db.tutor_subjects.get.getAll();
 			expect(post_tutor_subjects.length).toEqual(27);
+
+			// check revalidation
+			expect(revalidatePath).toHaveBeenCalledOnce();
 		});
 	});
 
@@ -468,9 +486,9 @@ describe("Tutor Input Forms Integration Tests", () => {
 			expect(adminArguments.html).toContain(">In-Person Only<");
 			expect(adminArguments.html).not.toContain("??");
 
-			// check redirect
-			expect(redirect).toHaveBeenCalledOnce();
-			expect(redirect).toHaveBeenCalledWith("/");
+			// check redirect and revalidation
+			expect(redirect).toHaveBeenCalledExactlyOnceWith("/");
+			expect(revalidatePath).toHaveBeenCalledExactlyOnceWith("/");
 
 			// --------------- ADMIN APPROVAL ---------------
 			await approvePendingTutorSemesterUpdate(1);
@@ -485,6 +503,11 @@ describe("Tutor Input Forms Integration Tests", () => {
 			// check pending_tutors
 			const post_pending_tutors = await db.pending_tutor.getAll();
 			expect(post_pending_tutors.length).toEqual(0);
+
+			// check revalidation
+			expect(revalidatePath).toHaveBeenCalledTimes(3);
+			expect(revalidatePath).toHaveBeenCalledWith("/team");
+			expect(revalidatePath).toHaveBeenCalledWith("/signup");
 		});
 	});
 });
