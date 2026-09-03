@@ -8,6 +8,7 @@ export type NewStudentRequestEmailData = {
 	pending_student_tutor: DBTypes.PendingStudentTutorRow;
 	student: DBTypes.StudentsRow;
 	tutor: DBTypes.TutorsRow;
+	guardians: DBTypes.GuardiansRow[];
 };
 
 // needs pending_student_tutor information and student information (could be found by pending_student_tutor information)
@@ -22,8 +23,10 @@ export default async function sendTutorNewStudentRequestEmail(data: NewStudentRe
 			title: "Personal Information",
 			rows: [
 				{ label: "Name", value: `${data.student.gov_first_name} ${data.student.pref_name ? `(${data.student.pref_name})` : ""} ${data.student.gov_last_name}` },
-				{ label: "Email", value: data.student.email },
-				{ label: "Phone", value: data.student.phone },
+				{ label: "Student Email", value: data.student.email },
+				{ label: "Student Phone", value: data.student.phone },
+				{ label: "Guardian Email", value: data.guardians.map((g) => g.email).join(", ") },
+				{ label: "Guardian Phone", value: data.guardians.map((g) => g.phone).join(", ") },
 				{ label: "Preferred Communication", value: data.student.pref_communication },
 			],
 		},
