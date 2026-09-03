@@ -2,95 +2,75 @@
 
 import { TutorFormValues } from "@/lib/validation/tutorForm/tutorFormSchema";
 import parseSubjects from "@/lib/db/integration/subjects";
-import { sendEmail } from "..";
+import { compileEmailTable, sendEmail, TableSection } from "..";
 import Mail from "nodemailer/lib/mailer";
 
 export default async function sendAdminPendingTutorApprovalEmail(pending_tutor_id: number, data: TutorFormValues & { tutor_id: number }) {
-	const sections = [
+	const sections: TableSection[] = [
 		{
 			title: "Personal Information",
-			fields: {
-				gov_first_name: "First Name",
-				gov_last_name: "Last Name",
-				pref_name: "Preferred Name",
-				email: "Email",
-				phone: "Phone",
-				bio: "Bio",
-				hobbies: "Hobbies",
-			},
+			rows: [
+				{ label: "First Name", value: data.gov_first_name },
+				{ label: "Last Name", value: data.gov_last_name },
+				{ label: "Preferred Name", value: data.pref_name },
+				{ label: "Email", value: data.email },
+				{ label: "Phone", value: data.phone },
+				{ label: "Bio", value: data.bio },
+				{ label: "Hobbies", value: data.hobbies },
+			],
 		},
 		{
 			title: "Tutoring Details",
-			fields: {
-				date_hired: "Date Hired",
-				prior_experience: "Prior Experience",
-				current_rate: "Rate ($)",
-				accepting_students: "Capacity",
-				availability: "Availability",
-				in_person: "Tutoring Mode",
-				city: "City",
-				location: "Location",
-			},
+			rows: [
+				{ label: "Date Hired", value: data.date_hired.toString() },
+				{ label: "Prior Experience", value: data.prior_experience.toString() },
+				{ label: "Rate ($)", value: data.current_rate.toString() },
+				{ label: "Capacity", value: data.accepting_students.toString() },
+				{ label: "Availability", value: data.availability },
+				{ label: "Tutoring Mode", value: data.in_person },
+				{ label: "City", value: data.city },
+				{ label: "Location", value: data.location },
+			],
 		},
 		{
 			title: "Emergency Contact",
-			fields: {
-				emerg_contact_name: "Name",
-				emerg_contact_phone: "Phone",
-				emerg_contact_relationship: "Relationship",
-			},
+			rows: [
+				{ label: "Name", value: data.emerg_contact_name },
+				{ label: "Phone", value: data.emerg_contact_phone },
+				{ label: "Relationship", value: data.emerg_contact_relationship },
+			],
 		},
 		{
 			title: "Post-Secondary History",
-			fields: {
-				current_uni: "University",
-				current_degree: "Degree",
-				field_of_study: "Field",
-				year_of_study: "Year",
-				current_fav_class: "Favourite Class",
-				academic_interests: "Interests",
-			},
+			rows: [
+				{ label: "University", value: data.current_uni },
+				{ label: "Degree", value: data.current_degree },
+				{ label: "Field", value: data.field_of_study },
+				{ label: "Year", value: data.year_of_study.toString() },
+				{ label: "Favourite Class", value: data.current_fav_class },
+				{ label: "Interests", value: data.academic_interests },
+			],
 		},
 		{
 			title: "High School History",
-			fields: {
-				high_school: "High School",
-				high_school_city: "City",
-				fav_high_school_class: "Favourite Class",
-				ap_ib_credentials: "AP/IB Status",
-			},
+			rows: [
+				{ label: "High School", value: data.high_school },
+				{ label: "City", value: data.high_school_city },
+				{ label: "Favourite Class", value: data.fav_high_school_class },
+				{ label: "AP/IB Status", value: data.ap_ib_credentials },
+			],
 		},
 	];
 
-	let tableContent = "";
-	sections.forEach((section) => {
-		tableContent += `
-         <tr>
-            <td colspan="2" style="padding: 15px 8px 5px 8px; font-size: 14px; color: #1eb9c2; font-weight: bold; text-transform: uppercase; border-bottom: 2px solid #1eb9c2;">
-               ${section.title}
-            </td>
-         </tr>
-      `;
-
-		Object.entries(section.fields).forEach(([key, label]) => {
-			const value = data[key as keyof TutorFormValues];
-			const displayValue = value !== undefined && value !== null && value !== "" ? value : "—";
-			tableContent += `
-            <tr>
-               <td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold; width: 40%; font-size: 13px;">${label}</td>
-               <td style="padding: 8px; border-bottom: 1px solid #eee; font-size: 13px;">${displayValue}</td>
-            </tr>
-         `;
-		});
-	});
+	let tableContent = compileEmailTable(sections, true);
 	tableContent += `
-      <tr>
-         <td colspan="2" style="padding: 15px 8px 5px 8px; font-size: 14px; color: #1eb9c2; font-weight: bold; text-transform: uppercase; border-bottom: 2px solid #1eb9c2;">Teaching Subjects</td>
-      </tr>
-      <tr>
-         <td colspan="2" style="padding: 12px 8px; background: #f0f7ff; font-size: 14px;">${parseSubjects(data.subjects)}</td>
-      </tr>
-   `;
+		<tr>
+			<td colspan="2" style="padding: 15px 8px 5px 8px; font-size: 14px; color: #1eb9c2; font-weight: bold; text-transform: uppercase; border-bottom: 2px solid #1eb9c2;">Teaching Subjects</td>
+		</tr>
+		<tr>
+			<td colspan="2" style="padding: 12px 8px; background: #f0f7ff; font-size: 14px;">${parseSubjects(data.subjects)}</td>
+		</tr>
+	`;
 
 	const test = process.env.APP_ENV != "prod";
 	const baseUrl = test ? "http://localhost:3000/api" : process.env.NEXT_PUBLIC_BASE_URL;
