@@ -5,7 +5,7 @@ import BasePage from "@/components/ui/base_page/BasePage";
 
 const open: boolean = true;
 
-const TutorFormPage = () => {
+const TutorIntakeFormPage = () => {
 	return (
 		<BasePage title={"Welcome to\nPropel!"}>
 			<p>
@@ -13,8 +13,9 @@ const TutorFormPage = () => {
 				they would like to be their tutor.
 			</p>
 			{open && <TutorIntakeForm />}
+			{!open && <p>Form is currently closed.</p>}
 		</BasePage>
 	);
 };
 
-export default TutorFormPage;
+export default TutorIntakeFormPage;

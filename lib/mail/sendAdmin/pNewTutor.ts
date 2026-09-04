@@ -5,7 +5,7 @@ import parseSubjects from "@/lib/db/integration/subjects";
 import { compileEmailTable, sendEmail, TableSection } from "..";
 import Mail from "nodemailer/lib/mailer";
 
-export default async function sendAdminPendingTutorApprovalEmail(pending_tutor_id: number, data: TutorFormValues & { tutor_id: number }) {
+export default async function sendAdminPendingNewTutorApprovalEmail(pending_tutor_id: number, data: TutorFormValues & { tutor_id: number }) {
 	const sections: TableSection[] = [
 		{
 			title: "Personal Information",
@@ -74,7 +74,7 @@ export default async function sendAdminPendingTutorApprovalEmail(pending_tutor_i
 
 	const test = process.env.APP_ENV != "prod";
 	const baseUrl = test ? "http://localhost:3000/api" : process.env.NEXT_PUBLIC_BASE_URL;
-	const approveUrl = `${baseUrl}/approvePendingTutor?id=${pending_tutor_id}`;
+	const approveUrl = `${baseUrl}/approvePendingNewTutor?id=${pending_tutor_id}`;
 	const insertion = data.tutor_id === -1;
 
 	const options: Mail.Options = {
@@ -98,7 +98,9 @@ export default async function sendAdminPendingTutorApprovalEmail(pending_tutor_i
             </div>
          </div>
       `,
-		attachments: [{ filename: `${data.gov_first_name}_${data.gov_last_name}-pending_tutor_entry-${pending_tutor_id}.json`, content: JSON.stringify(data, null, 2), contentType: "application/json" }],
+		attachments: [
+			{ filename: `${data.gov_first_name.replaceAll(" ", "_")}_${data.gov_last_name.replaceAll(" ", "_")}-pending_tutor_entry-${pending_tutor_id}.json`, content: JSON.stringify(data, null, 2), contentType: "application/json" },
+		],
 	};
 
 	return sendEmail(options);
