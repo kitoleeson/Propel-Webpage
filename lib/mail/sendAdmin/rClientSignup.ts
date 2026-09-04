@@ -1,137 +1,63 @@
 /** @format */
 
 import { ClientFormValues, GuardianClientFormValues, StudentClientFormValues, TutorClientFormValues } from "@/lib/validation/clientForm/clientFormSchema";
-import { sendEmail } from "..";
+import { compileEmailTable, sendEmail, TableSection } from "..";
 import Mail from "nodemailer/lib/mailer";
 
 export default async function sendAdminClientSignupReviewEmail(data: ClientFormValues) {
-	const student_section = {
-		title: "Student",
-		fields: {
-			gov_first_name: "First Name",
-			gov_last_name: "Last Name",
-			pref_name: "Preferred Name",
-			email: "Email",
-			phone: "Phone",
-			pref_communication: "Preferred Communication",
-			city: "City",
-			grade: "Grade",
-			how_found_us: "How Found Us",
-			biller: "Biller",
+	const sections: TableSection[] = [
+		{
+			title: "Student",
+			rows: [
+				{ label: "First Name", value: data.student.gov_first_name },
+				{ label: "Last Name", value: data.student.gov_last_name },
+				{ label: "Preferred Name", value: data.student.pref_name },
+				{ label: "Email", value: data.student.email },
+				{ label: "Phone", value: data.student.phone },
+				{ label: "Preferred Communication", value: data.student.pref_communication },
+				{ label: "City", value: data.student.city },
+				{ label: "Grade", value: data.student.grade.toString() },
+				{ label: "How Found Us", value: data.student.how_found_us },
+				{ label: "Biller", value: data.student.biller },
+			],
 		},
-	};
-
-	const guardian_section = {
-		title: "Guardian",
-		fields: {
-			gov_first_name: "First Name",
-			gov_last_name: "Last Name",
-			pref_name: "Preferred Name",
-			email: "Email",
-			phone: "Phone",
-			pref_communication: "Preferred Communication",
-			relationship: "Relationship to Student",
-			is_primary_biller: "Primary Biller?",
-			already_exists: "Already Exists?",
+		{
+			title: "Tutors",
+			rows: [
+				{ label: "First Choice", value: data.tutors.choices[0].toString() },
+				{ label: "Second Choice", value: data.tutors.choices[1].toString() },
+				{ label: "Ideal Time and Location", value: data.tutors.timeandlocation },
+				{ label: "Notes", value: data.tutors.notes },
+			],
 		},
-	};
-
-	const tutor_section = {
-		title: "Tutors",
-		fields: {
-			first_choice: "First Choice",
-			second_choice: "Second Choice",
-			timeandlocation: "Ideal Time and Location",
-			notes: "Notes",
+		{
+			title: "Other",
+			rows: [
+				{ label: "Primary Biller Index", value: data.primary_biller_index.toString() },
+				{ label: "Additional Comments", value: data.comments },
+			],
 		},
-	};
-
-	const other_section = {
-		title: "Other",
-		fields: {
-			primary_biller_index: "Primary Biller Index",
-			comments: "Additional Comments",
-		},
-	};
-
-	let tableContent = "";
-	tableContent += `
-		<tr>
-			<td colspan="2" style="padding: 15px 8px 5px 8px; font-size: 14px; color: #1eb9c2; font-weight: bold; text-transform: uppercase; border-bottom: 2px solid #1eb9c2;">
-				${student_section.title}
-			</td>
-		</tr>
-	`;
-
-	Object.entries(student_section.fields).forEach(([key, label]) => {
-		const value = data.student[key as keyof StudentClientFormValues];
-		const displayValue = value !== undefined && value !== null && value !== "" ? value : "—";
-		tableContent += `
-			<tr>
-				<td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold; width: 40%; font-size: 13px;">${label}</td>
-				<td style="padding: 8px; border-bottom: 1px solid #eee; font-size: 13px;">${displayValue}</td>
-			</tr>
-		`;
-	});
+	];
 
 	data.guardians.forEach((guardian, i) => {
-		tableContent += `
-			<tr>
-				<td colspan="2" style="padding: 15px 8px 5px 8px; font-size: 14px; color: #1eb9c2; font-weight: bold; text-transform: uppercase; border-bottom: 2px solid #1eb9c2;">
-					${guardian_section.title} ${i + 1}
-				</td>
-			</tr>
-		`;
-
-		Object.entries(guardian_section.fields).forEach(([key, label]) => {
-			const value = guardian[key as keyof GuardianClientFormValues];
-			const displayValue = value !== undefined && value !== null && value !== "" ? value : "—";
-			tableContent += `
-				<tr>
-					<td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold; width: 40%; font-size: 13px;">${label}</td>
-					<td style="padding: 8px; border-bottom: 1px solid #eee; font-size: 13px;">${displayValue}</td>
-				</tr>
-			`;
-		});
+		const guardianData = {
+			title: `Guardian ${i + 1}`,
+			rows: [
+				{ label: "First Name", value: guardian.gov_first_name },
+				{ label: "Last Name", value: guardian.gov_last_name },
+				{ label: "Preferred Name", value: guardian.pref_name },
+				{ label: "Email", value: guardian.email },
+				{ label: "Phone", value: guardian.phone },
+				{ label: "Preferred Communication", value: guardian.pref_communication },
+				{ label: "Relationship to Student", value: guardian.relationship },
+				{ label: "Primary Biller?", value: guardian.is_primary_biller.toString() },
+				{ label: "Already Exists?", value: guardian.already_exists.toString() },
+			],
+		};
+		sections.splice(1 + i, 0, guardianData);
 	});
 
-	tableContent += `
-		<tr>
-			<td colspan="2" style="padding: 15px 8px 5px 8px; font-size: 14px; color: #1eb9c2; font-weight: bold; text-transform: uppercase; border-bottom: 2px solid #1eb9c2;">
-				${tutor_section.title}
-			</td>
-		</tr>
-	`;
-
-	Object.entries(tutor_section.fields).forEach(([key, label]) => {
-		const value = label.includes("Choice") ? (label.includes("First") ? data.tutors.choices[0] : data.tutors.choices[1]) : data.tutors[key as keyof TutorClientFormValues];
-		const displayValue = value !== undefined && value !== null && value !== "" ? value : "—";
-		tableContent += `
-			<tr>
-				<td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold; width: 40%; font-size: 13px;">${label}</td>
-				<td style="padding: 8px; border-bottom: 1px solid #eee; font-size: 13px;">${displayValue}</td>
-			</tr>
-		`;
-	});
-
-	tableContent += `
-		<tr>
-			<td colspan="2" style="padding: 15px 8px 5px 8px; font-size: 14px; color: #1eb9c2; font-weight: bold; text-transform: uppercase; border-bottom: 2px solid #1eb9c2;">
-				${other_section.title}
-			</td>
-		</tr>
-	`;
-
-	Object.entries(other_section.fields).forEach(([key, label]) => {
-		const value = data[key as keyof ClientFormValues];
-		const displayValue = value !== undefined && value !== null && value !== "" ? value : "—";
-		tableContent += `
-			<tr>
-				<td style="padding: 8px; border-bottom: 1px solid #eee; font-weight: bold; width: 40%; font-size: 13px;">${label}</td>
-				<td style="padding: 8px; border-bottom: 1px solid #eee; font-size: 13px;">${displayValue}</td>
-			</tr>
-		`;
-	});
+	let tableContent = compileEmailTable(sections);
 
 	const options: Mail.Options = {
 		to: process.env.ADMIN_EMAIL,
@@ -142,10 +68,8 @@ export default async function sendAdminClientSignupReviewEmail(data: ClientFormV
                <h1 style="margin: 0; font-size: 20px;">Student Profile Review</h1>
             </div>
             <div style="padding: 20px;">
-               <table style="width: 100%; border-collapse: collapse;">
-                  ${tableContent}
-               </table>
-            </div>
+				${tableContent}
+			</div>
          </div>
       `,
 		attachments: [{ filename: `${data.student.gov_first_name}_${data.student.gov_last_name}-Client_Signup_Form.json`, content: JSON.stringify(data, null, 2), contentType: "application/json" }],

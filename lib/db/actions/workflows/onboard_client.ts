@@ -136,7 +136,8 @@ export async function getNewStudentRequestEmailData(pending_student_tutor_id: nu
 	const pending_student_tutor = (await db.pending_student_tutor.get.get(pending_student_tutor_id))[0];
 	const student = (await db.student.get.get(pending_student_tutor.student_id))[0];
 	const tutor = (await db.tutor.get.get(pending_student_tutor.tutor_id))[0];
-	return { pending_student_tutor, student, tutor };
+	const guardians = await db.student_guardian.get.getGuardians(pending_student_tutor.student_id);
+	return { pending_student_tutor, student, tutor, guardians };
 }
 
 export async function tutorAcceptStudent(pending_student_tutor_id: number) {
