@@ -170,7 +170,7 @@ describe("Onboard Client Integration Tests", () => {
 				to: "propeltutoringyeg@gmail.com",
 				html: expect.any(String),
 				subject: `New Client Signup: Rocket Man`,
-				attachments: [{ filename: `Rocket_Man-Client_Signup_Form.json`, content: JSON.stringify(data, null, 2), contentType: "application/json" }],
+				attachments: [{ filename: `Rocket_Man-Client_Signup_Form.json`, content: JSON.stringify({ ...data, tutor_choices: ["Janie", "Janie"] }, null, 2), contentType: "application/json" }],
 			});
 			expect(adminArguments.html).toContain(">Rocket<");
 			expect(adminArguments.html).toContain(">Man<");
@@ -202,6 +202,7 @@ describe("Onboard Client Integration Tests", () => {
 			expect(tutorArguments.html).toContain(">Rocket (RM) Man<");
 			expect(tutorArguments.html).toContain(">Math, Science<");
 			expect(tutorArguments.html).toContain(">Weekdays after 5pm<");
+			expect(tutorArguments.html).toContain(">Janie<");
 			expect(tutorArguments.html).not.toContain("??");
 		});
 
@@ -265,7 +266,7 @@ describe("Onboard Client Integration Tests", () => {
 				to: "propeltutoringyeg@gmail.com",
 				html: expect.any(String),
 				subject: `New Client Signup: Rocket Man`,
-				attachments: [{ filename: `Rocket_Man-Client_Signup_Form.json`, content: JSON.stringify(data, null, 2), contentType: "application/json" }],
+				attachments: [{ filename: `Rocket_Man-Client_Signup_Form.json`, content: JSON.stringify({ ...data, tutor_choices: ["Janie", "Janie"] }, null, 2), contentType: "application/json" }],
 			});
 			expect(adminArguments.html).toContain(">Rocket<");
 			expect(adminArguments.html).toContain(">Man<");
@@ -297,6 +298,7 @@ describe("Onboard Client Integration Tests", () => {
 			expect(tutorArguments.html).toContain(">Rocket (RM) Man<");
 			expect(tutorArguments.html).toContain(">Math, Science<");
 			expect(tutorArguments.html).toContain(">Weekdays after 5pm<");
+			expect(tutorArguments.html).toContain(">Janie<");
 			expect(tutorArguments.html).not.toContain("??");
 		});
 
@@ -365,7 +367,7 @@ describe("Onboard Client Integration Tests", () => {
 				to: "propeltutoringyeg@gmail.com",
 				html: expect.any(String),
 				subject: `New Client Signup: Rocket Man`,
-				attachments: [{ filename: `Rocket_Man-Client_Signup_Form.json`, content: JSON.stringify(data, null, 2), contentType: "application/json" }],
+				attachments: [{ filename: `Rocket_Man-Client_Signup_Form.json`, content: JSON.stringify({ ...data, tutor_choices: ["Janie", "Janie"] }, null, 2), contentType: "application/json" }],
 			});
 			expect(adminArguments.html).toContain(">Rocket<");
 			expect(adminArguments.html).toContain(">Man<");
@@ -397,6 +399,10 @@ describe("Onboard Client Integration Tests", () => {
 			expect(tutorArguments.html).toContain(">Rocket (RM) Man<");
 			expect(tutorArguments.html).toContain(">Math, Science<");
 			expect(tutorArguments.html).toContain(">Weekdays after 5pm<");
+			expect(tutorArguments.html).toContain(">Rose Toto<");
+			expect(tutorArguments.html).toContain(">rosanna1@africa.ca, (111) 456-7890, prefers email<");
+			expect(tutorArguments.html).toContain(">rosanna2@africa.ca, (222) 456-7890, prefers email<");
+			expect(tutorArguments.html).toContain(">Janie<");
 			expect(tutorArguments.html).not.toContain("??");
 		});
 
@@ -466,7 +472,7 @@ describe("Onboard Client Integration Tests", () => {
 				to: "propeltutoringyeg@gmail.com",
 				html: expect.any(String),
 				subject: `New Client Signup: Rocket Man`,
-				attachments: [{ filename: `Rocket_Man-Client_Signup_Form.json`, content: JSON.stringify(data, null, 2), contentType: "application/json" }],
+				attachments: [{ filename: `Rocket_Man-Client_Signup_Form.json`, content: JSON.stringify({ ...data, tutor_choices: ["Janie", "Janie"] }, null, 2), contentType: "application/json" }],
 			});
 			expect(adminArguments.html).toContain(">Rocket<");
 			expect(adminArguments.html).toContain(">Man<");
@@ -498,6 +504,10 @@ describe("Onboard Client Integration Tests", () => {
 			expect(tutorArguments.html).toContain(">Rocket (RM) Man<");
 			expect(tutorArguments.html).toContain(">Math, Science<");
 			expect(tutorArguments.html).toContain(">Weekdays after 5pm<");
+			expect(tutorArguments.html).toContain(">Rose Toto<");
+			expect(tutorArguments.html).toContain(">rosanna1@africa.ca, (111) 456-7890, prefers email<");
+			expect(tutorArguments.html).toContain(">rosanna2@africa.ca, (222) 456-7890, prefers email<");
+			expect(tutorArguments.html).toContain(">Janie<");
 			expect(tutorArguments.html).not.toContain("??");
 		});
 
@@ -571,7 +581,7 @@ describe("Onboard Client Integration Tests", () => {
 				to: "propeltutoringyeg@gmail.com",
 				html: expect.any(String),
 				subject: `New Client Signup: Rocket Man`,
-				attachments: [{ filename: `Rocket_Man-Client_Signup_Form.json`, content: JSON.stringify(data, null, 2), contentType: "application/json" }],
+				attachments: [{ filename: `Rocket_Man-Client_Signup_Form.json`, content: JSON.stringify({ ...data, tutor_choices: ["Janie", "Janie"] }, null, 2), contentType: "application/json" }],
 			});
 			expect(adminArguments.html).toContain(">Rocket<");
 			expect(adminArguments.html).toContain(">Man<");
@@ -603,6 +613,10 @@ describe("Onboard Client Integration Tests", () => {
 			expect(tutorArguments.html).toContain(">Rocket (RM) Man<");
 			expect(tutorArguments.html).toContain(">Math, Science<");
 			expect(tutorArguments.html).toContain(">Weekdays after 5pm<");
+			expect(tutorArguments.html).toContain(">Rose Toto<");
+			expect(tutorArguments.html).toContain(">rosanna1@africa.ca, (111) 456-7890, prefers email<");
+			expect(tutorArguments.html).toContain(">rosanna2@africa.ca, (222) 456-7890, prefers email<");
+			expect(tutorArguments.html).toContain(">Janie<");
 			expect(tutorArguments.html).not.toContain("??");
 		});
 
@@ -665,7 +679,7 @@ describe("Onboard Client Integration Tests", () => {
 				to: "propeltutoringyeg@gmail.com",
 				html: expect.any(String),
 				subject: `New Client Signup: Rocket Man`,
-				attachments: [{ filename: `Rocket_Man-Client_Signup_Form.json`, content: JSON.stringify(data, null, 2), contentType: "application/json" }],
+				attachments: [{ filename: `Rocket_Man-Client_Signup_Form.json`, content: JSON.stringify({ ...data, tutor_choices: ["Janie", "Janie"] }, null, 2), contentType: "application/json" }],
 			});
 			expect(adminArguments.html).toContain(">Rocket<");
 			expect(adminArguments.html).toContain(">Man<");
@@ -697,6 +711,9 @@ describe("Onboard Client Integration Tests", () => {
 			expect(tutorArguments.html).toContain(">Rocket (RM) Man<");
 			expect(tutorArguments.html).toContain(">Math, Science<");
 			expect(tutorArguments.html).toContain(">Weekdays after 5pm<");
+			expect(tutorArguments.html).toContain(">Rose Toto<");
+			expect(tutorArguments.html).toContain(">rosanna1@africa.ca, (111) 456-7890, prefers email<");
+			expect(tutorArguments.html).toContain(">Janie<");
 			expect(tutorArguments.html).not.toContain("??");
 		});
 
@@ -753,7 +770,7 @@ describe("Onboard Client Integration Tests", () => {
 				to: "propeltutoringyeg@gmail.com",
 				html: expect.any(String),
 				subject: `New Client Signup: Rocket Man`,
-				attachments: [{ filename: `Rocket_Man-Client_Signup_Form.json`, content: JSON.stringify(data, null, 2), contentType: "application/json" }],
+				attachments: [{ filename: `Rocket_Man-Client_Signup_Form.json`, content: JSON.stringify({ ...data, tutor_choices: ["Janie", "Janie"] }, null, 2), contentType: "application/json" }],
 			});
 			expect(adminArguments.html).toContain(">Rocket<");
 			expect(adminArguments.html).toContain(">Man<");
@@ -784,6 +801,7 @@ describe("Onboard Client Integration Tests", () => {
 			expect(tutorArguments.html).toContain(">Rocket (RM) Man<");
 			expect(tutorArguments.html).toContain(">Math, Science<");
 			expect(tutorArguments.html).toContain(">Weekdays after 5pm<");
+			expect(tutorArguments.html).toContain(">Janie<");
 			expect(tutorArguments.html).not.toContain("??");
 		});
 
@@ -1010,6 +1028,9 @@ describe("Onboard Client Integration Tests", () => {
 			expect(tutorArguments.html).toContain(">Rocket (RM) Man<");
 			expect(tutorArguments.html).toContain(">Math, Science<");
 			expect(tutorArguments.html).toContain(">Weekdays after 5pm<");
+			expect(tutorArguments.html).toContain(">Rose Toto<");
+			expect(tutorArguments.html).toContain(">rosanna1@africa.ca, (111) 456-7890, prefers email<");
+			expect(tutorArguments.html).toContain(">Janie<");
 			expect(tutorArguments.html).not.toContain("??");
 		});
 
@@ -1064,6 +1085,9 @@ describe("Onboard Client Integration Tests", () => {
 			expect(tutorArguments.html).toContain(">Rocket (RM) Man<");
 			expect(tutorArguments.html).toContain(">Math, Science<");
 			expect(tutorArguments.html).toContain(">Weekdays after 5pm<");
+			expect(tutorArguments.html).toContain(">Rose Toto<");
+			expect(tutorArguments.html).toContain(">rosanna1@africa.ca, (111) 456-7890, prefers email<");
+			expect(tutorArguments.html).toContain(">Janie<");
 			expect(tutorArguments.html).not.toContain("??");
 
 			// check client agreement email send
@@ -1150,6 +1174,9 @@ describe("Onboard Client Integration Tests", () => {
 			expect(tutorArguments.html).toContain(">Rocket (RM) Man<");
 			expect(tutorArguments.html).toContain(">Math, Science<");
 			expect(tutorArguments.html).toContain(">Weekdays after 5pm<");
+			expect(tutorArguments.html).toContain(">Rose Toto<");
+			expect(tutorArguments.html).toContain(">rosanna1@africa.ca, (111) 456-7890, prefers email<");
+			expect(tutorArguments.html).toContain(">Janie<");
 			expect(tutorArguments.html).not.toContain("??");
 
 			// check admin assignment email send

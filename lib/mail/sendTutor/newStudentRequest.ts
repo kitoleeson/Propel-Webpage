@@ -11,7 +11,6 @@ export type NewStudentRequestEmailData = {
 	guardians: DBTypes.GuardiansRow[];
 };
 
-// needs pending_student_tutor information and student information (could be found by pending_student_tutor information)
 export default async function sendTutorNewStudentRequestEmail(data: NewStudentRequestEmailData) {
 	const sections: TableSection[] = [
 		{
@@ -20,8 +19,6 @@ export default async function sendTutorNewStudentRequestEmail(data: NewStudentRe
 				{ label: "Name", value: `${data.student.gov_first_name} ${data.student.pref_name ? `(${data.student.pref_name})` : ""} ${data.student.gov_last_name}` },
 				{ label: "Student Email", value: data.student.email },
 				{ label: "Student Phone", value: data.student.phone },
-				{ label: "Guardian Email", value: data.guardians.map((g) => g.email).join(", ") },
-				{ label: "Guardian Phone", value: data.guardians.map((g) => g.phone).join(", ") },
 				{ label: "Preferred Communication", value: data.student.pref_communication },
 			],
 		},
@@ -34,7 +31,18 @@ export default async function sendTutorNewStudentRequestEmail(data: NewStudentRe
 				{ label: "Ideal Time and Location", value: data.pending_student_tutor.timeandlocation },
 			],
 		},
+		{
+			title: "Tutor Choices",
+			rows: [
+				{ label: "First Choice", value: data.pending_student_tutor.first_choice_tutor },
+				{ label: "Second Choice", value: data.pending_student_tutor.second_choice_tutor },
+			],
+		},
 	];
+	data.guardians.forEach((guardian, i) => {
+		sections[0].rows.push({ label: `Guardian ${i + 1} Name`, value: `${guardian.pref_name ?? guardian.gov_first_name} ${guardian.gov_last_name}` });
+		sections[0].rows.push({ label: `Guardian ${i + 1} Contact`, value: `${guardian.email}, ${guardian.phone}, prefers ${guardian.pref_communication}` });
+	});
 	const tableContent = compileEmailTable(sections);
 
 	const test = process.env.APP_ENV != "prod";
