@@ -397,6 +397,9 @@ describe("Onboard Client Integration Tests", () => {
 			expect(tutorArguments.html).toContain(">Rocket (RM) Man<");
 			expect(tutorArguments.html).toContain(">Math, Science<");
 			expect(tutorArguments.html).toContain(">Weekdays after 5pm<");
+			expect(tutorArguments.html).toContain(">Rose Toto<");
+			expect(tutorArguments.html).toContain(">rosanna1@africa.ca, (111) 456-7890, prefers email<");
+			expect(tutorArguments.html).toContain(">rosanna2@africa.ca, (222) 456-7890, prefers email<");
 			expect(tutorArguments.html).not.toContain("??");
 		});
 
@@ -498,6 +501,9 @@ describe("Onboard Client Integration Tests", () => {
 			expect(tutorArguments.html).toContain(">Rocket (RM) Man<");
 			expect(tutorArguments.html).toContain(">Math, Science<");
 			expect(tutorArguments.html).toContain(">Weekdays after 5pm<");
+			expect(tutorArguments.html).toContain(">Rose Toto<");
+			expect(tutorArguments.html).toContain(">rosanna1@africa.ca, (111) 456-7890, prefers email<");
+			expect(tutorArguments.html).toContain(">rosanna2@africa.ca, (222) 456-7890, prefers email<");
 			expect(tutorArguments.html).not.toContain("??");
 		});
 
@@ -603,6 +609,12 @@ describe("Onboard Client Integration Tests", () => {
 			expect(tutorArguments.html).toContain(">Rocket (RM) Man<");
 			expect(tutorArguments.html).toContain(">Math, Science<");
 			expect(tutorArguments.html).toContain(">Weekdays after 5pm<");
+			expect(tutorArguments.html).toContain(">Rose Toto<");
+			expect(tutorArguments.html).toContain(">rosanna1@africa.ca, (111) 456-7890, prefers email<");
+			expect(tutorArguments.html).toContain(">rosanna2@africa.ca, (222) 456-7890, prefers email<");
+			expect(tutorArguments.html).toContain(">Rose Toto<");
+			expect(tutorArguments.html).toContain(">rosanna1@africa.ca, (111) 456-7890, prefers email<");
+			expect(tutorArguments.html).toContain(">rosanna2@africa.ca, (222) 456-7890, prefers email<");
 			expect(tutorArguments.html).not.toContain("??");
 		});
 
@@ -697,6 +709,8 @@ describe("Onboard Client Integration Tests", () => {
 			expect(tutorArguments.html).toContain(">Rocket (RM) Man<");
 			expect(tutorArguments.html).toContain(">Math, Science<");
 			expect(tutorArguments.html).toContain(">Weekdays after 5pm<");
+			expect(tutorArguments.html).toContain(">Rose Toto<");
+			expect(tutorArguments.html).toContain(">rosanna1@africa.ca, (111) 456-7890, prefers email<");
 			expect(tutorArguments.html).not.toContain("??");
 		});
 
@@ -1010,6 +1024,8 @@ describe("Onboard Client Integration Tests", () => {
 			expect(tutorArguments.html).toContain(">Rocket (RM) Man<");
 			expect(tutorArguments.html).toContain(">Math, Science<");
 			expect(tutorArguments.html).toContain(">Weekdays after 5pm<");
+			expect(tutorArguments.html).toContain(">Rose Toto<");
+			expect(tutorArguments.html).toContain(">rosanna1@africa.ca, (111) 456-7890, prefers email<");
 			expect(tutorArguments.html).not.toContain("??");
 		});
 
@@ -1064,6 +1080,8 @@ describe("Onboard Client Integration Tests", () => {
 			expect(tutorArguments.html).toContain(">Rocket (RM) Man<");
 			expect(tutorArguments.html).toContain(">Math, Science<");
 			expect(tutorArguments.html).toContain(">Weekdays after 5pm<");
+			expect(tutorArguments.html).toContain(">Rose Toto<");
+			expect(tutorArguments.html).toContain(">rosanna1@africa.ca, (111) 456-7890, prefers email<");
 			expect(tutorArguments.html).not.toContain("??");
 
 			// check client agreement email send
@@ -1150,6 +1168,8 @@ describe("Onboard Client Integration Tests", () => {
 			expect(tutorArguments.html).toContain(">Rocket (RM) Man<");
 			expect(tutorArguments.html).toContain(">Math, Science<");
 			expect(tutorArguments.html).toContain(">Weekdays after 5pm<");
+			expect(tutorArguments.html).toContain(">Rose Toto<");
+			expect(tutorArguments.html).toContain(">rosanna1@africa.ca, (111) 456-7890, prefers email<");
 			expect(tutorArguments.html).not.toContain("??");
 
 			// check admin assignment email send

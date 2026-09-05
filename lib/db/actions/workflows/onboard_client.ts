@@ -205,6 +205,7 @@ export async function tutorDeclineStudent(pending_student_tutor_id: number) {
 		if (pending_pairs.length) {
 			const data = await getNewStudentRequestEmailData(pending_pairs[0].pending_student_tutor_id);
 			await sendTutorNewStudentRequestEmail(data);
+			// also notify the admin that the first choice tutor declined
 		} else {
 			const data: AdminAssignStudentEmailData = { student: (await db.student.get.get(pending_student_tutor.student_id))[0], subjects: pending_student_tutor.subjects, timeandlocation: pending_student_tutor.timeandlocation };
 			await sendAdminAssignStudentActionEmail(data);
