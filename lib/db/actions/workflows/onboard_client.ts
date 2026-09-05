@@ -14,6 +14,7 @@ import { AdminAssignStudentEmailData } from "@/lib/mail/sendAdmin/aAssignStudent
 
 export async function onboardClientWithFormData(data: ClientFormValues) {
 	let first_choice_pending_student_tutor_id;
+	let tutor_choices: string[];
 
 	const client = await db.pool.connect();
 	const tx = sql(client);
@@ -78,6 +79,7 @@ export async function onboardClientWithFormData(data: ClientFormValues) {
 			const pending_tutor = (await db.pending_student_tutor.insert(student_tutor_data, tx))[0];
 			first_choice_pending_student_tutor_id = first_choice_pending_student_tutor_id ?? pending_tutor.pending_student_tutor_id;
 		}
+		tutor_choices = tutors.map((t) => t.pref_name ?? t.gov_first_name);
 
 		await client.query("COMMIT");
 	} catch (e: any) {
@@ -113,7 +115,7 @@ export async function onboardClientWithFormData(data: ClientFormValues) {
 	}
 
 	try {
-		await sendAdminClientSignupReviewEmail(data);
+		await sendAdminClientSignupReviewEmail({ ...data, tutor_choices });
 	} catch (e) {
 		throw e;
 	}

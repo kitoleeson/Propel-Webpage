@@ -170,7 +170,7 @@ describe("Onboard Client Integration Tests", () => {
 				to: "propeltutoringyeg@gmail.com",
 				html: expect.any(String),
 				subject: `New Client Signup: Rocket Man`,
-				attachments: [{ filename: `Rocket_Man-Client_Signup_Form.json`, content: JSON.stringify(data, null, 2), contentType: "application/json" }],
+				attachments: [{ filename: `Rocket_Man-Client_Signup_Form.json`, content: JSON.stringify({ ...data, tutor_choices: ["Janie", "Janie"] }, null, 2), contentType: "application/json" }],
 			});
 			expect(adminArguments.html).toContain(">Rocket<");
 			expect(adminArguments.html).toContain(">Man<");
@@ -266,7 +266,7 @@ describe("Onboard Client Integration Tests", () => {
 				to: "propeltutoringyeg@gmail.com",
 				html: expect.any(String),
 				subject: `New Client Signup: Rocket Man`,
-				attachments: [{ filename: `Rocket_Man-Client_Signup_Form.json`, content: JSON.stringify(data, null, 2), contentType: "application/json" }],
+				attachments: [{ filename: `Rocket_Man-Client_Signup_Form.json`, content: JSON.stringify({ ...data, tutor_choices: ["Janie", "Janie"] }, null, 2), contentType: "application/json" }],
 			});
 			expect(adminArguments.html).toContain(">Rocket<");
 			expect(adminArguments.html).toContain(">Man<");
@@ -367,7 +367,7 @@ describe("Onboard Client Integration Tests", () => {
 				to: "propeltutoringyeg@gmail.com",
 				html: expect.any(String),
 				subject: `New Client Signup: Rocket Man`,
-				attachments: [{ filename: `Rocket_Man-Client_Signup_Form.json`, content: JSON.stringify(data, null, 2), contentType: "application/json" }],
+				attachments: [{ filename: `Rocket_Man-Client_Signup_Form.json`, content: JSON.stringify({ ...data, tutor_choices: ["Janie", "Janie"] }, null, 2), contentType: "application/json" }],
 			});
 			expect(adminArguments.html).toContain(">Rocket<");
 			expect(adminArguments.html).toContain(">Man<");
@@ -472,7 +472,7 @@ describe("Onboard Client Integration Tests", () => {
 				to: "propeltutoringyeg@gmail.com",
 				html: expect.any(String),
 				subject: `New Client Signup: Rocket Man`,
-				attachments: [{ filename: `Rocket_Man-Client_Signup_Form.json`, content: JSON.stringify(data, null, 2), contentType: "application/json" }],
+				attachments: [{ filename: `Rocket_Man-Client_Signup_Form.json`, content: JSON.stringify({ ...data, tutor_choices: ["Janie", "Janie"] }, null, 2), contentType: "application/json" }],
 			});
 			expect(adminArguments.html).toContain(">Rocket<");
 			expect(adminArguments.html).toContain(">Man<");
@@ -581,7 +581,7 @@ describe("Onboard Client Integration Tests", () => {
 				to: "propeltutoringyeg@gmail.com",
 				html: expect.any(String),
 				subject: `New Client Signup: Rocket Man`,
-				attachments: [{ filename: `Rocket_Man-Client_Signup_Form.json`, content: JSON.stringify(data, null, 2), contentType: "application/json" }],
+				attachments: [{ filename: `Rocket_Man-Client_Signup_Form.json`, content: JSON.stringify({ ...data, tutor_choices: ["Janie", "Janie"] }, null, 2), contentType: "application/json" }],
 			});
 			expect(adminArguments.html).toContain(">Rocket<");
 			expect(adminArguments.html).toContain(">Man<");
@@ -679,7 +679,7 @@ describe("Onboard Client Integration Tests", () => {
 				to: "propeltutoringyeg@gmail.com",
 				html: expect.any(String),
 				subject: `New Client Signup: Rocket Man`,
-				attachments: [{ filename: `Rocket_Man-Client_Signup_Form.json`, content: JSON.stringify(data, null, 2), contentType: "application/json" }],
+				attachments: [{ filename: `Rocket_Man-Client_Signup_Form.json`, content: JSON.stringify({ ...data, tutor_choices: ["Janie", "Janie"] }, null, 2), contentType: "application/json" }],
 			});
 			expect(adminArguments.html).toContain(">Rocket<");
 			expect(adminArguments.html).toContain(">Man<");
@@ -770,7 +770,7 @@ describe("Onboard Client Integration Tests", () => {
 				to: "propeltutoringyeg@gmail.com",
 				html: expect.any(String),
 				subject: `New Client Signup: Rocket Man`,
-				attachments: [{ filename: `Rocket_Man-Client_Signup_Form.json`, content: JSON.stringify(data, null, 2), contentType: "application/json" }],
+				attachments: [{ filename: `Rocket_Man-Client_Signup_Form.json`, content: JSON.stringify({ ...data, tutor_choices: ["Janie", "Janie"] }, null, 2), contentType: "application/json" }],
 			});
 			expect(adminArguments.html).toContain(">Rocket<");
 			expect(adminArguments.html).toContain(">Man<");
