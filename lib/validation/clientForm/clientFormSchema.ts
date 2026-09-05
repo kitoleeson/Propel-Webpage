@@ -2,6 +2,8 @@
 
 import { z } from "zod";
 
+const testing: boolean = true; // Set to true to enable default values for testing
+
 const personBase = z.object({
 	gov_first_name: z.string().min(1, "First name is required"),
 	gov_last_name: z.string().min(1, "Last name is required"),
@@ -42,55 +44,55 @@ const tutorsSchema = z
 		}
 	});
 
-// export const defaultStudent: ClientFormValues["student"] = {
-// 	gov_first_name: "Student",
-// 	gov_last_name: "Test",
-// 	pref_name: "Tess",
-// 	email: "tess@student.ca",
-// 	phone: "(123) 456-7890",
-// 	pref_communication: "Email",
-// 	grade: 12,
-// 	city: "Edmonton",
-// 	how_found_us: "Word of Mouth",
-// 	biller: "Guardian",
-// };
+export const defaultStudent: StudentClientFormValues = testing
+	? {
+			gov_first_name: "Student",
+			gov_last_name: "Test",
+			pref_name: "Tess",
+			email: "tess@student.ca",
+			phone: "(123) 456-7890",
+			pref_communication: "Email",
+			grade: 12,
+			city: "Edmonton",
+			how_found_us: "Word of Mouth",
+			biller: "Guardian",
+		}
+	: {
+			gov_first_name: "",
+			gov_last_name: "",
+			pref_name: "",
+			email: "",
+			phone: "",
+			pref_communication: undefined as any,
+			grade: undefined as any,
+			city: "",
+			how_found_us: undefined as any,
+			biller: undefined as any,
+		};
 
-// export const defaultGuardian: ClientFormValues["guardians"][0] = {
-// 	gov_first_name: "Guardian",
-// 	gov_last_name: "Test",
-// 	pref_name: "",
-// 	email: "guardian@test.ca",
-// 	phone: "(123) 456-7890",
-// 	pref_communication: "Text Message",
-// 	relationship: "Mother",
-// 	is_primary_biller: false,
-// 	already_exists: false,
-// };
-
-export const defaultStudent: StudentClientFormValues = {
-	gov_first_name: "",
-	gov_last_name: "",
-	pref_name: "",
-	email: "",
-	phone: "",
-	pref_communication: undefined as any,
-	grade: undefined as any,
-	city: "",
-	how_found_us: undefined as any,
-	biller: undefined as any,
-};
-
-export const defaultGuardian: GuardianClientFormValues = {
-	gov_first_name: "",
-	gov_last_name: "",
-	pref_name: "",
-	email: "",
-	phone: "",
-	pref_communication: undefined as any,
-	relationship: undefined as any,
-	is_primary_biller: false,
-	already_exists: false,
-};
+export const defaultGuardian: GuardianClientFormValues = testing
+	? {
+			gov_first_name: "Guardian",
+			gov_last_name: "Test",
+			pref_name: "",
+			email: "guardian@test.ca",
+			phone: "(123) 456-7890",
+			pref_communication: "Text Message",
+			relationship: "Mother",
+			is_primary_biller: false,
+			already_exists: false,
+		}
+	: {
+			gov_first_name: "",
+			gov_last_name: "",
+			pref_name: "",
+			email: "",
+			phone: "",
+			pref_communication: undefined as any,
+			relationship: undefined as any,
+			is_primary_biller: false,
+			already_exists: false,
+		};
 
 export const formSchema = z
 	.object({

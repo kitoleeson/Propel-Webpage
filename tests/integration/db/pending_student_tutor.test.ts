@@ -59,6 +59,8 @@ describe("Pending Student Tutor Repository Integration Tests", () => {
 				travel_fee: 0,
 				had_session: false,
 				timeandlocation: "Weekdays after 5pm at the University of Alberta campus",
+				first_choice_tutor: tutor.pref_name ?? tutor.gov_first_name,
+				second_choice_tutor: tutor.pref_name ?? tutor.gov_first_name,
 			})
 		)[0];
 		return { student: student, tutor: tutor, pending_student_tutor: pending_student_tutor };
@@ -72,6 +74,8 @@ describe("Pending Student Tutor Repository Integration Tests", () => {
 		travel_fee: 0,
 		had_session: false,
 		timeandlocation: "Weekdays after 5pm at the University of Alberta",
+		first_choice_tutor: "First Choice",
+		second_choice_tutor: "Second Choice",
 	};
 
 	describe("Insert & Find", () => {
