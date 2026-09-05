@@ -2,7 +2,7 @@
 
 import { z } from "zod";
 
-const testing: boolean = true; // Set to true to enable default values for testing
+const testing: boolean = false; // Set to true to enable default values for testing
 
 const personBase = z.object({
 	gov_first_name: z.string().min(1, "First name is required"),
