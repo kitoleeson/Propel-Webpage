@@ -60,8 +60,8 @@ export async function onboardClientWithFormData(data: ClientFormValues) {
 		}
 
 		// insert into pending_student_tutor
-		for (let tutor_id of data.tutors.choices) {
-			const tutor = (await db.tutor.get.get(tutor_id, tx))[0];
+		const tutors = await Promise.all(data.tutors.choices.map(async (tutor_id) => (await db.tutor.get.get(tutor_id, tx))[0]));
+		for (let tutor of tutors) {
 			const student_tutor_data: DBTypes.PendingStudentTutor = {
 				student_id: student.student_id,
 				tutor_id: tutor.tutor_id,
@@ -72,6 +72,8 @@ export async function onboardClientWithFormData(data: ClientFormValues) {
 				travel_fee: 0,
 				had_session: false,
 				timeandlocation: data.tutors.timeandlocation,
+				first_choice_tutor: tutors[0].pref_name ?? tutors[0].gov_first_name,
+				second_choice_tutor: tutors[1].pref_name ?? tutors[1].gov_first_name,
 			};
 			const pending_tutor = (await db.pending_student_tutor.insert(student_tutor_data, tx))[0];
 			first_choice_pending_student_tutor_id = first_choice_pending_student_tutor_id ?? pending_tutor.pending_student_tutor_id;

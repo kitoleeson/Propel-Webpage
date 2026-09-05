@@ -5,7 +5,6 @@ import Mail from "nodemailer/lib/mailer";
 import { DBTypes } from "@/lib/db/dbtypes";
 
 export type NewStudentRequestEmailData = {
-	// add tutor choices to pending_student_tutor data to find here
 	pending_student_tutor: DBTypes.PendingStudentTutorRow;
 	student: DBTypes.StudentsRow;
 	tutor: DBTypes.TutorsRow;
@@ -32,13 +31,13 @@ export default async function sendTutorNewStudentRequestEmail(data: NewStudentRe
 				{ label: "Ideal Time and Location", value: data.pending_student_tutor.timeandlocation },
 			],
 		},
-		// {
-		// 	title: "Tutor Choices Information",
-		// 	rows: [
-		// 		{ label: "First Choice", value: data.tutor_choices_names.first },
-		// 		{ label: "Second Choice", value: data.tutor_choices_names.second },
-		// 	],
-		// },
+		{
+			title: "Tutor Choices",
+			rows: [
+				{ label: "First Choice", value: data.pending_student_tutor.first_choice_tutor },
+				{ label: "Second Choice", value: data.pending_student_tutor.second_choice_tutor },
+			],
+		},
 	];
 	data.guardians.forEach((guardian, i) => {
 		sections[0].rows.push({ label: `Guardian ${i + 1} Name`, value: `${guardian.pref_name ?? guardian.gov_first_name} ${guardian.gov_last_name}` });
