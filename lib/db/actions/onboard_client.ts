@@ -3,8 +3,8 @@
 "use server";
 
 import { ClientFormValues } from "@/lib/validation/clientForm/clientFormSchema";
-import { db, sql } from "../..";
-import { DBTypes } from "../../dbtypes";
+import { db, sql } from "..";
+import { DBTypes } from "../dbtypes";
 import { sendAdminAssignStudentActionEmail, sendAdminClientSignupReviewEmail, sendAdminTutorClientAcceptanceReviewEmail } from "@/lib/mail/sendAdmin";
 import { sendClientSignupConfirmationEmail } from "@/lib/mail/sendClient";
 import sendClientClientAgreementEmail, { ClientAgreementEmailData } from "@/lib/mail/sendClient/clientAgreement";
