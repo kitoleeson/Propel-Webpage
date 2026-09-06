@@ -172,12 +172,3 @@ const ClientSignUpForm = ({ tutors, subjects }: { tutors: DBTypes.Tutors[]; subj
 };
 
 export default ClientSignUpForm;
-
-/**
- * THINGS TO UI TEST:
- * - add and remove guardians
- * - persistent form values
- * - submission and database inputting
- * - primary biller accuracy
- * - autofill existing guardian
- */
