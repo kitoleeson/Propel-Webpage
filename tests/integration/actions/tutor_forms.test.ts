@@ -9,17 +9,17 @@ import { revalidatePath } from "next/cache";
 withNeonTestBranch();
 
 let db: typeof import("@/lib/db").db;
-let submitNewTutorForApproval: typeof import("@/lib/db/actions/workflows/tutor_forms").submitNewTutorForApproval;
-let approvePendingNewTutor: typeof import("@/lib/db/actions/workflows/tutor_forms").approvePendingNewTutor;
-let submitTutorSemesterUpdateForApproval: typeof import("@/lib/db/actions/workflows/tutor_forms").submitTutorSemesterUpdateForApproval;
-let approvePendingTutorSemesterUpdate: typeof import("@/lib/db/actions/workflows/tutor_forms").approvePendingTutorSemesterUpdate;
+let submitNewTutorForApproval: typeof import("@/lib/db/actions/tutor_forms").submitNewTutorForApproval;
+let approvePendingNewTutor: typeof import("@/lib/db/actions/tutor_forms").approvePendingNewTutor;
+let submitTutorSemesterUpdateForApproval: typeof import("@/lib/db/actions/tutor_forms").submitTutorSemesterUpdateForApproval;
+let approvePendingTutorSemesterUpdate: typeof import("@/lib/db/actions/tutor_forms").approvePendingTutorSemesterUpdate;
 let emailSpy: import("vitest").MockInstance;
 
 describe("Tutor Input Forms Integration Tests", () => {
 	beforeAll(async () => {
 		vi.resetModules();
 		({ db } = await import("@/lib/db"));
-		({ submitNewTutorForApproval, approvePendingNewTutor, submitTutorSemesterUpdateForApproval, approvePendingTutorSemesterUpdate } = await import("@/lib/db/actions/workflows/tutor_forms"));
+		({ submitNewTutorForApproval, approvePendingNewTutor, submitTutorSemesterUpdateForApproval, approvePendingTutorSemesterUpdate } = await import("@/lib/db/actions/tutor_forms"));
 
 		const mail = await import("@/lib/mail");
 		emailSpy = vi.spyOn(mail, "sendEmail").mockImplementation(async (data: Mail.Options) => ({

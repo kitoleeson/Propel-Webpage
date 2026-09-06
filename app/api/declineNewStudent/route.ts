@@ -1,7 +1,7 @@
 /** @format */
 
 import { NextRequest } from "next/server";
-import { tutorDeclineStudent } from "@/lib/db/actions/workflows/onboard_client";
+import { tutorDeclineStudent } from "@/lib/db/actions/onboard_client";
 import { handleRouteError, renderHtmlResponse } from "../utils";
 
 export async function GET(req: NextRequest) {

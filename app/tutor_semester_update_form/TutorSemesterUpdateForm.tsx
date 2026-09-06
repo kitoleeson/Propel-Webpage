@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { FieldErrors, FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { defaultTutor, tutorPlaceholder, TutorSemesterUpdateFormValues, tutorSemesterUpdateSchema } from "@/lib/validation/tutorForm/tutorFormSchema";
 import { FormInputCluster, FormDropdownInput, FormTextInput, FormNumberInput } from "@/components/ui/form";
-import { getTutorInfoFromName, submitTutorSemesterUpdateForApproval } from "@/lib/db/actions/workflows/tutor_forms";
+import { getTutorInfoFromName, submitTutorSemesterUpdateForApproval } from "@/lib/db/actions/tutor_forms";
 import { useEffect } from "react";
 import FormSubmitInput from "@/components/ui/form/inputs/FormSubmitInput";
 import FormTextAreaInput from "@/components/ui/form/inputs/FormTextAreaInput";

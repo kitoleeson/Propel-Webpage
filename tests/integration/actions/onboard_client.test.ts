@@ -10,16 +10,16 @@ import path from "path";
 withNeonTestBranch();
 
 let db: typeof import("@/lib/db").db;
-let onboardClientWithFormData: typeof import("@/lib/db/actions/workflows/onboard_client").onboardClientWithFormData;
-let tutorAcceptStudent: typeof import("@/lib/db/actions/workflows/onboard_client").tutorAcceptStudent;
-let tutorDeclineStudent: typeof import("@/lib/db/actions/workflows/onboard_client").tutorDeclineStudent;
+let onboardClientWithFormData: typeof import("@/lib/db/actions/onboard_client").onboardClientWithFormData;
+let tutorAcceptStudent: typeof import("@/lib/db/actions/onboard_client").tutorAcceptStudent;
+let tutorDeclineStudent: typeof import("@/lib/db/actions/onboard_client").tutorDeclineStudent;
 let emailSpy: import("vitest").MockInstance;
 
 describe("Onboard Client Integration Tests", () => {
 	beforeAll(async () => {
 		vi.resetModules();
 		({ db } = await import("@/lib/db"));
-		({ onboardClientWithFormData, tutorAcceptStudent, tutorDeclineStudent } = await import("@/lib/db/actions/workflows/onboard_client"));
+		({ onboardClientWithFormData, tutorAcceptStudent, tutorDeclineStudent } = await import("@/lib/db/actions/onboard_client"));
 		await db.pool.query("TRUNCATE TABLE tutors RESTART IDENTITY CASCADE");
 		await db.tutor.insert.insertWithSubjects(createMockTutorWithSubjects(1));
 		await db.tutor.insert.insertWithSubjects(createMockTutorWithSubjects(2, { current_rate: 40, accepting_students: 4 }));

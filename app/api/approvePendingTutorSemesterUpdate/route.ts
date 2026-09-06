@@ -1,7 +1,7 @@
 /** @format */
 
 import { NextRequest } from "next/server";
-import { approvePendingTutorSemesterUpdate } from "@/lib/db/actions/workflows/tutor_forms";
+import { approvePendingTutorSemesterUpdate } from "@/lib/db/actions/tutor_forms";
 import { handleRouteError, renderHtmlResponse } from "../utils";
 
 export async function GET(req: NextRequest) {

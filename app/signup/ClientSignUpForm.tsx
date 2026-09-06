@@ -11,7 +11,7 @@ import { defaultStudent, defaultGuardian, formSchema, ClientFormValues } from "@
 import { placeholders } from "@/lib/validation/clientForm/clientFormPersonPlaceholders";
 import PickTutorSignUpForm from "@/components/ui/form/sections/PickTutorSignUpForm";
 import { DBTypes } from "@/lib/db/dbtypes";
-import { onboardClientWithFormData } from "@/lib/db/actions/workflows/onboard_client";
+import { onboardClientWithFormData } from "@/lib/db/actions/onboard_client";
 import { useRouter } from "next/navigation";
 
 function shuffle(array: any[]) {

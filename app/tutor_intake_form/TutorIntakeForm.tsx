@@ -7,7 +7,7 @@ import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { defaultTutor, TutorFormValues, tutorSchema, tutorPlaceholder } from "@/lib/validation/tutorForm/tutorFormSchema";
 import { FormInputCluster, FormPhoneInput, FormDropdownInput, FormTextInput, FormNumberInput, FormDateInput } from "@/components/ui/form";
 import FormCheckboxInput from "@/components/ui/form/inputs/FormCheckboxInput";
-import { submitNewTutorForApproval } from "@/lib/db/actions/workflows/tutor_forms";
+import { submitNewTutorForApproval } from "@/lib/db/actions/tutor_forms";
 import { useEffect } from "react";
 import FormSubmitInput from "@/components/ui/form/inputs/FormSubmitInput";
 import FormTextAreaInput from "@/components/ui/form/inputs/FormTextAreaInput";
