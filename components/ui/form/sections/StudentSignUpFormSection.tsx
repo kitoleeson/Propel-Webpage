@@ -19,7 +19,7 @@ const StudentSection = ({ placeholder }: Props) => {
 
 	return (
 		<fieldset disabled={isSubmitting} className="group disabled:opacity-75 transition-opacity duration-200">
-			<h1>Student Information</h1>
+			<legend>Student Information</legend>
 
 			<FormInputCluster>
 				<FormTextInput label="Government First Name" register={register("student.gov_first_name")} placeholder={placeholder.gov_first_name} error={errors.student?.gov_first_name?.message} />

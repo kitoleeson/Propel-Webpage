@@ -58,10 +58,10 @@ const GuardianSection = ({ index, placeholder, optional }: Props) => {
 
 	return (
 		<fieldset disabled={isSubmitting} className="group disabled:opacity-75 transition-opacity duration-200">
-			<h1>
+			<legend>
 				Guardian Information{index > 0 && ` ${index + 1}`}
 				{optional && " (Optional)"}
-			</h1>
+			</legend>
 
 			{index == 0 && (
 				<p>
