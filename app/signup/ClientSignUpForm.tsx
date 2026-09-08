@@ -6,10 +6,9 @@ import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormProvider, SubmitHandler, useFieldArray, useForm } from "react-hook-form";
 import { z } from "zod";
-import { FormButtonInput, StudentSection, GuardianSection, FormInputCluster, FormTextAreaInput, FormSubmitInput } from "@/components/ui/form";
+import { FormButtonInput, StudentSection, GuardianSection, FormInputCluster, FormTextAreaInput, FormSubmitInput, PickTutorSection } from "@/components/ui/form";
 import { defaultStudent, defaultGuardian, formSchema, ClientFormValues } from "@/lib/validation/clientForm/clientFormSchema";
 import { placeholders } from "@/lib/validation/clientForm/clientFormPersonPlaceholders";
-import PickTutorSignUpForm from "@/components/ui/form/sections/PickTutorSignUpForm";
 import { DBTypes } from "@/lib/db/dbtypes";
 import { onboardClientWithFormData } from "@/lib/db/actions/onboard_client";
 import { useRouter } from "next/navigation";
@@ -155,7 +154,7 @@ const ClientSignUpForm = ({ tutors, subjects }: { tutors: DBTypes.Tutors[]; subj
 					))}
 					<FormButtonInput label="Add New Guardian" onClick={addGuardian} disabled={isSubmitting} divFormat="mt-14" format="w-full" />
 				</div>
-				<PickTutorSignUpForm tutors={tutors} subjects={subjects} />
+				<PickTutorSection tutors={tutors} subjects={subjects} />
 				<FormInputCluster>
 					<FormTextAreaInput
 						label="Any other specific requests, concerns, or extra comments/information you would like us to know (optional):"

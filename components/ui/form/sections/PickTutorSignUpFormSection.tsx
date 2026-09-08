@@ -12,7 +12,7 @@ import { DBTypes } from "@/lib/db/dbtypes";
 import Link from "next/link";
 import { navLinks } from "../../base_page/nav_bar/links";
 
-const PickTutorSignUpForm = ({ tutors, subjects }: { tutors: DBTypes.Tutors[]; subjects: string[] }) => {
+const PickTutorSection = ({ tutors, subjects }: { tutors: DBTypes.Tutors[]; subjects: string[] }) => {
 	const [filteredTutors, setFilteredTutors] = useState<DBTypes.Tutors[]>(tutors);
 	const [loading, setLoading] = useState(false);
 
@@ -130,6 +130,6 @@ const PickTutorSignUpForm = ({ tutors, subjects }: { tutors: DBTypes.Tutors[]; s
 	);
 };
 
-export default PickTutorSignUpForm;
+export default PickTutorSection;
 
 // section can sometimes be too wide for phone screen. fix later
