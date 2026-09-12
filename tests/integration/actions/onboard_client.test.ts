@@ -621,7 +621,7 @@ describe("Onboard Client Integration Tests", () => {
 		});
 
 		it("should onboard a new student primary biller with a guardian", async () => {
-			const data = createMockClientFormValues({ biller: "Student" });
+			const data = createMockClientFormValues({ biller: "Student" }, [{ is_primary_biller: false }]);
 			await onboardClientWithFormData(data);
 
 			// --------------- CHECK DATABASE INPUTS ---------------
@@ -644,7 +644,7 @@ describe("Onboard Client Integration Tests", () => {
 			expect(student_guardians.length).toEqual(1);
 			expect(student_guardians[0].student_id).toEqual(1);
 			expect(student_guardians[0].guardian_id).toEqual(1);
-			expect(student_guardians[0].is_primary_biller).toEqual(true);
+			expect(student_guardians[0].is_primary_biller).toEqual(false);
 
 			// check billing_accounts
 			const billing_accounts = await db.billing_account.get.getAll();
