@@ -10,7 +10,7 @@ export default defineConfig({
 	plugins: [react(), tsconfigPaths()],
 	test: {
 		globals: true,
-		testTimeout: 30000,
+		testTimeout: 10000,
 		maxWorkers: 8,
 		projects: [
 			{ extends: true, plugins: [neonTesting()], test: { name: "unit", environment: "node", setupFiles: ["tests/test-setup.ts"], include: ["tests/**/*.test.ts"], exclude: ["tests/**/*.browser.test.ts"] } },

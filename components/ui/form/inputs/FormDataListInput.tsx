@@ -59,7 +59,7 @@ const FormDataListInput = (props: FormDataListInputProps) => {
 
 	return (
 		<div className={`w-full flex flex-col gap-1 flex-1 portrait:mt-2 relative ${props.divFormat}`}>
-			<label>{props.label}</label>
+			<label htmlFor={props.name}>{props.label}</label>
 
 			<div ref={containerRef} className="relative w-full">
 				{/* Input Field */}
@@ -80,6 +80,7 @@ const FormDataListInput = (props: FormDataListInputProps) => {
 						</span>
 					))}
 					<input
+						id={props.name}
 						ref={inputRef}
 						type="text"
 						value={query}

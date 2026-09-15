@@ -18,9 +18,10 @@ function formatPhone(value: string) {
 export default function FormPhoneInput(props: FormPhoneInputProps) {
 	return (
 		<div className={`flex flex-col gap-1 flex-1 ${props.divFormat}`}>
-			<label>{props.label}</label>
+			<label htmlFor={props.register?.name}>{props.label}</label>
 
 			<input
+				id={props.register?.name}
 				type="tel"
 				inputMode="numeric"
 				{...props.register}

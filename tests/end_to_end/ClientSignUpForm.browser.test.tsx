@@ -1,17 +1,9 @@
 /** @format */
 
-/**
- * THINGS TO UI TEST:
- * - add and remove guardians
- * - persistent form values
- * - submission calls correct functions
- * - primary biller accuracy
- * - autofill existing guardian
- */
-
-import { render } from "vitest-browser-react";
+import { cleanup, render, RenderResult } from "vitest-browser-react";
 import type { DBTypes } from "@/lib/db/dbtypes";
 import ClientSignUpForm from "@/app/signup/ClientSignUpForm";
+import { userEvent } from "vitest/browser";
 
 const { mockTutors, mockSubjects, mockGuardian, mockRouterPush, mockOnboardClientWithFormData, mockCheckGuardianStatus, mockGetTutorsBySubjects } = vi.hoisted(() => {
 	const mockTutors: DBTypes.TutorsRow[] = [
@@ -92,6 +84,7 @@ const { mockTutors, mockSubjects, mockGuardian, mockRouterPush, mockOnboardClien
 		phone: "(123) 456-7890",
 		pref_communication: "Text Message",
 	};
+
 	return {
 		mockTutors,
 		mockSubjects,
@@ -107,8 +100,105 @@ vi.mock("next/navigation", () => ({ useRouter: () => ({ push: mockRouterPush }) 
 vi.mock("@/lib/db/actions/onboard_client", () => ({ onboardClientWithFormData: mockOnboardClientWithFormData }));
 vi.mock("@/lib/db/actions/client_form", () => ({ checkGuardianStatus: mockCheckGuardianStatus, getTutorsBySubjects: mockGetTutorsBySubjects }));
 
+const fillOutStudentSection = async (page: RenderResult, overrides: any = {}) => {
+	const studentSection = page.getByRole("group", { name: "Student Information" });
+
+	await studentSection.getByLabelText("Government First Name").fill(overrides.gov_first_name ?? "Test");
+	await studentSection.getByLabelText("Government Last Name").fill(overrides.gov_last_name ?? "Student");
+	await studentSection.getByLabelText("Preferred Name (if applicable)").fill(overrides.pref_name ?? "Tess");
+
+	await studentSection.getByLabelText("Grade").fill(overrides.grade ?? "12");
+	await studentSection.getByLabelText("City").fill(overrides.city ?? "Edmonton");
+
+	await studentSection.getByRole("textbox", { name: "Email" }).fill(overrides.email ?? "student@example.ca");
+	await studentSection.getByLabelText("Phone").fill(overrides.phone ?? "(123) 456-7890");
+	if (overrides.pref_communication === "Text Message") await studentSection.getByRole("radio", { name: "Text Message" }).click();
+	else await studentSection.getByRole("radio", { name: "Email" }).click();
+
+	await userEvent.selectOptions(studentSection.getByLabelText("How Did You Find Us?"), overrides.how_found_us ?? "Word of Mouth");
+	if (overrides.biller === "Student") await studentSection.getByRole("radio", { name: "Student" }).click();
+	else await studentSection.getByRole("radio", { name: "Guardian" }).click();
+};
+
+const fillOutGuardianSection = async (page: RenderResult, overrides: any = {}) => {
+	const guardianSection = page.getByRole("group", { name: overrides.section_name ?? "Guardian Information" });
+
+	await guardianSection.getByLabelText("Government First Name").fill(overrides.gov_first_name ?? "Test");
+	await guardianSection.getByLabelText("Government Last Name").fill(overrides.gov_last_name ?? "Guardian");
+	await guardianSection.getByLabelText("Preferred Name (if applicable)").fill(overrides.pref_name ?? "Tessa");
+
+	await userEvent.selectOptions(guardianSection.getByLabelText("Relationship to Student"), overrides.relationship ?? "Legal Guardian");
+
+	await guardianSection.getByRole("textbox", { name: "Email" }).fill(overrides.email ?? "guardian@example.ca");
+	await guardianSection.getByLabelText("Phone").fill(overrides.phone ?? "(987) 654-3210");
+	if (overrides.pref_communication === "Text Message") await guardianSection.getByRole("radio", { name: "Text Message" }).click();
+	else await guardianSection.getByRole("radio", { name: "Email" }).click();
+};
+
+const fillOutPickTutorSection = async (page: RenderResult, overrides: any = {}) => {
+	const pickTutorSection = page.getByRole("group", { name: overrides.section_name ?? "Choose Your Tutor" });
+
+	await userEvent.selectOptions(pickTutorSection.getByLabelText("First Option"), overrides.first_option ?? "McJesus");
+	await userEvent.selectOptions(pickTutorSection.getByLabelText("Second Option"), overrides.first_option ?? "Leo");
+
+	await pickTutorSection.getByLabelText("What subjects are you looking for tutoring in?").fill(overrides.subjects ?? "Math 10 AP, Chemistry 20 AP");
+	await pickTutorSection.getByLabelText("What days, times, and locations work best for you?").fill(overrides.times_and_locations ?? "Weekdays after 5pm, weekends all day");
+};
+
 describe("Client Sign Up Form", () => {
+	beforeEach(() => {
+		localStorage.clear();
+		sessionStorage.clear();
+	});
+
+	afterEach(() => cleanup());
+
 	it("should load the form", async () => {
 		const form = await render(<ClientSignUpForm tutors={mockTutors} subjects={mockSubjects} />);
+		await expect.element(form.getByText("Sign Up")).toBeInTheDocument();
+		await expect.element(form.getByText("Student Information")).toBeInTheDocument();
+		await expect.element(form.getByText("Guardian Information")).toBeInTheDocument();
+		await expect.element(form.getByText("Choose Your Tutor")).toBeInTheDocument();
 	});
+
+	it("should load, fill out, and submit the form", async () => {
+		const form = await render(<ClientSignUpForm tutors={mockTutors} subjects={mockSubjects} />);
+		await fillOutStudentSection(form);
+		await fillOutGuardianSection(form);
+		await fillOutPickTutorSection(form);
+		await form.getByRole("button", { name: "Sign Up" }).click();
+		expect(mockOnboardClientWithFormData).toHaveBeenCalledOnce();
+	});
+
+	/**
+	it("should display field errors returned by server", async () => {
+		// mockOnboardClientWithFormData.mockResolvedValueOnce({
+		// 	success: false,
+		// 	errors: [{ field: "comments", message: "Comment contains invalid characters" }],
+		// });
+		// const form = await render(<ClientSignUpForm tutors={mockTutors} subjects={mockSubjects} />);
+		// await fillOutStudentSection(form);
+		// const submitBtn = form.getByRole("button", { name: "Sign Up" });
+		// await submitBtn.click();
+		// // await expect.element(form.getByText("Comment contains invalid characters")).toBeInTheDocument();
+		// expect(mockRouterPush).not.toHaveBeenCalled();
+	});
+
+	it("should display global errors returned by server", async () => {});
+	it("should display error input on incorrect zod types", async () => {});
+	it("should add and remove a new guardian", async () => {});
+	it("should add a second guardian as the primary biller", async () => {});
+	it("should submit with a student biller", async () => {});
+	it("should remember form state after refresh", async () => {});
+	it("should autofill an existing guardian", async () => {});
+	*/
 });
+
+/**
+ * THINGS TO UI TEST:
+ * - add and remove guardians
+ * - persistent form values
+ * - submission calls correct functions
+ * - primary biller accuracy
+ * - autofill existing guardian
+ */

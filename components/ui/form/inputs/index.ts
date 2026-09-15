@@ -77,6 +77,7 @@ type FormTextAreaInputProps = FormRegisterableProps & {
 type FormDataListInputProps = FormBaseInputProps & {
 	label: string;
 	options: string[];
+	name?: string;
 	onChange: (updated: string[]) => void;
 };
 

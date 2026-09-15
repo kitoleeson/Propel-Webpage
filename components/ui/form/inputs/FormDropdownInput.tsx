@@ -5,8 +5,8 @@ import { FormDropdownInputProps } from ".";
 const FormDropdownInput = (props: FormDropdownInputProps) => {
 	return (
 		<div className={`flex flex-col gap-1 flex-1 ${props.divFormat}`}>
-			<label>{props.label}</label>
-			<select className={`border border-gray-300 rounded-md p-1 ${props.format}`} {...props.register} defaultValue="" disabled={props.disabled}>
+			<label htmlFor={props.register?.name}>{props.label}</label>
+			<select id={props.register?.name} className={`border border-gray-300 rounded-md p-1 ${props.format}`} {...props.register} defaultValue="" disabled={props.disabled}>
 				<option value="" disabled>
 					{props.placeholder || "Select an option"}
 				</option>
