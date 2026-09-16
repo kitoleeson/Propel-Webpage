@@ -211,7 +211,7 @@ CREATE TABLE IF NOT EXISTS student_tutor (
 -- deleted: never deleted
 
 CREATE TABLE IF NOT EXISTS pending_student_tutor (
-    pending_student_tutor_it SERIAL PRIMARY KEY,
+    pending_student_tutor_id SERIAL PRIMARY KEY,
     student_id INTEGER NOT NULL REFERENCES students(student_id),
     tutor_id INTEGER NOT NULL REFERENCES tutors(tutor_id),
     
