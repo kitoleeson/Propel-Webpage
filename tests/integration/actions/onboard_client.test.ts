@@ -939,6 +939,7 @@ describe("Onboard Client Integration Tests", () => {
 			expect(student_tutors[0].student_id).toEqual(1);
 			expect(student_tutors[0].tutor_id).toEqual(1);
 			expect(student_tutors[0].hourly_rate).toEqual(37.5);
+			expect(student_tutors[0].markup).toEqual(5);
 			expect(student_tutors[0].had_session).toEqual(false);
 
 			expect(emailSpy).toHaveBeenCalledTimes(5);
@@ -957,7 +958,7 @@ describe("Onboard Client Integration Tests", () => {
 			expect(clientArguments.text).toContain("Hi RM,");
 			expect(clientArguments.text).toContain("excited to begin");
 			expect(clientArguments.text).toContain(
-				"You will be working with Janie, a Chemical Sciences student at the University of Johannesburg. Their current hourly rate is $37.5 per hour, which will not change for as long as you work together. You will be hearing from Janie shortly to set up a first session.",
+				"You will be working with Janie, a Chemical Sciences student at the University of Johannesburg. Their current hourly rate is $42.5 per hour, which will not change for as long as you work together. You will be hearing from Janie shortly to set up a first session.",
 			);
 			expect(clientArguments.text).not.toContain("??");
 
@@ -1104,7 +1105,7 @@ describe("Onboard Client Integration Tests", () => {
 			expect(clientArguments.text).toContain("Hi RM,");
 			expect(clientArguments.text).toContain("excited to begin");
 			expect(clientArguments.text).toContain(
-				"You will be working with Janie, a Chemical Sciences student at the University of Johannesburg. Their current hourly rate is $40 per hour, which will not change for as long as you work together. You will be hearing from Janie shortly to set up a first session.",
+				"You will be working with Janie, a Chemical Sciences student at the University of Johannesburg. Their current hourly rate is $45 per hour, which will not change for as long as you work together. You will be hearing from Janie shortly to set up a first session.",
 			);
 			expect(clientArguments.text).not.toContain("??");
 
