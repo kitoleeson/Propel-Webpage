@@ -36,9 +36,13 @@ export default async function sendTutorNewStudentRequestEmail(data: NewStudentRe
 			rows: [
 				{ label: "First Choice", value: data.pending_student_tutor.first_choice_tutor },
 				{ label: "Second Choice", value: data.pending_student_tutor.second_choice_tutor },
+				{ label: "Notes", value: data.pending_student_tutor.tutor_notes },
 			],
 		},
-		// add notes & comments
+		{
+			title: "Other",
+			rows: [{ label: "Additional Comments", value: data.pending_student_tutor.additional_comments }],
+		},
 	];
 	data.guardians.forEach((guardian, i) => {
 		sections[0].rows.push({ label: `Guardian ${i + 1} Name`, value: `${guardian.pref_name ?? guardian.gov_first_name} ${guardian.gov_last_name}` });

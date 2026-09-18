@@ -77,6 +77,8 @@ export namespace DBTypes {
 		timeandlocation: string;
 		first_choice_tutor: string;
 		second_choice_tutor: string;
+		tutor_notes: string;
+		additional_comments: string;
 	};
 	export type PendingStudentTutorRow = CompleteRecord<PendingStudentTutor, "pending_student_tutor_id">;
 

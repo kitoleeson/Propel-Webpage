@@ -75,6 +75,8 @@ export async function onboardClientWithFormData(data: ClientFormValues) {
 				timeandlocation: data.tutors.timeandlocation,
 				first_choice_tutor: tutors[0].pref_name ?? tutors[0].gov_first_name,
 				second_choice_tutor: tutors[1].pref_name ?? tutors[1].gov_first_name,
+				tutor_notes: data.tutors.notes ?? "",
+				additional_comments: data.comments ?? "",
 			};
 			const pending_tutor = (await db.pending_student_tutor.insert(student_tutor_data, tx))[0];
 			first_choice_pending_student_tutor_id = first_choice_pending_student_tutor_id ?? pending_tutor.pending_student_tutor_id;
