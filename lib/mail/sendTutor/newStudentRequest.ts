@@ -36,7 +36,12 @@ export default async function sendTutorNewStudentRequestEmail(data: NewStudentRe
 			rows: [
 				{ label: "First Choice", value: data.pending_student_tutor.first_choice_tutor },
 				{ label: "Second Choice", value: data.pending_student_tutor.second_choice_tutor },
+				{ label: "Notes", value: data.pending_student_tutor.tutor_notes },
 			],
+		},
+		{
+			title: "Other",
+			rows: [{ label: "Additional Comments", value: data.pending_student_tutor.additional_comments }],
 		},
 	];
 	data.guardians.forEach((guardian, i) => {

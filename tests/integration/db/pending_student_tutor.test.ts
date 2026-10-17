@@ -61,6 +61,8 @@ describe("Pending Student Tutor Repository Integration Tests", () => {
 				timeandlocation: "Weekdays after 5pm at the University of Alberta campus",
 				first_choice_tutor: tutor.pref_name ?? tutor.gov_first_name,
 				second_choice_tutor: tutor.pref_name ?? tutor.gov_first_name,
+				tutor_notes: "Tutor Notes",
+				additional_comments: "Additional Comments",
 			})
 		)[0];
 		return { student: student, tutor: tutor, pending_student_tutor: pending_student_tutor };
@@ -76,6 +78,8 @@ describe("Pending Student Tutor Repository Integration Tests", () => {
 		timeandlocation: "Weekdays after 5pm at the University of Alberta",
 		first_choice_tutor: "First Choice",
 		second_choice_tutor: "Second Choice",
+		tutor_notes: "Tutor Notes",
+		additional_comments: "Additional Comments",
 	};
 
 	describe("Insert & Find", () => {
@@ -91,6 +95,7 @@ describe("Pending Student Tutor Repository Integration Tests", () => {
 			expect(pending_student_tutor).toBeDefined();
 			expect(pending_student_tutor.student_id).toEqual(student.student_id);
 			expect(pending_student_tutor.tutor_id).toEqual(tutor.tutor_id);
+			expect(pending_student_tutor.tutor_notes).toEqual("Tutor Notes");
 		});
 
 		it("should error insert on invalid student_id", async () => {

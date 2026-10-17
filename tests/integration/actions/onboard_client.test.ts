@@ -40,16 +40,16 @@ describe("Onboard Client Integration Tests", () => {
 
 	beforeEach(async () => {
 		await db.pool.query(`
-         TRUNCATE TABLE
-         students,
-         guardians,
-         student_guardian,
-         student_tutor,
-         billing_accounts,
-         student_billing,
-         pending_student_tutor
-         RESTART IDENTITY CASCADE
-      `);
+			TRUNCATE TABLE
+			students,
+			guardians,
+			student_guardian,
+			student_tutor,
+			billing_accounts,
+			student_billing,
+			pending_student_tutor
+			RESTART IDENTITY CASCADE
+		`);
 		emailSpy.mockClear();
 	});
 
@@ -203,6 +203,8 @@ describe("Onboard Client Integration Tests", () => {
 			expect(tutorArguments.html).toContain(">Math, Science<");
 			expect(tutorArguments.html).toContain(">Weekdays after 5pm<");
 			expect(tutorArguments.html).toContain(">Janie<");
+			expect(tutorArguments.html).toContain(">Test notes<");
+			expect(tutorArguments.html).toContain(">Test comments<");
 			expect(tutorArguments.html).not.toContain("??");
 		});
 
@@ -403,6 +405,8 @@ describe("Onboard Client Integration Tests", () => {
 			expect(tutorArguments.html).toContain(">rosanna1@africa.ca, (111) 456-7890, prefers email<");
 			expect(tutorArguments.html).toContain(">rosanna2@africa.ca, (222) 456-7890, prefers email<");
 			expect(tutorArguments.html).toContain(">Janie<");
+			expect(tutorArguments.html).toContain(">Test notes<");
+			expect(tutorArguments.html).toContain(">Test comments<");
 			expect(tutorArguments.html).not.toContain("??");
 		});
 
@@ -508,6 +512,8 @@ describe("Onboard Client Integration Tests", () => {
 			expect(tutorArguments.html).toContain(">rosanna1@africa.ca, (111) 456-7890, prefers email<");
 			expect(tutorArguments.html).toContain(">rosanna2@africa.ca, (222) 456-7890, prefers email<");
 			expect(tutorArguments.html).toContain(">Janie<");
+			expect(tutorArguments.html).toContain(">Test notes<");
+			expect(tutorArguments.html).toContain(">Test comments<");
 			expect(tutorArguments.html).not.toContain("??");
 		});
 
@@ -617,6 +623,10 @@ describe("Onboard Client Integration Tests", () => {
 			expect(tutorArguments.html).toContain(">rosanna1@africa.ca, (111) 456-7890, prefers email<");
 			expect(tutorArguments.html).toContain(">rosanna2@africa.ca, (222) 456-7890, prefers email<");
 			expect(tutorArguments.html).toContain(">Janie<");
+			expect(tutorArguments.html).toContain(">Test notes<");
+			expect(tutorArguments.html).toContain(">Test comments<");
+			expect(tutorArguments.html).toContain(">Test notes<");
+			expect(tutorArguments.html).toContain(">Test comments<");
 			expect(tutorArguments.html).not.toContain("??");
 		});
 
@@ -714,6 +724,8 @@ describe("Onboard Client Integration Tests", () => {
 			expect(tutorArguments.html).toContain(">Rose Toto<");
 			expect(tutorArguments.html).toContain(">rosanna1@africa.ca, (111) 456-7890, prefers email<");
 			expect(tutorArguments.html).toContain(">Janie<");
+			expect(tutorArguments.html).toContain(">Test notes<");
+			expect(tutorArguments.html).toContain(">Test comments<");
 			expect(tutorArguments.html).not.toContain("??");
 		});
 
@@ -802,6 +814,8 @@ describe("Onboard Client Integration Tests", () => {
 			expect(tutorArguments.html).toContain(">Math, Science<");
 			expect(tutorArguments.html).toContain(">Weekdays after 5pm<");
 			expect(tutorArguments.html).toContain(">Janie<");
+			expect(tutorArguments.html).toContain(">Test notes<");
+			expect(tutorArguments.html).toContain(">Test comments<");
 			expect(tutorArguments.html).not.toContain("??");
 		});
 
@@ -939,6 +953,7 @@ describe("Onboard Client Integration Tests", () => {
 			expect(student_tutors[0].student_id).toEqual(1);
 			expect(student_tutors[0].tutor_id).toEqual(1);
 			expect(student_tutors[0].hourly_rate).toEqual(37.5);
+			expect(student_tutors[0].markup).toEqual(5);
 			expect(student_tutors[0].had_session).toEqual(false);
 
 			expect(emailSpy).toHaveBeenCalledTimes(5);
@@ -957,7 +972,7 @@ describe("Onboard Client Integration Tests", () => {
 			expect(clientArguments.text).toContain("Hi RM,");
 			expect(clientArguments.text).toContain("excited to begin");
 			expect(clientArguments.text).toContain(
-				"You will be working with Janie, a Chemical Sciences student at the University of Johannesburg. Their current hourly rate is $37.5 per hour, which will not change for as long as you work together. You will be hearing from Janie shortly to set up a first session.",
+				"You will be working with Janie, a Chemical Sciences student at the University of Johannesburg. Their current hourly rate is $42.5 per hour, which will not change for as long as you work together. You will be hearing from Janie shortly to set up a first session.",
 			);
 			expect(clientArguments.text).not.toContain("??");
 
@@ -1031,6 +1046,10 @@ describe("Onboard Client Integration Tests", () => {
 			expect(tutorArguments.html).toContain(">Rose Toto<");
 			expect(tutorArguments.html).toContain(">rosanna1@africa.ca, (111) 456-7890, prefers email<");
 			expect(tutorArguments.html).toContain(">Janie<");
+			expect(tutorArguments.html).toContain(">Test notes<");
+			expect(tutorArguments.html).toContain(">Test comments<");
+			expect(tutorArguments.html).toContain(">Test notes<");
+			expect(tutorArguments.html).toContain(">Test comments<");
 			expect(tutorArguments.html).not.toContain("??");
 		});
 
@@ -1088,6 +1107,10 @@ describe("Onboard Client Integration Tests", () => {
 			expect(tutorArguments.html).toContain(">Rose Toto<");
 			expect(tutorArguments.html).toContain(">rosanna1@africa.ca, (111) 456-7890, prefers email<");
 			expect(tutorArguments.html).toContain(">Janie<");
+			expect(tutorArguments.html).toContain(">Test notes<");
+			expect(tutorArguments.html).toContain(">Test comments<");
+			expect(tutorArguments.html).toContain(">Test notes<");
+			expect(tutorArguments.html).toContain(">Test comments<");
 			expect(tutorArguments.html).not.toContain("??");
 
 			// check client agreement email send
@@ -1104,7 +1127,7 @@ describe("Onboard Client Integration Tests", () => {
 			expect(clientArguments.text).toContain("Hi RM,");
 			expect(clientArguments.text).toContain("excited to begin");
 			expect(clientArguments.text).toContain(
-				"You will be working with Janie, a Chemical Sciences student at the University of Johannesburg. Their current hourly rate is $40 per hour, which will not change for as long as you work together. You will be hearing from Janie shortly to set up a first session.",
+				"You will be working with Janie, a Chemical Sciences student at the University of Johannesburg. Their current hourly rate is $45 per hour, which will not change for as long as you work together. You will be hearing from Janie shortly to set up a first session.",
 			);
 			expect(clientArguments.text).not.toContain("??");
 
@@ -1177,6 +1200,8 @@ describe("Onboard Client Integration Tests", () => {
 			expect(tutorArguments.html).toContain(">Rose Toto<");
 			expect(tutorArguments.html).toContain(">rosanna1@africa.ca, (111) 456-7890, prefers email<");
 			expect(tutorArguments.html).toContain(">Janie<");
+			expect(tutorArguments.html).toContain(">Test notes<");
+			expect(tutorArguments.html).toContain(">Test comments<");
 			expect(tutorArguments.html).not.toContain("??");
 
 			// check admin assignment email send
