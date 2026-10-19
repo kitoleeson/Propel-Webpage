@@ -8,7 +8,7 @@ import { DBTypes } from "../../dbtypes";
 import { sendAdminAssignStudentActionEmail, sendAdminClientSignupReviewEmail, sendAdminTutorClientAcceptanceReviewEmail } from "@/lib/mail/sendAdmin";
 import { sendClientSignupConfirmationEmail } from "@/lib/mail/sendClient";
 import sendClientClientAgreementEmail, { ClientAgreementEmailData } from "@/lib/mail/sendClient/clientAgreement";
-import { sendTutorNewStudentRequestEmail } from "@/lib/mail/sendTutor";
+import { sendTutorNewStudentRequestEmail, sendTutorStudentAcceptanceConfirmationEmail } from "@/lib/mail/sendTutor";
 import { NewStudentRequestEmailData } from "@/lib/mail/sendTutor/newStudentRequest";
 import { AdminAssignStudentEmailData } from "@/lib/mail/sendAdmin/aAssignStudent";
 
@@ -185,6 +185,13 @@ export async function tutorAcceptStudent(pending_student_tutor_id: number) {
 	// email the client contract to the student and guardians
 	try {
 		await sendClientClientAgreementEmail(data);
+	} catch (e) {
+		throw e;
+	}
+
+	// email a confirmation to the tutor
+	try {
+		await sendTutorStudentAcceptanceConfirmationEmail(data);
 	} catch (e) {
 		throw e;
 	}

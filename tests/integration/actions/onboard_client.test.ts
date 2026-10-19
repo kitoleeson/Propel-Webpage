@@ -956,7 +956,7 @@ describe("Onboard Client Integration Tests", () => {
 			expect(student_tutors[0].markup).toEqual(5);
 			expect(student_tutors[0].had_session).toEqual(false);
 
-			expect(emailSpy).toHaveBeenCalledTimes(5);
+			expect(emailSpy).toHaveBeenCalledTimes(6);
 
 			// check client agreement email send
 			const clientArguments = emailSpy.mock.calls[3][0];
@@ -976,8 +976,21 @@ describe("Onboard Client Integration Tests", () => {
 			);
 			expect(clientArguments.text).not.toContain("??");
 
+			// check tutor agreement email send
+			const tutorArguments = emailSpy.mock.calls[4][0];
+			expect(tutorArguments).toEqual({
+				to: "jane1@example.ca",
+				text: expect.any(String),
+				subject: "Student Acceptance Confirmation: RM Man",
+			});
+			expect(tutorArguments.text).toContain("Hi Janie,");
+			expect(tutorArguments.text).toContain("Your tutor pairing with RM Man has been confirmed.");
+			expect(tutorArguments.text).toContain("1.");
+			expect(tutorArguments.text).toContain("2.");
+			expect(tutorArguments.text).not.toContain("??");
+
 			// check admin review email send
-			const adminArguments = emailSpy.mock.calls[4][0];
+			const adminArguments = emailSpy.mock.calls[5][0];
 			expect(adminArguments).toEqual({
 				to: "propeltutoringyeg@gmail.com",
 				html: expect.any(String),
@@ -1090,7 +1103,7 @@ describe("Onboard Client Integration Tests", () => {
 			expect(student_tutors[0].student_id).toEqual(1);
 			expect(student_tutors[0].tutor_id).toEqual(2);
 
-			expect(emailSpy).toHaveBeenCalledTimes(6);
+			expect(emailSpy).toHaveBeenCalledTimes(7);
 
 			// check second choice tutor email send
 			const tutorArguments = emailSpy.mock.calls[3][0];
@@ -1131,8 +1144,21 @@ describe("Onboard Client Integration Tests", () => {
 			);
 			expect(clientArguments.text).not.toContain("??");
 
+			// check tutor agreement email send
+			const tutorAcceptArguments = emailSpy.mock.calls[5][0];
+			expect(tutorAcceptArguments).toEqual({
+				to: "jane2@example.ca",
+				text: expect.any(String),
+				subject: "Student Acceptance Confirmation: RM Man",
+			});
+			expect(tutorAcceptArguments.text).toContain("Hi Janie,");
+			expect(tutorAcceptArguments.text).toContain("Your tutor pairing with RM Man has been confirmed.");
+			expect(tutorAcceptArguments.text).toContain("1.");
+			expect(tutorAcceptArguments.text).toContain("2.");
+			expect(tutorAcceptArguments.text).not.toContain("??");
+
 			// check admin review email send
-			const adminArguments = emailSpy.mock.calls[5][0];
+			const adminArguments = emailSpy.mock.calls[6][0];
 			expect(adminArguments).toEqual({
 				to: "propeltutoringyeg@gmail.com",
 				html: expect.any(String),
