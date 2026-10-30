@@ -175,6 +175,7 @@ describe("Onboard Client Integration Tests", () => {
 			expect(adminArguments.html).toContain(">Rocket<");
 			expect(adminArguments.html).toContain(">Man<");
 			expect(adminArguments.html).toContain(">rosanna1@africa.ca<");
+			expect(adminArguments.html).toContain(">Math, Science<");
 			expect(adminArguments.html).not.toContain("??");
 
 			// check client email send

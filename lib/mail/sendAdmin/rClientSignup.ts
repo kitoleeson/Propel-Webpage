@@ -26,6 +26,7 @@ export default async function sendAdminClientSignupReviewEmail(data: ClientFormV
 			rows: [
 				{ label: "First Choice", value: data.tutor_choices[0] },
 				{ label: "Second Choice", value: data.tutor_choices[1] },
+				{ label: "Subjects", value: data.tutors.subjects },
 				{ label: "Ideal Time and Location", value: data.tutors.timeandlocation },
 				{ label: "Notes", value: data.tutors.notes },
 			],
