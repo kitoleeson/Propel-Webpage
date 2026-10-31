@@ -4,11 +4,12 @@ import { ClientFormValues } from "@/lib/validation/clientForm/clientFormSchema";
 import { compileEmailTable, sendEmail, TableSection } from "..";
 import Mail from "nodemailer/lib/mailer";
 
-export default async function sendAdminClientSignupReviewEmail(data: ClientFormValues & { tutor_choices: string[] }) {
+export default async function sendAdminClientSignupReviewEmail(data: ClientFormValues & { tutor_choices: string[]; student_id: number }) {
 	const sections: TableSection[] = [
 		{
 			title: "Student",
 			rows: [
+				{ label: "Student ID", value: data.student_id.toString() },
 				{ label: "First Name", value: data.student.gov_first_name },
 				{ label: "Last Name", value: data.student.gov_last_name },
 				{ label: "Preferred Name", value: data.student.pref_name },
