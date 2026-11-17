@@ -179,4 +179,6 @@ export default ClientSignUpForm;
  * - submission and database inputting
  * - primary biller accuracy
  * - autofill existing guardian
+ * - all buttons work on all pages
+ * - tutor updates update team page (via form or student acceptance)
  */
