@@ -4,6 +4,9 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
 	/* config options here */
+	outputFileTracingIncludes: {
+		"/**": ["./assets/email_bodies/**/*"],
+	},
 	serverExternalPackages: ["bufferutil", "utf-8-validate"],
 	webpack(config) {
 		const imageRule = config.module.rules.find((rule: any) => rule?.test?.test?.(".svg"));

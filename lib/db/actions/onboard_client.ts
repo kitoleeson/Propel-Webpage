@@ -8,13 +8,14 @@ import { DBTypes } from "../dbtypes";
 import { sendAdminAssignStudentActionEmail, sendAdminClientSignupReviewEmail, sendAdminTutorClientAcceptanceReviewEmail } from "@/lib/mail/sendAdmin";
 import { sendClientSignupConfirmationEmail } from "@/lib/mail/sendClient";
 import sendClientClientAgreementEmail, { ClientAgreementEmailData } from "@/lib/mail/sendClient/clientAgreement";
-import { sendTutorNewStudentRequestEmail } from "@/lib/mail/sendTutor";
+import { sendTutorNewStudentRequestEmail, sendTutorStudentAcceptanceConfirmationEmail } from "@/lib/mail/sendTutor";
 import { NewStudentRequestEmailData } from "@/lib/mail/sendTutor/newStudentRequest";
 import { AdminAssignStudentEmailData } from "@/lib/mail/sendAdmin/aAssignStudent";
 
 export async function onboardClientWithFormData(data: ClientFormValues) {
 	let first_choice_pending_student_tutor_id;
 	let tutor_choices: string[];
+	let student_id: number;
 
 	const client = await db.pool.connect();
 	const tx = sql(client);
@@ -23,6 +24,7 @@ export async function onboardClientWithFormData(data: ClientFormValues) {
 
 		// insert into student
 		const student = (await db.student.insert(data.student as DBTypes.Students, tx))[0];
+		student_id = student.student_id;
 
 		// insert into guardians and student_guardian
 		for (let g of data.guardians) {
@@ -75,6 +77,8 @@ export async function onboardClientWithFormData(data: ClientFormValues) {
 				timeandlocation: data.tutors.timeandlocation,
 				first_choice_tutor: tutors[0].pref_name ?? tutors[0].gov_first_name,
 				second_choice_tutor: tutors[1].pref_name ?? tutors[1].gov_first_name,
+				tutor_notes: data.tutors.notes ?? "",
+				additional_comments: data.comments ?? "",
 			};
 			const pending_tutor = (await db.pending_student_tutor.insert(student_tutor_data, tx))[0];
 			first_choice_pending_student_tutor_id = first_choice_pending_student_tutor_id ?? pending_tutor.pending_student_tutor_id;
@@ -115,7 +119,7 @@ export async function onboardClientWithFormData(data: ClientFormValues) {
 	}
 
 	try {
-		await sendAdminClientSignupReviewEmail({ ...data, tutor_choices });
+		await sendAdminClientSignupReviewEmail({ ...data, tutor_choices, student_id });
 	} catch (e) {
 		throw e;
 	}
@@ -183,6 +187,13 @@ export async function tutorAcceptStudent(pending_student_tutor_id: number) {
 	// email the client contract to the student and guardians
 	try {
 		await sendClientClientAgreementEmail(data);
+	} catch (e) {
+		throw e;
+	}
+
+	// email a confirmation to the tutor
+	try {
+		await sendTutorStudentAcceptanceConfirmationEmail(data);
 	} catch (e) {
 		throw e;
 	}

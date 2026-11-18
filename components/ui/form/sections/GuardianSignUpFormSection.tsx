@@ -72,7 +72,7 @@ const GuardianSection = ({ index, placeholder, optional }: Props) => {
 
 			<FormInputCluster>
 				<FormCheckboxInput
-					label="Is this guardian already linked to a registered student?"
+					label="Has this guardian previously registered for Propel Tutoring with another student?"
 					register={register(`guardians.${index}.already_exists`, { onChange: clearFields })}
 					options={["Yes"]}
 					error={errors.guardians?.[index]?.already_exists?.message}

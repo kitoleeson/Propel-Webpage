@@ -47,7 +47,7 @@ export default async function sendClientClientAgreementEmail(data: ClientAgreeme
 			.replaceAll("??TutorFirstName??", data.tutor.pref_name ?? data.tutor.gov_first_name)
 			.replaceAll("??TutorFieldOfStudy??", data.tutor.field_of_study ? anIfy(data.tutor.field_of_study) : "a")
 			.replaceAll("??TutorUni??", data.tutor.current_uni ?? "University of Alberta")
-			.replaceAll("??TutorRate??", data.tutor.current_rate.toString());
+			.replaceAll("??TutorRatePlusMarkup??", (data.tutor.current_rate + data.student_tutor.markup).toString());
 
 		const options: Mail.Options = {
 			to: data.student.email,
