@@ -4,6 +4,11 @@ import { z } from "zod";
 
 const testing: boolean = false; // Set to true to enable default values for testing
 
+const sanitizedOptionalString = z
+	.string()
+	.transform((val) => (val.trim() === "" ? undefined : val))
+	.optional();
+
 // console.log(`[ENV CHECK] APP_ENV is: "${process.env.APP_ENV}"`);
 // console.log(`[ENV CHECK] Testing mode is: ${process.env.APP_ENV != "prod"}`);
 
@@ -28,7 +33,7 @@ export const tutorSchema = z
 	.object({
 		gov_first_name: z.string().min(1, "First name is required"),
 		gov_last_name: z.string().min(1, "Last name is required"),
-		pref_name: z.string().optional(),
+		pref_name: sanitizedOptionalString,
 		email: z.string().email("Invalid email address"),
 		phone: z.string().min(1, "Phone number is required"),
 
@@ -47,7 +52,7 @@ export const tutorSchema = z
 		availability: z.string().min(1, "Availability is required"),
 		in_person: z.enum(["In-Person Only", "Online Only", "Hybrid"]),
 		city: z.string().min(1, { message: "City is required" }),
-		location: z.string().optional(),
+		location: sanitizedOptionalString,
 
 		subjects: subjectSchema,
 
@@ -90,7 +95,7 @@ export const tutorSemesterUpdateSchema = z
 		availability: z.string().min(1, "Availability is required"),
 		in_person: z.enum(["In-Person Only", "Online Only", "Hybrid"]),
 		city: z.string().min(1, { message: "City is required" }),
-		location: z.string().optional(),
+		location: sanitizedOptionalString,
 
 		current_uni: z.string().min(1, "Current university is required"),
 		current_degree: z.enum(["Bachelor's Degree", "Master's Degree", "Associate's Degree", "Doctorate", "Vocational Certificate", "Other"]),

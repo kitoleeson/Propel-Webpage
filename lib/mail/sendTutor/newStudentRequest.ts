@@ -16,7 +16,7 @@ export default async function sendTutorNewStudentRequestEmail(data: NewStudentRe
 		{
 			title: "Personal Information",
 			rows: [
-				{ label: "Name", value: `${data.student.gov_first_name} ${data.student.pref_name ? `(${data.student.pref_name})` : ""} ${data.student.gov_last_name}` },
+				{ label: "Name", value: `${data.student.gov_first_name}${data.student.pref_name ? ` (${data.student.pref_name})` : ""} ${data.student.gov_last_name}` },
 				{ label: "Student Email", value: data.student.email },
 				{ label: "Student Phone", value: data.student.phone },
 				{ label: "Preferred Communication", value: data.student.pref_communication },

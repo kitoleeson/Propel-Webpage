@@ -174,6 +174,7 @@ describe("Onboard Client Integration Tests", () => {
 			});
 			expect(adminArguments.html).toContain(">Rocket<");
 			expect(adminArguments.html).toContain(">Man<");
+			expect(adminArguments.html).toContain(">rocket1.man@mars.ca<");
 			expect(adminArguments.html).toContain(">rosanna1@africa.ca<");
 			expect(adminArguments.html).toContain(">Math, Science<");
 			expect(adminArguments.html).toContain(">1<");
@@ -210,9 +211,9 @@ describe("Onboard Client Integration Tests", () => {
 			expect(tutorArguments.html).not.toContain("??");
 		});
 
-		it("should onboard a new student with an existing guardian", async () => {
+		it("should onboard a new student with an existing guardian and no preferred name", async () => {
 			const guardian = (await db.guardian.insert(createMockGuardian()))[0];
-			const data = createMockClientFormValues({}, [{ already_exists: true, email_password: guardian.email }]);
+			const data = createMockClientFormValues({ pref_name: undefined }, [{ already_exists: true, email_password: guardian.email }]);
 			await onboardClientWithFormData(data);
 
 			// CHECK DATABASE INPUTS
@@ -283,9 +284,9 @@ describe("Onboard Client Integration Tests", () => {
 				to: "rocket1.man@mars.ca",
 				cc: ["rosanna1@africa.ca"],
 				text: expect.any(String),
-				subject: `Propel Tutoring Signup Confirmation - RM Man`,
+				subject: `Propel Tutoring Signup Confirmation - Rocket Man`,
 			});
-			expect(clientArguments.text).toContain("Hi RM,");
+			expect(clientArguments.text).toContain("Hi Rocket,");
 			expect(clientArguments.text).toContain("here is what comes next:");
 			expect(clientArguments.text).toContain("3.");
 			expect(clientArguments.text).not.toContain("??");
@@ -295,11 +296,11 @@ describe("Onboard Client Integration Tests", () => {
 			expect(tutorArguments).toEqual({
 				to: "jane1@example.ca",
 				html: expect.any(String),
-				subject: `New Student Request: RM Man`,
+				subject: `New Student Request: Rocket Man`,
 			});
 			expect(tutorArguments.html).toContain("http://localhost:3000/api/acceptNewStudent?id=1");
 			expect(tutorArguments.html).toContain("http://localhost:3000/api/declineNewStudent?id=1");
-			expect(tutorArguments.html).toContain(">Rocket (RM) Man<");
+			expect(tutorArguments.html).toContain(">Rocket Man<");
 			expect(tutorArguments.html).toContain(">Math, Science<");
 			expect(tutorArguments.html).toContain(">Weekdays after 5pm<");
 			expect(tutorArguments.html).toContain(">Janie<");

@@ -4,10 +4,15 @@ import { z } from "zod";
 
 const testing: boolean = false; // Set to true to enable default values for testing
 
+const sanitizedOptionalString = z
+	.string()
+	.transform((val) => (val.trim() === "" ? undefined : val))
+	.optional();
+
 const personBase = z.object({
 	gov_first_name: z.string().min(1, "First name is required"),
 	gov_last_name: z.string().min(1, "Last name is required"),
-	pref_name: z.string().optional(),
+	pref_name: sanitizedOptionalString,
 	email: z.string().email("Invalid email address"),
 	phone: z.string().min(1, "Phone number is required"),
 	pref_communication: z.enum(["Email", "Text Message"]),
@@ -24,7 +29,7 @@ const guardianSchema = personBase.extend({
 	relationship: z.enum(["Mother", "Father", "Parent", "Legal Guardian", "Other"]),
 	is_primary_biller: z.boolean(),
 	already_exists: z.boolean(),
-	email_password: z.string().optional(),
+	email_password: sanitizedOptionalString,
 });
 
 const tutorsSchema = z
@@ -32,7 +37,7 @@ const tutorsSchema = z
 		choices: z.array(z.number().int()).length(2),
 		subjects: z.string().min(1),
 		timeandlocation: z.string().min(1),
-		notes: z.string().optional(),
+		notes: sanitizedOptionalString,
 	})
 	.superRefine((data, ctx) => {
 		if (data.choices[0] === data.choices[1]) {
@@ -100,7 +105,7 @@ export const formSchema = z
 		guardians: z.array(guardianSchema),
 		primary_biller_index: z.number().min(-1),
 		tutors: tutorsSchema,
-		comments: z.string().optional(),
+		comments: sanitizedOptionalString,
 	})
 	.superRefine((data, ctx) => {
 		const guardianBilling = data.student.biller === "Guardian";
